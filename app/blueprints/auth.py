@@ -11,8 +11,8 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        # In a real app, you would use Supabase Auth
-        # For now, we'll just check if the user exists
+        # TODO: use Supabase Auth
+        # check if the user exists
         user = User.get_by_username(username)
         if user:
             login_user(user)
@@ -33,13 +33,13 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # In a real app, you would use Supabase Auth
-        # For now, we'll just create a user record
+        # TODO: use Supabase Auth
+        # create a user record
         try:
             response = supabase.table('users').insert({
                 'username': username,
                 'email': email,
-                # In a real app, you would hash the password
+                # TODO: hash the password
                 'password_hash': password
             }).execute()
 

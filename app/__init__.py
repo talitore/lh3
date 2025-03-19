@@ -11,7 +11,6 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # Initialize Supabase
     global supabase
     supabase = create_client(app.config['SUPABASE_URL'], app.config['SUPABASE_KEY'])
 
