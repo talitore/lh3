@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
-from app import db
+from app import supabase
 from app.models import User
 from flask_login import login_user, logout_user, login_required
 
@@ -7,11 +7,13 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-    # Placeholder login logic
     if request.method == 'POST':
         username = request.form.get('username')
-        # In a real app, add proper password checking
-        user = User.query.filter_by(username=username).first()
+        password = request.form.get('password')
+
+        # In a real app, you would use Supabase Auth
+        # For now, we'll just check if the user exists
+        user = User.get_by_username(username)
         if user:
             login_user(user)
             return redirect(url_for('main.index'))
@@ -26,14 +28,25 @@ def logout():
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
-    # Placeholder registration logic
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
-        # Normally, you would hash the password and include additional validation
-        user = User(username=username, email=email)
-        db.session.add(user)
-        db.session.commit()
-        flash('Registration successful, please log in.')
-        return redirect(url_for('auth.login'))
+        password = request.form.get('password')
+
+        # In a real app, you would use Supabase Auth
+        # For now, we'll just create a user record
+        try:
+            response = supabase.table('users').insert({
+                'username': username,
+                'email': email,
+                # In a real app, you would hash the password
+                'password_hash': password
+            }).execute()
+
+            if response.data:
+                flash('Registration successful, please log in.')
+                return redirect(url_for('auth.login'))
+        except Exception as e:
+            flash('Registration failed. Username or email might already exist.')
+
     return render_template('auth/register.html')
