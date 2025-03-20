@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - LH3{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Edit Profile</h1>
+    <form method="POST" action="{{ url_for('auth.edit_profile') }}" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="avatar">Profile Picture</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*">
+            {% if user.avatar %}
+            <p>Current avatar: {{ user.avatar }}</p>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio" name="bio" rows="4">{{ user.bio or '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="hash_nickname">Hash Nickname</label>
+            <input type="text" id="hash_nickname" name="hash_nickname" value="{{ user.hash_nickname or '' }}">
+        </div>
+
+        <fieldset class="form-group">
+            <legend>Privacy Settings</legend>
+
+            <div>
+                <label for="privacy_profile">Profile Visibility</label>
+                <select id="privacy_profile" name="privacy_profile">
+                    <option value="public" {% if user.privacy_settings.profile == 'public' %}selected{% endif %}>Public</option>
+                    <option value="members" {% if user.privacy_settings.profile == 'members' %}selected{% endif %}>Members Only</option>
+                    <option value="private" {% if user.privacy_settings.profile == 'private' %}selected{% endif %}>Private</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="privacy_runs">Runs/Trails Visibility</label>
+                <select id="privacy_runs" name="privacy_runs">
+                    <option value="public" {% if user.privacy_settings.runs == 'public' %}selected{% endif %}>Public</option>
+                    <option value="members" {% if user.privacy_settings.runs == 'members' %}selected{% endif %}>Members Only</option>
+                    <option value="private" {% if user.privacy_settings.runs == 'private' %}selected{% endif %}>Private</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="privacy_stats">Stats Visibility</label>
+                <select id="privacy_stats" name="privacy_stats">
+                    <option value="public" {% if user.privacy_settings.stats == 'public' %}selected{% endif %}>Public</option>
+                    <option value="members" {% if user.privacy_settings.stats == 'members' %}selected{% endif %}>Members Only</option>
+                    <option value="private" {% if user.privacy_settings.stats == 'private' %}selected{% endif %}>Private</option>
+                </select>
+            </div>
+        </fieldset>
+
+        <div class="form-group">
+            <button type="submit" class="button">Save Changes</button>
+            <a href="{{ url_for('auth.profile') }}" class="button" style="background-color: #95a5a6;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    fieldset {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 1.5rem;
+    }
+
+    legend {
+        padding: 0 0.5rem;
+        font-weight: bold;
+    }
+
+    fieldset div {
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}

@@ -3,18 +3,26 @@ from flask_login import UserMixin
 from datetime import datetime
 
 class User(UserMixin):
-    def __init__(self, id, username, email, password_hash=None):
+    def __init__(self, id, username, email, password_hash=None, avatar=None, bio=None, favorite_runs=None,
+                 personal_stats=None, hash_nickname=None, role='member', privacy_settings=None):
         self.id = id
         self.username = username
         self.email = email
         self.password_hash = password_hash
+        self.avatar = avatar
+        self.bio = bio
+        self.favorite_runs = favorite_runs or []
+        self.personal_stats = personal_stats or {}
+        self.hash_nickname = hash_nickname
+        self.role = role  # 'admin', 'member', or 'guest'
+        self.privacy_settings = privacy_settings or {'profile': 'public', 'runs': 'public', 'stats': 'public'}
 
     @staticmethod
     def get(user_id):
         response = supabase.table('users').select('*').eq('id', user_id).execute()
         if response.data:
             user_data = response.data[0]
-            return User(user_data['id'], user_data['username'], user_data['email'])
+            return User(**user_data)
         return None
 
     @staticmethod
@@ -22,8 +30,22 @@ class User(UserMixin):
         response = supabase.table('users').select('*').eq('username', username).execute()
         if response.data:
             user_data = response.data[0]
-            return User(user_data['id'], user_data['username'], user_data['email'])
+            return User(**user_data)
         return None
+
+    @staticmethod
+    def get_by_email(email):
+        response = supabase.table('users').select('*').eq('email', email).execute()
+        if response.data:
+            user_data = response.data[0]
+            return User(**user_data)
+        return None
+
+    def is_admin(self):
+        return self.role == 'admin'
+
+    def is_guest(self):
+        return self.role == 'guest'
 
     def __repr__(self):
         return f'<User {self.username}>'
