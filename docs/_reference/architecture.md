@@ -28,6 +28,8 @@ The application is built using:
 - **Styling**: Tailwind CSS (with shadcn/ui integration and CSS variables for theming)
 - **Component Library**: shadcn/ui (added via CLI, customizable, themable)
 - **Package Manager**: pnpm
+- **ORM**: Prisma
+- **Database**: PostgreSQL
 
 ## Build and Deployment
 

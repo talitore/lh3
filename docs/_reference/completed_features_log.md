@@ -1,2 +1,3 @@
+- **Phase 1 – Project & Tooling Setup:** Completed 2025-05-10. Established the essential technical stack and initial project structure for hashhub-web.
 - **Design System:** Completed 2025-05-09. Integrated shadcn/ui as the foundational design system for the application to provide a consistent and modern look and feel.
 - **Next.js Application Bootstrap:** Completed 2025-05-09. Initialized a new Next.js application with TypeScript, ESLint, and Tailwind CSS, establishing the foundational project structure.
