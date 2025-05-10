@@ -4,5 +4,5 @@
 
    - `pnpm add next-auth`
 
-2. **Configure providers** (Google/GitHub) in `app/api/auth/[...nextauth].ts`
+2. **Configure providers** (Google) in `app/api/auth/[...nextauth].ts`
 3. **Protect API routes** via `getServerSession`

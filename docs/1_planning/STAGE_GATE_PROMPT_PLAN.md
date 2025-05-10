@@ -52,7 +52,7 @@ Populate spec.md:
 Populate design.md:
 
 Add any architectural thoughts, visual sketches (as markdown code or descriptions),
-component interactions, or other design considerations worth capturing early.
+component interactions, or other design considerations worth capturing early. Ensure we're adopting the principles of SLC (Simple, Lovable, and Complete), which can be researched @ https://longform.asmartbear.com/slc/.
 
 Populate uxpilot_prompts.md:
 
