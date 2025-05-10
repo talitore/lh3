@@ -1,4 +1,4 @@
-### Phase 2 – Data Modeling & Schema
+### Phase 2.5 – Data Modeling & Schema
 
 1. **Define Prisma schema** (`prisma/schema.prisma`):
 
