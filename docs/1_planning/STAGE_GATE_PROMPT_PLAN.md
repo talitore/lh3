@@ -11,7 +11,7 @@ Determine Feature Name: Extract a short, clear name for the feature based
 on the file or content (e.g., chart-feature.md → "Chart Feature").
 
 Create Folder: Inside docs/1_planning/, create a new folder named after the
-feature (e.g., docs/1_planning/chart-feature/).
+feature (e.g., docs/1_planning/chart-feature/). If a phase number is included in the feature name, prefix the folder name with 'phase-' and the number. (e.g., docs/1_planning/phase-1-chart-feature/).
 
 Create Standard Files: Within this folder, generate the following files:
 

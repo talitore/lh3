@@ -2,7 +2,7 @@
 
 1. **Bootstrap Next.js project**
 
-   - `pnpm dlx create-next-app@latest hashhub-web --ts`
+   - `pnpm dlx create-next-app@latest lh3-web --ts`
    - Pin Next.js to v15.3.2: `pnpm add next@15.3.2 react react-dom`
 
 2. **Install & configure Tailwind v4**

@@ -1,6 +1,6 @@
 Thought for a few seconds
 
-Below is a sequential, detailed task list you can tick off as you build out HashHub with Next.js 15.3.2+, Tailwind v4 and shadcn/ui:
+Below is a sequential, detailed task list you can tick off as you build out LH3 with Next.js 15.3.2+, Tailwind v4 and shadcn/ui:
 
 ---
 
@@ -8,7 +8,7 @@ Below is a sequential, detailed task list you can tick off as you build out Hash
 
 1. **Bootstrap Next.js project**
 
-   - `npx create-next-app@latest hashhub-web --ts`
+   - `npx create-next-app@latest lh3-web --ts`
    - Pin Next.js to v15.3.2: `npm install next@15.3.2 react react-dom`
 
 2. **Install & configure Tailwind v4**
