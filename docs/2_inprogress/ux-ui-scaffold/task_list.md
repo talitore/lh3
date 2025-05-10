@@ -1,0 +1,23 @@
+# UX/UI Scaffold Implementation Tasks
+
+- [ ] **Global Layout Setup (Option 2 - Modern Collapsible Overlay Sidebar)**
+  - [x] Create `app/layout.tsx`.
+  - [x] Implement Header component with logo, navigation links ("Feed", "Events", "Members"), Admin Mode toggle, user profile icon, and sidebar toggle icon.
+  - [x] Implement Sidebar component (collapsible overlay) with sections: "Upcoming Events", "Quick Stats", "Admin Tools".
+  - [x] Implement Main Content Area.
+  - [x] Ensure layout is responsive (mobile, tablet, desktop).
+- [ ] **Design System Setup**
+  - [x] Configure `tailwind.config.js` to extend Shadcn's Tailwind tokens (colors, spacing, typography).
+- [ ] **Common Reusable Component Creation**
+  - [x] Create `Card` component (`components/ui/card.tsx`).
+  - [x] Create `Badge` component (`components/ui/badge.tsx`).
+  - [x] Create `Button` component (`components/ui/button.tsx`).
+  - [x] Create `Input` component (`components/ui/input.tsx`).
+  - [x] Create `MapEmbed` component (`components/ui/map-embed.tsx`).
+  - [x] Create `PhotoGallery` component (`components/ui/photo-gallery.tsx`).
+  - [x] Ensure all components are styled with Tailwind CSS and are accessible.
+- [ ] **Prototyping/Development Workflow**
+  - [x] Create sandbox pages in `app/(demo)/components/` for each new UI component to demonstrate its states and props.
+- [ ] **Documentation & Cleanup**
+  - [x] Review and add comments where necessary.
+  - [x] Ensure adherence to non-functional requirements (performance, responsiveness, accessibility, maintainability, extensibility).
