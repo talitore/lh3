@@ -32,6 +32,7 @@ The application is built using:
 - **Package Manager**: pnpm
 - **ORM**: Prisma (manages database schema and provides type-safe access)
 - **Database**: PostgreSQL (schema defined and managed by Prisma)
+- **Authentication**: NextAuth.js (for user authentication)
 
 ## Data Modeling & Database Schema
 
@@ -69,7 +70,7 @@ The build process leverages Next.js build tools with pnpm as the package manager
 
 ## Routing
 
-Next.js App Router file-system based routing is used. Folders within the `src/app` directory define routes. Special files like `page.tsx` (for UI), `layout.tsx` (for shared layouts), and `route.ts` (for API endpoints) are used to define the content and behavior of these routes.
+Next.js App Router file-system based routing is used. Folders within the `src/app` directory define routes. Special files like `page.tsx` (for UI), `layout.tsx` (for shared layouts), and `route.ts` (for API endpoints) are used to define the content and behavior of these routes. API routes can be protected using `getServerSession` to restrict access to authenticated users.
 
 ## Styling
 
@@ -99,3 +100,24 @@ The UX/UI Scaffold introduced a set of core, reusable UI components and a develo
 ## Code Quality & Linting
 
 ESLint is configured for Next.js/TypeScript to ensure code quality and consistency.
+
+## Authentication and Authorization
+
+User authentication is handled using **NextAuth.js**. The initial implementation utilizes the Google OAuth 2.0 provider, allowing users to sign in securely with their Google accounts.
+
+API routes requiring authentication are protected by verifying the user's session on the server side using \`getServerSession(authOptions)\`. If a valid session is not found, the API endpoint returns a 401 Unauthorized response.
+
+## Session Management
+
+NextAuth.js manages user sessions using the default **JWT (JSON Web Token) session strategy**. This provides a stateless session mechanism suitable for serverless deployments. The JWT is securely stored in an HTTP-only cookie in the user's browser.
+
+## Configuration Management
+
+Key configuration settings, particularly for external services and security, are managed using environment variables. For NextAuth.js, the following \`AUTH\_\` prefixed variables are used, following recommended conventions for future compatibility:
+
+- \`AUTH_URL\`: The canonical URL of the application.
+- \`AUTH_SECRET\`: A strong secret for signing and encrypting session data.
+- \`AUTH_GOOGLE_ID\`: Google OAuth Client ID.
+- \`AUTH_GOOGLE_SECRET\`: Google OAuth Client Secret.
+
+These variables should be stored securely (e.g., in a \`.env.local\` file for local development and configured in the deployment environment).

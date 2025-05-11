@@ -1,3 +1,4 @@
+- **Phase 3 - Authentication:** Completed 2025-05-10. Implemented user authentication using NextAuth.js with Google OAuth and secured API routes.
 - **Phase 2.5 - Data Modeling & Schema:** Completed 2025-05-10. Defined the core data models (User, Run, RSVP, Photo) and relationships using Prisma, enabling database schema migration and client generation.
 - **Phase 2 – UX/UI Scaffold:** Completed 2024-06-10. Established a global layout, reusable design system, and core UI components with a modern, accessible, and extensible foundation for future development.
 - **Phase 1 – Project & Tooling Setup:** Completed 2025-05-10. Established the essential technical stack and initial project structure for lh3-web.
