@@ -120,9 +120,73 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  image: 'image',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RunScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  descriptor: 'descriptor',
+  dateTime: 'dateTime',
+  address: 'address',
+  lat: 'lat',
+  lng: 'lng',
+  introLink: 'introLink',
+  organizerId: 'organizerId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RSVPScalarFieldEnum = {
+  id: 'id',
+  runId: 'runId',
+  userId: 'userId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PhotoScalarFieldEnum = {
+  id: 'id',
+  url: 'url',
+  runId: 'runId',
+  uploaderId: 'uploaderId',
+  caption: 'caption',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+exports.RSVPStatus = exports.$Enums.RSVPStatus = {
+  YES: 'YES',
+  NO: 'NO',
+  MAYBE: 'MAYBE'
+};
 
 exports.Prisma.ModelName = {
-
+  User: 'User',
+  Run: 'Run',
+  RSVP: 'RSVP',
+  Photo: 'Photo'
 };
 
 /**
