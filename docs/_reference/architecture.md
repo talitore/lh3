@@ -30,8 +30,38 @@ The application is built using:
 - **Styling**: Tailwind CSS (with shadcn/ui integration and CSS variables for theming)
 - **Component Library**: shadcn/ui (added via CLI, customizable, themable)
 - **Package Manager**: pnpm
-- **ORM**: Prisma
-- **Database**: PostgreSQL
+- **ORM**: Prisma (manages database schema and provides type-safe access)
+- **Database**: PostgreSQL (schema defined and managed by Prisma)
+
+## Data Modeling & Database Schema
+
+The core data structure of the application is defined using Prisma. The schema, located in `prisma/schema.prisma`, includes the following key models:
+
+- **User**: Represents application users.
+- **Run**: Represents run events organized by users.
+- **RSVP**: Tracks user responses (Yes, No, Maybe) to runs.
+- **Photo**: Allows users to upload photos related to runs.
+
+These models have defined fields, types, and relationships to ensure data integrity and provide a structured way to store and access application data.
+
+## ORM & Data Access Layer
+
+Prisma is utilized as the Object-Relational Mapper (ORM) for this project. It serves several key functions:
+
+- **Schema Definition**: The `prisma/schema.prisma` file is the single source of truth for the database schema.
+- **Type-Safe Client**: Prisma generates a type-safe client (`@prisma/client`) that is used in the backend to interact with the database, preventing common data-related errors.
+- **Database Migrations**: Prisma manages database schema migrations, allowing for version-controlled changes to the database structure.
+
+## Database Migration Strategy
+
+Database schema migrations are handled using Prisma Migrate. The primary command used during development is `pnpm prisma migrate dev`. This command:
+
+- Compares the current `prisma/schema.prisma` with the state of the database.
+- Generates SQL migration files based on the differences.
+- Applies the generated migrations to the development database.
+- Ensures the Prisma Client is up-to-date with the latest schema.
+
+This approach allows for an iterative and version-controlled process for evolving the database schema alongside application features.
 
 ## Build and Deployment
 
