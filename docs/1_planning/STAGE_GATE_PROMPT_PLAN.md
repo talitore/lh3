@@ -3,6 +3,17 @@ has been referenced using @filename.md in this chat.
 
 Instructions:
 
+Gain Context:
+
+- Review the reference docs to understand the context of repo.
+  - [Architecture](../_reference/architecture.md)
+  - [Completed Features Log](../_reference/completed_features_log.md)
+- Review each completed feature's summary.md to determine if it's relevant to the current feature. If it is, read the rest of the feature's docs to gain context.
+  - [Completed Features](../3_completed/)
+  - [Package JSON](../../package.json)
+  - [Prisma Schema](../../prisma/schema.prisma)
+  - [OpenAPI Spec](../../openapi.yaml)
+
 Read the Referenced File: Review the contents of the feature file that was
 referenced using @ (e.g., @chart-feature.md) to understand the feature idea
 and its intended goal.

@@ -26,9 +26,7 @@ export async function loginAsTestUser(
     {
       form: {
         username: username,
-        password: '', // Added empty password
         csrfToken: csrfToken,
-        json: 'true', // Ask for JSON response to see outcome
       },
       // NextAuth often expects application/x-www-form-urlencoded for this endpoint
       headers: {
@@ -39,6 +37,16 @@ export async function loginAsTestUser(
 
   const responseBodyText = await loginResponse.text();
 
+  console.log(
+    `[AuthUtils Debug] Login Response Status: ${loginResponse.status()}`
+  );
+  console.log(
+    `[AuthUtils Debug] Login Response Body Text: ${responseBodyText.slice(
+      0,
+      100
+    )}`
+  );
+
   if (!loginResponse.ok()) {
     throw new Error(
       `Credentials sign-in POST request failed: ${loginResponse.statusText()} - ${responseBodyText}`
@@ -47,33 +55,13 @@ export async function loginAsTestUser(
 
   // The response from a successful credentials callback might be a redirect or JSON
   // We expect a session cookie to be set by NextAuth upon successful auth.
-  // Check if the response URL indicates success (e.g., not an error page or back to signin with error)
-  // If json: true is respected, it might return { url: "/" } or similar on success.
-  const loginJson = JSON.parse(responseBodyText || '{}'); // Attempt to parse, default to empty object if text is empty
-  if (loginJson && loginJson.url && loginJson.url.includes('error')) {
-    throw new Error(
-      `Credentials sign-in failed, error in response: ${loginJson.url}`
-    );
-  }
-  // A successful response to a credentials callback with json:true usually redirects.
-  // The body might contain { url: "/" } or similar upon success which indicates where to redirect.
-  if (!loginJson.url && loginResponse.status() !== 200) {
-    throw new Error(
-      `Credentials sign-in possibly failed, status: ${loginResponse.status()}, body: ${responseBodyText}`
-    );
-  }
+  // Playwright's request.post follows redirects by default, so loginResponse
+  // should be the final 200 OK response from the redirected page (e.g., '/').
 
-  // If loginJson.url points to an error page, it means auth failed.
-  if (
-    loginJson.url &&
-    (loginJson.url.includes('error') || loginJson.url.includes('signin'))
-  ) {
-    throw new Error(
-      `Credentials sign-in failed, NextAuth redirected to: ${loginJson.url}`
-    );
-  }
+  // A successful response to a credentials callback results in a redirect,
+  // which page.request.post follows. Check for the final 200 status.
 
-  // At this point, a session cookie should have been set if auth was successful and loginJson.url was / or similar.
+  // At this point, a session cookie should have been set if auth was successful.
   // The calling test should handle navigation/reload if needed.
   const cookies = await page.context().cookies();
   const sessionCookie = cookies.find((cookie) =>
