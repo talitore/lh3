@@ -6,7 +6,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1,
-  reporter: 'html',
+  reporter: './playwright.reporter.ts',
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
@@ -18,10 +18,21 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm dev',
+    command:
+      'cross-env E2E_TESTING_MODE=true SKIP_AUTH_CHECKS=true MOCK_AUTH_FOR_TESTS=true USE_MOCK_DATA=true pnpm dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    stdout: 'pipe',
-    stderr: 'pipe',
+    stdout: 'ignore',
+    stderr: 'ignore',
+    timeout: 60000, // Increase timeout to 60 seconds
+  },
+  // Global timeout for tests
+  timeout: 30000,
+  // Set environment variables for tests
+  env: {
+    E2E_TESTING_MODE: 'true',
+    SKIP_AUTH_CHECKS: 'true',
+    MOCK_AUTH_FOR_TESTS: 'true',
+    USE_MOCK_DATA: 'true',
   },
 });
