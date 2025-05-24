@@ -1,105 +1,122 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { useState, useEffect, useRef } from "react"
-import { MapPin, Loader2 } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
+import * as React from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { MapPin, Loader2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
-interface AddressAutocompleteProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  onAddressSelected: (address: string, coordinates: { lat: number, lng: number }) => void
-  defaultValue?: string
-  apiKey?: string
+// Import constants
+import { TIMING, INPUT_VALIDATION, CSS_CLASSES } from '@/lib/constants/ui';
+import { MAPBOX, ERROR_MESSAGES } from '@/lib/constants/api';
+import { getMapboxAccessToken } from '@/lib/config/env';
+
+interface AddressAutocompleteProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  onAddressSelected: (
+    address: string,
+    coordinates: { lat: number; lng: number }
+  ) => void;
+  defaultValue?: string;
+  apiKey?: string;
 }
 
 /**
  * AddressAutocomplete Component
- * 
+ *
  * A component that provides address autocomplete functionality using Mapbox Geocoding API.
- * 
+ *
  * @param onAddressSelected - Callback function when an address is selected
  * @param defaultValue - Optional default address value
  * @param apiKey - Optional Mapbox API key (falls back to env variable)
  */
 export function AddressAutocomplete({
   onAddressSelected,
-  defaultValue = "",
+  defaultValue = '',
   apiKey,
   className,
   ...props
 }: AddressAutocompleteProps) {
-  const [input, setInput] = useState(defaultValue)
-  const [suggestions, setSuggestions] = useState<Array<{ text: string, place_name: string, center: [number, number] }>>([])
-  const [showSuggestions, setShowSuggestions] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const suggestionsRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [input, setInput] = useState(defaultValue);
+  const [suggestions, setSuggestions] = useState<
+    Array<{ text: string; place_name: string; center: [number, number] }>
+  >([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        suggestionsRef.current && 
+        suggestionsRef.current &&
         !suggestionsRef.current.contains(event.target as Node) &&
         inputRef.current &&
         !inputRef.current.contains(event.target as Node)
       ) {
-        setShowSuggestions(false)
+        setShowSuggestions(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Fetch suggestions from Mapbox Geocoding API
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (!input || input.length < 3) {
-        setSuggestions([])
-        return
+      if (!input || input.length < INPUT_VALIDATION.MIN_ADDRESS_SEARCH_LENGTH) {
+        setSuggestions([]);
+        return;
       }
 
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        const mapboxToken = apiKey || process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+        const mapboxToken = apiKey || getMapboxAccessToken();
         if (!mapboxToken) {
-          console.error("Mapbox access token is required")
-          return
+          console.error(ERROR_MESSAGES.MAPBOX_TOKEN_REQUIRED);
+          return;
         }
 
-        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        const endpoint = `${MAPBOX.GEOCODING_BASE_URL}/${encodeURIComponent(
           input
-        )}.json?access_token=${mapboxToken}&autocomplete=true&types=address,place,locality,neighborhood`
+        )}.json?access_token=${mapboxToken}&${MAPBOX.GEOCODING_PARAMS}`;
 
-        const response = await fetch(endpoint)
-        const data = await response.json()
-        
+        const response = await fetch(endpoint);
+        const data = await response.json();
+
         if (data.features) {
-          setSuggestions(data.features)
-          setShowSuggestions(true)
+          setSuggestions(data.features);
+          setShowSuggestions(true);
         }
       } catch (error) {
-        console.error("Error fetching address suggestions:", error)
+        console.error('Error fetching address suggestions:', error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
     const debounceTimer = setTimeout(() => {
-      fetchSuggestions()
-    }, 300)
+      fetchSuggestions();
+    }, TIMING.DEBOUNCE_DELAY);
 
-    return () => clearTimeout(debounceTimer)
-  }, [input, apiKey])
+    return () => clearTimeout(debounceTimer);
+  }, [input, apiKey]);
 
-  const handleSelectAddress = (suggestion: { place_name: string, center: [number, number] }) => {
-    setInput(suggestion.place_name)
-    setShowSuggestions(false)
-    onAddressSelected(suggestion.place_name, { lat: suggestion.center[1], lng: suggestion.center[0] })
-  }
+  const handleSelectAddress = (suggestion: {
+    place_name: string;
+    center: [number, number];
+  }) => {
+    setInput(suggestion.place_name);
+    setShowSuggestions(false);
+    onAddressSelected(suggestion.place_name, {
+      lat: suggestion.center[1],
+      lng: suggestion.center[0],
+    });
+  };
 
   return (
     <div className="relative w-full">
@@ -111,14 +128,14 @@ export function AddressAutocomplete({
           onChange={(e) => setInput(e.target.value)}
           onFocus={() => input.length >= 3 && setShowSuggestions(true)}
           className={cn(
-            "pl-10", // Space for the icon
+            CSS_CLASSES.INPUT_ICON_SPACING, // Space for the icon
             className
           )}
           {...props}
         />
-        <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <MapPin className={CSS_CLASSES.MAP_PIN_ICON} />
         {isLoading && (
-          <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+          <Loader2 className={CSS_CLASSES.LOADING_SPINNER} />
         )}
       </div>
 
@@ -141,5 +158,5 @@ export function AddressAutocomplete({
         </div>
       )}
     </div>
-  )
+  );
 }

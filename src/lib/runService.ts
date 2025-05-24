@@ -1,6 +1,9 @@
 import { PrismaClient, Prisma } from '@/generated/prisma';
 import { getServiceProvider } from './serviceProvider';
 
+// Import constants
+import { DATABASE, RSVP_STATUS } from '@/lib/constants/app';
+
 export interface CreateRunData {
   number: number;
   descriptor: string;
@@ -139,11 +142,11 @@ export async function getAllRuns(
       take: limit,
       include: {
         organizer: {
-          select: { id: true, name: true, image: true }, // Select only necessary organizer fields
+          select: DATABASE.SELECT_FIELDS.USER_BASIC, // Select only necessary organizer fields
         },
         _count: {
           select: {
-            rsvps: { where: { status: 'YES' } }, // Count only 'YES' RSVPs
+            rsvps: { where: { status: RSVP_STATUS.YES } }, // Count only 'YES' RSVPs
           },
         },
       },
@@ -188,42 +191,32 @@ export async function getRunById(id: string, prismaClient?: PrismaClient) {
       where: { id },
       include: {
         organizer: {
-          select: { id: true, name: true, email: true, image: true },
+          select: DATABASE.SELECT_FIELDS.USER_DETAILED,
         },
         rsvps: {
           include: {
             user: {
-              select: { id: true, name: true, image: true },
+              select: DATABASE.SELECT_FIELDS.USER_BASIC,
             },
           },
-          orderBy: {
-            createdAt: 'asc',
-          },
+          orderBy: DATABASE.ORDER_BY.CREATED_AT_ASC,
         },
         attendees: {
           include: {
             user: {
-              select: { id: true, name: true, image: true },
+              select: DATABASE.SELECT_FIELDS.USER_BASIC,
             },
           },
-          orderBy: {
-            markedAt: 'asc',
-          },
+          orderBy: DATABASE.ORDER_BY.MARKED_AT_ASC,
         },
         photos: {
           select: {
-            id: true,
-            storageKey: true,
-            url: true,
-            caption: true,
-            createdAt: true,
+            ...DATABASE.SELECT_FIELDS.PHOTO_BASIC,
             uploadedBy: {
-              select: { id: true, name: true, image: true },
+              select: DATABASE.SELECT_FIELDS.USER_BASIC,
             },
           },
-          orderBy: {
-            createdAt: 'desc',
-          },
+          orderBy: DATABASE.ORDER_BY.CREATED_AT_DESC,
         },
       },
     });
@@ -234,9 +227,9 @@ export async function getRunById(id: string, prismaClient?: PrismaClient) {
 
     // Process RSVPs into a more structured format if desired, or count them
     const rsvpCounts = {
-      yes: run.rsvps.filter((r) => r.status === 'YES').length,
-      no: run.rsvps.filter((r) => r.status === 'NO').length,
-      maybe: run.rsvps.filter((r) => r.status === 'MAYBE').length,
+      yes: run.rsvps.filter((r) => r.status === RSVP_STATUS.YES).length,
+      no: run.rsvps.filter((r) => r.status === RSVP_STATUS.NO).length,
+      maybe: run.rsvps.filter((r) => r.status === RSVP_STATUS.MAYBE).length,
     };
 
     return {
@@ -296,7 +289,7 @@ export async function updateRun(
       // Optionally include relations if needed in the response, similar to getRunById
       include: {
         organizer: {
-          select: { id: true, name: true, image: true },
+          select: DATABASE.SELECT_FIELDS.USER_BASIC,
         },
       },
     });

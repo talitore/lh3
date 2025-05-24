@@ -1,5 +1,6 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { MAP_DIMENSIONS, CSS_CLASSES } from '@/lib/constants/ui';
 
 interface MapEmbedProps extends React.IframeHTMLAttributes<HTMLIFrameElement> {
   src: string;
@@ -10,20 +11,20 @@ interface MapEmbedProps extends React.IframeHTMLAttributes<HTMLIFrameElement> {
 
 /**
  * MapEmbed Component
- * 
+ *
  * A simple wrapper for embedding maps via iframe.
- * 
+ *
  * @param src - The source URL for the map embed (e.g., Google Maps embed URL)
  * @param title - The title attribute for the iframe (for accessibility)
- * @param width - Optional width of the map (default: "100%")
- * @param height - Optional height of the map (default: "450px")
+ * @param width - Optional width of the map (default: from MAP_DIMENSIONS.DEFAULT_WIDTH)
+ * @param height - Optional height of the map (default: from MAP_DIMENSIONS.EMBED_HEIGHT)
  * @param className - Optional additional classes
  */
 function MapEmbed({
   src,
   title,
-  width = "100%",
-  height = "450px",
+  width = MAP_DIMENSIONS.DEFAULT_WIDTH,
+  height = MAP_DIMENSIONS.EMBED_HEIGHT,
   className,
   ...props
 }: MapEmbedProps) {
@@ -33,7 +34,7 @@ function MapEmbed({
       title={title}
       width={width}
       height={height}
-      className={cn("border-0 rounded-md", className)}
+      className={cn(CSS_CLASSES.MAP_CONTAINER, className)}
       allowFullScreen
       loading="lazy"
       referrerPolicy="no-referrer-when-downgrade"

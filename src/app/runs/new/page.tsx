@@ -10,6 +10,10 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 
+// Import constants
+import { DEFAULT_COORDINATES } from "@/lib/constants/ui"
+import { API_ENDPOINTS, HTTP_STATUS } from "@/lib/constants/api"
+
 interface RunFormData {
   number: number | ""
   descriptor: string
@@ -28,8 +32,8 @@ export default function NewRunPage() {
     descriptor: "",
     dateTime: "",
     address: "",
-    lat: 38.9592, // Default to Lawrence, KS
-    lng: -95.3281,
+    lat: DEFAULT_COORDINATES.LAT, // Default to Lawrence, KS
+    lng: DEFAULT_COORDINATES.LNG,
     introLink: "",
   })
 
@@ -62,7 +66,7 @@ export default function NewRunPage() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch("/api/runs", {
+      const response = await fetch(API_ENDPOINTS.RUNS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,7 +101,7 @@ export default function NewRunPage() {
   return (
     <div className="container mx-auto p-8 max-w-4xl">
       <h1 className="text-3xl font-bold mb-8">Create New Run</h1>
-      
+
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Basic Information */}
@@ -118,7 +122,7 @@ export default function NewRunPage() {
                   required
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="descriptor">Description</Label>
                 <Textarea
@@ -130,7 +134,7 @@ export default function NewRunPage() {
                   rows={3}
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="dateTime">Date & Time</Label>
                 <Input
@@ -141,7 +145,7 @@ export default function NewRunPage() {
                   required
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="introLink">Intro Link (Optional)</Label>
                 <Input
@@ -171,7 +175,7 @@ export default function NewRunPage() {
                   onAddressSelected={handleAddressSelected}
                 />
               </div>
-              
+
               <div className="text-sm text-muted-foreground">
                 Coordinates: {formData.lat.toFixed(6)}, {formData.lng.toFixed(6)}
               </div>

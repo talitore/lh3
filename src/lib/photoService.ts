@@ -4,11 +4,14 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import crypto from 'crypto'; // For generating unique identifiers
 import { getServiceProvider } from './serviceProvider';
 
-const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
-const AWS_REGION = process.env.AWS_REGION;
-// AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are typically picked up automatically by the SDK from env vars
+// Import constants
+import { ERROR_MESSAGES } from '@/lib/constants/api';
+import { TIMING, FILE_UPLOAD } from '@/lib/constants/ui';
+import { TEST_MODE } from '@/lib/constants/app';
+import { getS3Config, isTestMode } from '@/lib/config/env';
 
-const isTestEnvironment = process.env.E2E_TESTING_MODE === 'true';
+// Legacy environment variable access - will be replaced with config functions
+const AWS_REGION = process.env.AWS_REGION;
 
 // In test mode, we'll use mock values if real ones aren't available
 if (!S3_BUCKET_NAME || !AWS_REGION) {
@@ -62,17 +65,17 @@ export async function generateSignedUrlForUpload(
     prismaClient || getServiceProvider().getDbService().getClient();
   const isTestMode = getServiceProvider().isInTestMode();
 
-  // In test mode, we'll use a mock bucket name if not provided
-  const bucketName =
-    S3_BUCKET_NAME || (isTestEnvironment ? 'test-bucket' : undefined);
+  // Get S3 configuration with test mode fallback
+  const s3Config = getS3Config();
+  const bucketName = s3Config.bucketName;
 
   if (!bucketName) {
-    throw new PhotoServiceError('S3 bucket name is not configured.', 500);
+    throw new PhotoServiceError(ERROR_MESSAGES.S3_BUCKET_NOT_CONFIGURED, 500);
   }
 
   try {
     // Check if we're in test mode with mock data
-    if (isTestMode && data.runId.startsWith('mock-run-id')) {
+    if (isTestMode && data.runId.startsWith(TEST_MODE.MOCK_RUN_ID_PREFIX)) {
       console.log('Using mock data for generateSignedUrlForUpload');
       const mockPhotoId = `mock-photo-id-${Date.now()}`;
       const mockStorageKey = `runs/${
@@ -97,11 +100,11 @@ export async function generateSignedUrlForUpload(
       );
     }
 
-    const randomBytes = crypto.randomBytes(16).toString('hex');
-    const fileExtension = data.fileName.split('.').pop() || 'bin';
-    const storageKey = `runs/${
+    const randomBytes = crypto.randomBytes(FILE_UPLOAD.RANDOM_BYTES_LENGTH).toString('hex');
+    const fileExtension = data.fileName.split('.').pop() || FILE_UPLOAD.DEFAULT_EXTENSION;
+    const storageKey = `${FILE_UPLOAD.STORAGE_PATH_PREFIX}/${
       data.runId
-    }/photos/${randomBytes}-${data.fileName.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
+    }/${FILE_UPLOAD.PHOTOS_SUBFOLDER}/${randomBytes}-${data.fileName.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
 
     // Create a preliminary photo record in the database
     // The actual 'url' field might be null or point to a placeholder until confirmed
@@ -118,7 +121,7 @@ export async function generateSignedUrlForUpload(
     // In test mode, we might want to skip the actual S3 interaction
     let signedUrl: string;
 
-    if (isTestEnvironment) {
+    if (isTestMode) {
       // For tests, just create a mock signed URL
       signedUrl = `https://${bucketName}.s3.amazonaws.com/${storageKey}?mockSignature=test`;
     } else {
@@ -136,7 +139,7 @@ export async function generateSignedUrlForUpload(
         },
       });
 
-      const expiresIn = 3600; // URL expires in 1 hour
+      const expiresIn = TIMING.S3_URL_EXPIRATION; // URL expires in 1 hour
       signedUrl = await getSignedUrl(s3Client, command, { expiresIn });
     }
 
@@ -149,7 +152,7 @@ export async function generateSignedUrlForUpload(
     if (error instanceof PhotoServiceError) throw error;
     console.error('Error in generateSignedUrlForUpload:', error);
     throw new PhotoServiceError(
-      'Failed to generate signed URL for photo upload.',
+      ERROR_MESSAGES.PHOTO_UPLOAD_FAILED,
       500
     );
   }

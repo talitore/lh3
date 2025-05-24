@@ -1,6 +1,11 @@
 import { PrismaClient, Prisma } from '@/generated/prisma';
 import { getServiceProvider } from './serviceProvider';
 
+// Import constants
+import { ERROR_MESSAGES } from '@/lib/constants/api';
+import { TEST_MODE, DATABASE } from '@/lib/constants/app';
+import { PLACEHOLDER_IMAGE } from '@/lib/constants/ui';
+
 export interface MarkAttendanceData {
   runId: string;
   userId: string; // The user being marked as attended
@@ -33,24 +38,24 @@ export async function markAttendance(
     // Check if we're in test mode with mock data
     if (
       isTestMode &&
-      (data.runId.startsWith('mock-run-id') ||
-        data.userId.startsWith('mock-user-id') ||
+      (data.runId.startsWith(TEST_MODE.MOCK_RUN_ID_PREFIX) ||
+        data.userId.startsWith(TEST_MODE.MOCK_USER_ID_PREFIX) ||
         data.userId === 'cluser00000000000000000000')
     ) {
       console.log('Using mock data for markAttendance');
       return {
-        id: `mock-attendance-id-${Date.now()}`,
+        id: `${TEST_MODE.MOCK_ATTENDANCE_ID_PREFIX}-${Date.now()}`,
         runId: data.runId,
         userId: data.userId,
         markedAt: new Date(),
         user: {
           id: data.userId,
-          name: 'Mock User',
-          image: 'https://via.placeholder.com/150?text=Mock+User',
+          name: TEST_MODE.MOCK_USER_NAME,
+          image: `${PLACEHOLDER_IMAGE.BASE_URL}${TEST_MODE.MOCK_USER_NAME.replace(/\s+/g, '+')}`,
         },
         run: {
           id: data.runId,
-          descriptor: 'Mock Run For Testing',
+          descriptor: TEST_MODE.MOCK_RUN_DESCRIPTOR,
         },
       };
     }
@@ -58,7 +63,7 @@ export async function markAttendance(
     // Check if the run exists
     const run = await client.run.findUnique({ where: { id: data.runId } });
     if (!run) {
-      throw new AttendanceError('Run not found', 404);
+      throw new AttendanceError(ERROR_MESSAGES.RUN_NOT_FOUND, 404);
     }
 
     // Check if the user to be marked attended exists
@@ -66,7 +71,7 @@ export async function markAttendance(
       where: { id: data.userId },
     });
     if (!userToMark) {
-      throw new AttendanceError('User to mark attended not found', 404);
+      throw new AttendanceError(ERROR_MESSAGES.USER_NOT_FOUND, 404);
     }
 
     // Attempt to create the attendance record
@@ -79,8 +84,8 @@ export async function markAttendance(
       },
       include: {
         // Optionally include details for the response
-        user: { select: { id: true, name: true, image: true } },
-        run: { select: { id: true, descriptor: true } },
+        user: { select: DATABASE.SELECT_FIELDS.USER_BASIC },
+        run: { select: DATABASE.SELECT_FIELDS.RUN_BASIC },
       },
     });
 
@@ -96,14 +101,14 @@ export async function markAttendance(
           const existingRecord = await client.attendance.findUnique({
             where: { runId_userId: { runId: data.runId, userId: data.userId } },
             include: {
-              user: { select: { id: true, name: true, image: true } },
-              run: { select: { id: true, descriptor: true } },
+              user: { select: DATABASE.SELECT_FIELDS.USER_BASIC },
+              run: { select: DATABASE.SELECT_FIELDS.RUN_BASIC },
             },
           });
           if (existingRecord) return existingRecord; // Return existing record if already marked
           // If for some reason it couldn't be fetched but P2002 occurred, throw a generic conflict
           throw new AttendanceError(
-            'User already marked as attended for this run.',
+            ERROR_MESSAGES.USER_ALREADY_ATTENDED,
             409
           );
         }

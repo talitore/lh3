@@ -11,6 +11,9 @@ The application follows a standard Next.js project structure. The UX/UI Scaffold
   - `src/components/ui/`: Core reusable UI components provided by the UX/UI Scaffold (e.g., `card.tsx`, `button.tsx`, `input.tsx`, `badge.tsx`, `map-embed.tsx`, `photo-gallery.tsx`). These are built using React and styled with Tailwind CSS, extending shadcn/ui principles.
 - `src/components/custom/`: Custom components that wrap or extend shadcn/ui components
 - `src/lib/`: Helper functions and utility code
+  - `src/lib/constants/`: Centralized constants and configuration values
+  - `src/lib/config/`: Environment configuration and validation
+  - `src/lib/services/`: Business logic and external service integrations
 - `public/`: Static assets
 - `styles/`: Global styles and CSS modules (including `globals.css` for CSS variables and theming)
 
@@ -136,6 +139,49 @@ The UX/UI Scaffold introduced a set of core, reusable UI components and a develo
   - Storybook was explicitly decided against in favor of these in-app demo pages.
 - Use shadcn/ui components as a base where applicable, and extend or customize them as needed, placing them in `src/components/ui/` or `src/components/custom/` respectively.
 
+## Constants and Configuration Management
+
+The application implements a centralized constants and configuration system to eliminate magic strings and ensure maintainability:
+
+### Constants Architecture
+
+All hardcoded values, magic strings, and configuration constants are extracted into dedicated files within `src/lib/constants/`:
+
+- **`ui.ts`**: UI-related constants including map dimensions, default coordinates, timing values, CSS classes, and visual configuration
+- **`api.ts`**: API endpoints, HTTP status codes, error messages, external service URLs, and request/response formats
+- **`app.ts`**: Application-wide constants including test mode values, pagination defaults, sorting options, and database field selectors
+- **`validation.ts`**: Validation rules, limits, error messages, and form validation patterns
+- **`index.ts`**: Centralized re-exports for convenient importing
+
+### Environment Configuration
+
+Environment variable management is centralized in `src/lib/config/env.ts` with:
+
+- **Type-safe configuration**: All environment variables are accessed through typed functions
+- **Validation**: Required environment variables are validated at runtime
+- **Test mode handling**: Automatic fallbacks and mock values for testing environments
+- **Helper functions**: Convenient access to common configuration needs (Mapbox tokens, S3 config, etc.)
+
+### Benefits
+
+- **Zero Magic Strings**: All hardcoded values are extracted to constants
+- **Single Source of Truth**: Changes to values only need to be made in one place
+- **Type Safety**: All constants are properly typed with TypeScript
+- **Test Consistency**: Test mode values are centralized and consistent
+- **Maintainability**: Easy to update configuration across the entire application
+
+### Usage Pattern
+
+Components and services import constants from the centralized location:
+
+```typescript
+import { DEFAULT_COORDINATES, MAP_DIMENSIONS } from '@/lib/constants/ui';
+import { API_ENDPOINTS, HTTP_STATUS } from '@/lib/constants/api';
+import { getMapboxAccessToken } from '@/lib/config/env';
+```
+
+This architecture ensures consistency, reduces errors, and improves maintainability across the codebase.
+
 ## Code Quality & Linting
 
 ESLint is configured for Next.js/TypeScript to ensure code quality and consistency.
@@ -160,7 +206,7 @@ NextAuth.js manages user sessions using the default **JWT (JSON Web Token) sessi
 
 ## Configuration Management
 
-Key configuration settings, particularly for external services and security, are managed using environment variables.
+Key configuration settings, particularly for external services and security, are managed using environment variables. The application uses a centralized configuration system in `src/lib/config/env.ts` that provides type-safe access to environment variables with validation and fallbacks for testing environments.
 
 ### Authentication Configuration
 

@@ -4,8 +4,11 @@ import { useState } from "react"
 import { MapPicker } from "@/components/ui/map-picker"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
+// Import constants
+import { DEFAULT_COORDINATES } from "@/lib/constants/ui"
+
 export default function MapPickerDemoPage() {
-  const [position, setPosition] = useState({ lat: 38.9592, lng: -95.3281 }) // Lawrence, KS
+  const [position, setPosition] = useState({ lat: DEFAULT_COORDINATES.LAT, lng: DEFAULT_COORDINATES.LNG }) // Lawrence, KS
   const [customPosition, setCustomPosition] = useState({ lat: 39.0458, lng: -76.6413 }) // Baltimore, MD
 
   const handlePositionChange = (lat: number, lng: number) => {
@@ -75,8 +78,8 @@ export default function MapPickerDemoPage() {
           This map is in a disabled state - the marker cannot be dragged and map interactions are limited.
         </p>
         <MapPicker
-          initialLat={38.9592}
-          initialLng={-95.3281}
+          initialLat={DEFAULT_COORDINATES.LAT}
+          initialLng={DEFAULT_COORDINATES.LNG}
           onPositionChange={() => {}}
           height="250px"
           disabled

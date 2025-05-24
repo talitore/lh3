@@ -1,6 +1,10 @@
 import mbxClient from '@mapbox/mapbox-sdk';
 import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 
+// Import constants
+import { ERROR_MESSAGES } from '@/lib/constants/api';
+import { getMapboxSecretToken } from '@/lib/config/env';
+
 export interface GeocodeResult {
   address: string;
   lat: number;
@@ -10,16 +14,16 @@ export interface GeocodeResult {
 
 /**
  * Geocode an address to coordinates using Mapbox Geocoding API
- * 
+ *
  * @param address - The address to geocode
  * @returns A promise that resolves to a GeocodeResult object
  */
 export async function geocodeAddress(address: string): Promise<GeocodeResult> {
   try {
-    const mapboxToken = process.env.MAPBOX_SECRET_TOKEN;
-    
+    const mapboxToken = getMapboxSecretToken();
+
     if (!mapboxToken) {
-      throw new Error('Mapbox secret token is required for server-side geocoding');
+      throw new Error(ERROR_MESSAGES.MAPBOX_SECRET_TOKEN_REQUIRED);
     }
 
     const baseClient = mbxClient({ accessToken: mapboxToken });
@@ -35,7 +39,7 @@ export async function geocodeAddress(address: string): Promise<GeocodeResult> {
     const features = response.body.features;
 
     if (!features || features.length === 0) {
-      throw new Error('No results found for the provided address');
+      throw new Error(ERROR_MESSAGES.NO_GEOCODING_RESULTS);
     }
 
     const [feature] = features;
@@ -55,7 +59,7 @@ export async function geocodeAddress(address: string): Promise<GeocodeResult> {
 
 /**
  * Validate and normalize an address using Mapbox Geocoding API
- * 
+ *
  * @param address - The address to validate
  * @returns A promise that resolves to a validated and normalized address string
  */
@@ -71,7 +75,7 @@ export async function validateAddress(address: string): Promise<string> {
 
 /**
  * Create a GeocodeResult from manual coordinates
- * 
+ *
  * @param lat - Latitude
  * @param lng - Longitude
  * @param address - Optional address string
