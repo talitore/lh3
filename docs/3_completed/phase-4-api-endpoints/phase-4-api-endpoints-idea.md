@@ -10,7 +10,7 @@
 2. **RSVP & Attendance**
 
    - `PUT /api/runs/[id]/rsvp` → toggle RSVP status
-   - `PUT /api/runs/[id]/attend` → set `taggedAt` timestamp
+   - `POST /api/runs/[id]/attendance` → Mark a specified user as attended (e.g., by an organizer). Request: `{ "userId": "..." }`
 
 3. **Photo uploads**
 

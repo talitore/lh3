@@ -7,6 +7,9 @@ const components = [
   { name: 'Input', path: '/input' },
   { name: 'MapEmbed', path: '/map-embed' },
   { name: 'PhotoGallery', path: '/photo-gallery' },
+  { name: 'AddressAutocomplete', path: '/address-autocomplete' },
+  { name: 'MapPicker', path: '/map-picker' },
+  { name: 'LocationPicker', path: '/location-picker' },
 ];
 
 export default function ComponentsDemoPage() {

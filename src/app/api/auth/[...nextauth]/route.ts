@@ -1,9 +1,15 @@
+// console.log(`E2E_TESTING_MODE on server: ${process.env.E2E_TESTING_MODE}`); // Debug log
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { PrismaClient } from '@/generated/prisma';
+import { authenticateTestCredentialsUser } from '@/lib/testAuthUsers'; // Updated import path
+
+const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
-  // Configure one or more authentication providers
+  adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.AUTH_GOOGLE_ID || '',
@@ -27,38 +33,40 @@ export const authOptions: NextAuthOptions = {
               // but NextAuth expects the credentials object.
             },
             async authorize(credentials, req) {
-              // This is where you'd normally validate credentials against a database
-              // For testing, we'll accept a specific username and return a mock user
-              if (credentials?.username === 'testuser@example.com') {
-                // Return a mock user object
-                // Ensure this shape matches what your application expects for a session user
-                return {
-                  id: 'test-user-id',
-                  name: 'Test User',
-                  email: 'testuser@example.com',
-                  image: 'https://via.placeholder.com/150', // Optional mock image
-                };
-              }
-              // If credentials are not valid, return null
-              return null;
+              // Logic moved to authenticateTestCredentialsUser
+              return authenticateTestCredentialsUser(
+                credentials?.username,
+                prisma
+              );
             },
           }),
         ]
       : []),
   ],
   secret: process.env.AUTH_SECRET || '',
+  session: {
+    strategy: 'jwt', // Using JWT strategy
+  },
   callbacks: {
-    async jwt({ token, account }) {
-      // Persist the OAuth access_token to the token right after signin
+    async jwt({ token, user, account }) {
+      // Persist the OAuth access_token and user id/role to the token right after signin
       if (account) {
         token.accessToken = account.access_token;
       }
+      if (user) {
+        // User object is available on sign-in
+        token.id = user.id;
+        token.role = user.role; // Assuming user object has role from adapter/db
+      }
       return token;
     },
-    async session({ session, token, user }) {
-      // Send properties to the client, like an access_token from a provider.
-      // @ts-expect-error // TODO: look into this TS error
-      session.accessToken = token.accessToken;
+    async session({ session, token }) {
+      // Send properties to the client, like an access_token, user id, and role.
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        // session.accessToken = token.accessToken as string; // Optional: if you need accessToken client-side
+      }
       return session;
     },
   },
