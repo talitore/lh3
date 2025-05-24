@@ -6,8 +6,8 @@ import { getServiceProvider } from './serviceProvider';
 
 // Import constants
 import { ERROR_MESSAGES } from '@/lib/constants/api';
-import { TIMING, FILE_UPLOAD } from '@/lib/constants/ui';
-import { TEST_MODE } from '@/lib/constants/app';
+import { TIMING } from '@/lib/constants/ui';
+import { TEST_MODE, FILE_UPLOAD } from '@/lib/constants/app';
 import { getS3Config, isTestMode } from '@/lib/config/env';
 
 // Legacy environment variable access - will be replaced with config functions

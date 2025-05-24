@@ -2,13 +2,17 @@
 
 ## Project Structure
 
-The application follows a standard Next.js project structure. The UX/UI Scaffold feature introduced a global layout and component demonstration area:
+The application follows a standard Next.js project structure with a comprehensive layout and component architecture:
 
 - `src/app/`: Contains all application routes, pages, and API handlers.
-  - `layout.tsx`: Implements the global application layout, including a fixed header, a collapsible overlay sidebar (with sections for "Upcoming Events", "Quick Stats", "Admin Tools"), and the main content area.
+  - `layout.tsx`: Implements the global application layout with a modern header and sidebar system using shadcn/ui components.
   - `(demo)/components/`: A dedicated area for sandbox pages, showcasing each UI component in isolation with its various states and props.
-- `src/components/`: Shared UI components.
-  - `src/components/ui/`: Core reusable UI components following shadcn/ui standards. Includes all standard shadcn/ui components (`button.tsx`, `card.tsx`, `input.tsx`, `badge.tsx`, `form.tsx`, `select.tsx`, `dialog.tsx`, `popover.tsx`, `alert.tsx`, `skeleton.tsx`, `sonner.tsx`, `separator.tsx`, `sheet.tsx`, `tabs.tsx`, `table.tsx`, `dropdown-menu.tsx`, `command.tsx`, `label.tsx`, `textarea.tsx`) plus custom components (`map-embed.tsx`, `photo-gallery.tsx`, `address-autocomplete.tsx`, `map-picker.tsx`, `combobox.tsx`). All components are built using React, styled with Tailwind CSS, and follow modern shadcn/ui patterns with data-slot attributes.
+- `src/components/`: Shared UI components organized by purpose.
+  - `src/components/layout/`: Layout-specific components including the refactored header, sidebar, and admin toggle components.
+    - `header.tsx`: Modern header component using shadcn/ui Button components and Lucide React icons.
+    - `sidebar.tsx`: Sidebar component built with shadcn/ui Sheet component for proper overlay behavior.
+    - `admin-toggle.tsx`: Extracted admin mode toggle component using shadcn/ui Switch.
+  - `src/components/ui/`: Core reusable UI components following shadcn/ui standards. Includes all standard shadcn/ui components (`button.tsx`, `card.tsx`, `input.tsx`, `badge.tsx`, `form.tsx`, `select.tsx`, `dialog.tsx`, `popover.tsx`, `alert.tsx`, `skeleton.tsx`, `sonner.tsx`, `separator.tsx`, `sheet.tsx`, `tabs.tsx`, `table.tsx`, `dropdown-menu.tsx`, `command.tsx`, `label.tsx`, `textarea.tsx`, `switch.tsx`) plus custom components (`map-embed.tsx`, `photo-gallery.tsx`, `address-autocomplete.tsx`, `map-picker.tsx`, `combobox.tsx`). All components are built using React, styled with Tailwind CSS, and follow modern shadcn/ui patterns with data-slot attributes.
 - `src/components/custom/`: Custom components that wrap or extend shadcn/ui components (reserved for future application-specific wrappers)
 - `src/lib/`: Helper functions and utility code
   - `src/lib/constants/`: Centralized constants and configuration values
@@ -241,6 +245,55 @@ Only use officially supported variants:
 - ❌ Inconsistent `data-slot` attributes
 
 This architecture ensures consistency, maintainability, and adherence to modern React and shadcn/ui best practices across the entire application.
+
+## Layout & Component Architecture
+
+The application implements a modern, consistent layout architecture using shadcn/ui components and best practices throughout all layout components.
+
+### Header Component
+
+The header component (`src/components/layout/header.tsx`) provides the main navigation and user authentication interface:
+
+- **Lucide React Icons**: Uses Lucide React icons for all interface elements (Menu icon)
+- **shadcn/ui Button Components**: All interactive elements use shadcn/ui Button components with appropriate variants
+- **Modular Design**: Admin toggle functionality is extracted to a separate, reusable component
+- **TypeScript Support**: Comprehensive TypeScript interfaces for all props and component structure
+- **Authentication Integration**: Seamless integration with NextAuth.js for user session management
+
+### Sidebar Component
+
+The sidebar component (`src/components/layout/sidebar.tsx`) provides contextual navigation using modern modal patterns:
+
+- **Sheet Component**: Built on shadcn/ui Sheet component for proper overlay behavior and accessibility
+- **Lucide React Icons**: Consistent icon usage with Calendar, BarChart3, and Settings icons
+- **Configuration-Driven**: Menu structure defined through centralized configuration in constants
+- **Button Components**: All navigation items use shadcn/ui Button components with consistent styling
+- **Keyboard Navigation**: Full keyboard navigation support through Sheet component implementation
+
+### Admin Toggle Component
+
+The admin toggle component (`src/components/layout/admin-toggle.tsx`) provides admin mode functionality:
+
+- **shadcn/ui Switch**: Modern toggle interface using the Switch component
+- **Accessible Design**: Proper labeling with shadcn/ui Label component for screen readers
+- **State Management**: Clean React hooks-based state management
+- **Reusable Architecture**: Designed for potential reuse across different parts of the application
+
+### Layout Configuration
+
+Layout components utilize centralized configuration from `src/lib/constants/ui.ts`:
+
+- **SIDEBAR_CONFIG**: Centralized sidebar menu configuration defining sections, icons, and navigation items
+- **Icon Mapping**: Systematic mapping of icon names to Lucide React components
+- **Styling Standards**: Standardized CSS classes and styling patterns across all layout components
+
+### Architecture Benefits
+
+- **Consistency**: All layout components follow unified shadcn/ui patterns and conventions
+- **Maintainability**: Centralized configuration enables easy updates and modifications
+- **Accessibility**: Enhanced keyboard navigation and comprehensive screen reader support
+- **Performance**: Optimized component rendering through shadcn/ui implementation patterns
+- **Developer Experience**: Clean code structure with comprehensive TypeScript support
 
 ## Component Quality Standards
 

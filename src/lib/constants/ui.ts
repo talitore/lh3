@@ -1,6 +1,6 @@
 /**
  * UI-related constants
- * 
+ *
  * This file contains all UI-related constants including dimensions,
  * timeouts, colors, and other visual configuration values.
  */
@@ -54,4 +54,37 @@ export const CSS_CLASSES = {
 export const ANIMATIONS = {
   SPINNER_CLASS: "animate-spin",
   TRANSITION_DURATION: "300ms",
+} as const;
+
+// Sidebar configuration
+export const SIDEBAR_CONFIG = {
+  SECTIONS: [
+    {
+      id: 'upcoming-events',
+      title: 'Upcoming Events',
+      icon: 'calendar',
+      items: [
+        { label: 'Event 1', href: '#' },
+        { label: 'Event 2', href: '#' },
+      ],
+    },
+    {
+      id: 'quick-stats',
+      title: 'Quick Stats',
+      icon: 'bar-chart',
+      items: [
+        { label: 'Active Members', href: '#' },
+        { label: 'Hash Cash Pool', href: '#' },
+      ],
+    },
+    {
+      id: 'admin-tools',
+      title: 'Admin Tools',
+      icon: 'settings',
+      items: [
+        { label: 'Attendance Tracking', href: '#' },
+        { label: 'User Management', href: '#' },
+      ],
+    },
+  ],
 } as const;
