@@ -1,4 +1,4 @@
-import Badge from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 
 export default function BadgeDemoPage() {
   return (
@@ -9,10 +9,9 @@ export default function BadgeDemoPage() {
         <h2 className="text-xl font-semibold mb-4">Badge Variants</h2>
         <div className="flex flex-wrap gap-4 items-center">
           <Badge variant="default">Default</Badge>
-          <Badge variant="info">Info</Badge>
-          <Badge variant="success">Success</Badge>
-          <Badge variant="warning">Warning</Badge>
-          <Badge variant="danger">Danger</Badge>
+          <Badge variant="secondary">Secondary</Badge>
+          <Badge variant="destructive">Destructive</Badge>
+          <Badge variant="outline">Outline</Badge>
         </div>
       </section>
 
@@ -21,11 +20,11 @@ export default function BadgeDemoPage() {
           Badges with Custom Styling
         </h2>
         <div className="flex flex-wrap gap-4 items-center">
-          <Badge variant="success" className="px-4 py-1 text-base">
-            Large Success
+          <Badge variant="secondary" className="px-4 py-1 text-base">
+            Large Secondary
           </Badge>
-          <Badge variant="info" className="rounded-sm">
-            Square Info
+          <Badge variant="outline" className="rounded-sm">
+            Square Outline
           </Badge>
           <Badge className="bg-purple-500 text-white">Custom Purple</Badge>
         </div>
@@ -35,11 +34,11 @@ export default function BadgeDemoPage() {
         <h2 className="text-xl font-semibold mb-4">Badges in Text</h2>
         <p className="text-lg">
           You can use badges to highlight certain keywords or statuses like
-          <Badge variant="info" className="mx-1">
+          <Badge variant="secondary" className="mx-1">
             NEW
           </Badge>
           or indicate a
-          <Badge variant="danger" className="mx-1">
+          <Badge variant="destructive" className="mx-1">
             CRITICAL
           </Badge>
           issue.

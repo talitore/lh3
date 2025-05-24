@@ -1,41 +1,9 @@
 'use client'; // For useState
 
-import Input from '@/components/ui/input';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useState } from 'react';
-
-// Placeholder Icons for demo
-const SearchIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-    />
-  </svg>
-);
-const AtSymbolIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 1 0-2.636 6.364M16.5 12V8.25"
-    />
-  </svg>
-);
+import { Search, AtSign } from 'lucide-react';
 
 export default function InputDemoPage() {
   const [textValue, setTextValue] = useState('');
@@ -51,13 +19,8 @@ export default function InputDemoPage() {
         <section className="p-4 border rounded-lg">
           <h2 className="text-xl font-semibold mb-4">Basic Inputs</h2>
           <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="text-basic"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Text Input
-              </label>
+            <div className="space-y-2">
+              <Label htmlFor="text-basic">Text Input</Label>
               <Input
                 id="text-basic"
                 type="text"
@@ -65,17 +28,12 @@ export default function InputDemoPage() {
                 value={textValue}
                 onChange={(e) => setTextValue(e.target.value)}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground">
                 Current value: {textValue}
               </p>
             </div>
-            <div>
-              <label
-                htmlFor="email-basic"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Email Input
-              </label>
+            <div className="space-y-2">
+              <Label htmlFor="email-basic">Email Input</Label>
               <Input
                 id="email-basic"
                 type="email"
@@ -84,13 +42,8 @@ export default function InputDemoPage() {
                 onChange={(e) => setEmailValue(e.target.value)}
               />
             </div>
-            <div>
-              <label
-                htmlFor="password-basic"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Password Input
-              </label>
+            <div className="space-y-2">
+              <Label htmlFor="password-basic">Password Input</Label>
               <Input
                 id="password-basic"
                 type="password"
@@ -105,48 +58,39 @@ export default function InputDemoPage() {
         <section className="p-4 border rounded-lg">
           <h2 className="text-xl font-semibold mb-4">Inputs with Icons</h2>
           <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="search-input"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Search (Icon Left)
-              </label>
-              <Input
-                id="search-input"
-                type="search"
-                placeholder="Search..."
-                iconLeft={<SearchIcon />}
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-              />
+            <div className="space-y-2">
+              <Label htmlFor="search-input">Search Input</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="search-input"
+                  type="search"
+                  placeholder="Search..."
+                  className="pl-10"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+              </div>
             </div>
-            <div>
-              <label
-                htmlFor="username-input"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Username (Icon Right)
-              </label>
-              <Input
-                id="username-input"
-                type="text"
-                placeholder="yourusername"
-                iconRight={<AtSymbolIcon />}
-              />
+            <div className="space-y-2">
+              <Label htmlFor="username-input">Username Input</Label>
+              <div className="relative">
+                <Input
+                  id="username-input"
+                  type="text"
+                  placeholder="yourusername"
+                  className="pr-10"
+                />
+                <AtSign className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              </div>
             </div>
           </div>
         </section>
 
         <section className="p-4 border rounded-lg">
           <h2 className="text-xl font-semibold mb-4">Disabled Input</h2>
-          <div>
-            <label
-              htmlFor="disabled-input"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Disabled Text Input
-            </label>
+          <div className="space-y-2">
+            <Label htmlFor="disabled-input">Disabled Text Input</Label>
             <Input
               id="disabled-input"
               type="text"
@@ -161,18 +105,13 @@ export default function InputDemoPage() {
           <h2 className="text-xl font-semibold mb-4">
             Input with Custom Styling
           </h2>
-          <div>
-            <label
-              htmlFor="custom-input"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Custom Styled Input
-            </label>
+          <div className="space-y-2">
+            <Label htmlFor="custom-input">Custom Styled Input</Label>
             <Input
               id="custom-input"
               type="text"
               placeholder="Focus me!"
-              className="border-brand focus:ring-brand-dark focus:border-brand-dark shadow-lg"
+              className="border-blue-300 focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
         </section>

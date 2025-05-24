@@ -8,8 +8,8 @@ The application follows a standard Next.js project structure. The UX/UI Scaffold
   - `layout.tsx`: Implements the global application layout, including a fixed header, a collapsible overlay sidebar (with sections for "Upcoming Events", "Quick Stats", "Admin Tools"), and the main content area.
   - `(demo)/components/`: A dedicated area for sandbox pages, showcasing each UI component in isolation with its various states and props.
 - `src/components/`: Shared UI components.
-  - `src/components/ui/`: Core reusable UI components provided by the UX/UI Scaffold (e.g., `card.tsx`, `button.tsx`, `input.tsx`, `badge.tsx`, `map-embed.tsx`, `photo-gallery.tsx`). These are built using React and styled with Tailwind CSS, extending shadcn/ui principles.
-- `src/components/custom/`: Custom components that wrap or extend shadcn/ui components
+  - `src/components/ui/`: Core reusable UI components following shadcn/ui standards. Includes all standard shadcn/ui components (`button.tsx`, `card.tsx`, `input.tsx`, `badge.tsx`, `form.tsx`, `select.tsx`, `dialog.tsx`, `popover.tsx`, `alert.tsx`, `skeleton.tsx`, `sonner.tsx`, `separator.tsx`, `sheet.tsx`, `tabs.tsx`, `table.tsx`, `dropdown-menu.tsx`, `command.tsx`, `label.tsx`, `textarea.tsx`) plus custom components (`map-embed.tsx`, `photo-gallery.tsx`, `address-autocomplete.tsx`, `map-picker.tsx`, `combobox.tsx`). All components are built using React, styled with Tailwind CSS, and follow modern shadcn/ui patterns with data-slot attributes.
+- `src/components/custom/`: Custom components that wrap or extend shadcn/ui components (reserved for future application-specific wrappers)
 - `src/lib/`: Helper functions and utility code
   - `src/lib/constants/`: Centralized constants and configuration values
   - `src/lib/config/`: Environment configuration and validation
@@ -116,28 +116,152 @@ The application uses Tailwind CSS for utility-first styling. The UX/UI Scaffold 
 - These custom tokens and global styles are primarily managed in `globals.css`, ensuring a consistent look and feel across the application.
 - All components are styled using Tailwind CSS, emphasizing responsiveness and accessibility.
 
-## UI Component Conventions
+## UI Component Architecture & Standards
 
-The UX/UI Scaffold introduced a set of core, reusable UI components and a development workflow:
+The application follows a comprehensive shadcn/ui-based component architecture established through Phase 2 standardization. All UI components must adhere to these patterns for consistency and maintainability.
 
-- **Core Components**:
-  - `Card`: For displaying contained pieces of information.
-  - `Badge`: For small status indicators or labels.
-  - `Button`: For user actions, with various styles and sizes.
-  - `Input`: For text-based user input.
-  - `MapEmbed`: For embedding interactive maps.
-  - `PhotoGallery`: For displaying collections of images.
-  - `AddressAutocomplete`: For address input with autocomplete functionality using Mapbox Geocoding API.
-  - `MapPicker`: For interactive map-based location selection with draggable markers.
-  - `Combobox`: For searchable dropdown selections.
-  - `Command`: For command palette functionality.
-  - `Popover`: For floating content containers.
-  - `Dialog`: For modal dialogs and overlays.
-    These components are located in `src/components/ui/`.
-- **Development Workflow**:
-  - New UI components are developed and tested in isolation within the `src/app/(demo)/components/` sandbox environment. Each component has a dedicated page demonstrating its props and states.
-  - Storybook was explicitly decided against in favor of these in-app demo pages.
-- Use shadcn/ui components as a base where applicable, and extend or customize them as needed, placing them in `src/components/ui/` or `src/components/custom/` respectively.
+### Component Categories
+
+#### **Standard shadcn/ui Components** (`src/components/ui/`)
+
+All standard shadcn/ui components are installed and follow the modern shadcn/ui patterns:
+
+- **Form & Input Components**: `button.tsx`, `input.tsx`, `textarea.tsx`, `label.tsx`, `form.tsx`, `select.tsx`
+- **Layout Components**: `card.tsx`, `separator.tsx`, `sheet.tsx`, `tabs.tsx`, `table.tsx`
+- **Feedback Components**: `alert.tsx`, `badge.tsx`, `skeleton.tsx`, `sonner.tsx` (toast replacement)
+- **Overlay Components**: `dialog.tsx`, `popover.tsx`, `dropdown-menu.tsx`
+- **Navigation Components**: `command.tsx`
+
+#### **Custom Components** (`src/components/ui/`)
+
+Application-specific components that extend shadcn/ui patterns:
+
+- **Map Components**: `map-embed.tsx`, `map-picker.tsx`, `address-autocomplete.tsx` (use centralized constants)
+- **Media Components**: `photo-gallery.tsx` (uses shadcn/ui Button internally)
+- **Composite Components**: `combobox.tsx` (wrapper using shadcn/ui components)
+
+### Component Development Standards
+
+#### **1. Import Patterns**
+```typescript
+// ✅ CORRECT: Always use named imports
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+// ❌ INCORRECT: Never use default imports
+import Button from '@/components/ui/button';
+```
+
+#### **2. Component Structure**
+All components must follow the modern shadcn/ui pattern:
+
+```typescript
+// ✅ CORRECT: Modern pattern with data-slot attributes
+function ComponentName({ className, ...props }: ComponentProps) {
+  return (
+    <element
+      data-slot="component-name"
+      className={cn(componentVariants({ variant, size }), className)}
+      {...props}
+    />
+  )
+}
+
+// ❌ INCORRECT: Old forwardRef pattern (deprecated)
+const ComponentName = React.forwardRef<HTMLElement, ComponentProps>(
+  ({ className, ...props }, ref) => { ... }
+)
+```
+
+#### **3. Icon Usage**
+```typescript
+// ✅ CORRECT: Use Lucide React icons
+import { Search, User, Settings } from 'lucide-react';
+
+// ❌ INCORRECT: Custom SVG components
+const CustomIcon = () => <svg>...</svg>;
+```
+
+#### **4. Variant Definitions**
+Only use officially supported variants:
+
+```typescript
+// ✅ CORRECT: Standard shadcn/ui variants
+<Button variant="default" | "destructive" | "outline" | "secondary" | "ghost" | "link">
+<Badge variant="default" | "secondary" | "destructive" | "outline">
+
+// ❌ INCORRECT: Custom variants not in shadcn/ui
+<Button variant="primary" | "info" | "success">
+```
+
+### Development Workflow
+
+#### **Component Testing & Documentation**
+- **Demo Pages**: All components must have demo pages in `src/app/(demo)/components/` showcasing all variants and states
+- **Isolation Testing**: Components are developed and tested in isolation before integration
+- **No Storybook**: The project explicitly uses in-app demo pages instead of Storybook
+
+#### **Adding New Components**
+
+1. **Standard shadcn/ui Components**:
+   ```bash
+   # Use the official CLI to add components
+   pnpm dlx shadcn@latest add [component-name]
+   ```
+
+2. **Custom Components**:
+   - Place in `src/components/ui/` if they extend shadcn/ui patterns
+   - Place in `src/components/custom/` if they are application-specific wrappers
+   - Must use centralized constants from `src/lib/constants/`
+   - Must follow the modern component pattern with `data-slot` attributes
+
+#### **Component Updates**
+- Always update components to use the latest shadcn/ui patterns
+- Ensure all components have consistent `data-slot` attributes
+- Update demo pages when component APIs change
+- Maintain backward compatibility when possible
+
+### Quality Standards
+
+#### **Required Patterns**
+- ✅ Named imports only
+- ✅ Modern function component pattern (no forwardRef unless necessary)
+- ✅ Proper `data-slot` attributes
+- ✅ Lucide React icons
+- ✅ Centralized constants usage
+- ✅ TypeScript interfaces for all props
+- ✅ Consistent className merging with `cn()` utility
+
+#### **Forbidden Patterns**
+- ❌ Default imports for shadcn/ui components
+- ❌ Custom SVG icon components (use Lucide React)
+- ❌ Magic strings (use constants)
+- ❌ Non-standard variants
+- ❌ Old forwardRef patterns for new components
+- ❌ Inconsistent `data-slot` attributes
+
+This architecture ensures consistency, maintainability, and adherence to modern React and shadcn/ui best practices across the entire application.
+
+## Component Quality Standards
+
+The application maintains strict quality standards to ensure consistency, maintainability, and adherence to modern React patterns:
+
+#### **Current Component Inventory**
+- **Standard shadcn/ui Components**: All components follow modern patterns with data-slot attributes and named exports
+- **Custom Components**: Application-specific components that extend shadcn/ui patterns while maintaining consistency
+- **Demo Coverage**: Every component has comprehensive demo pages showcasing all variants and usage patterns
+
+#### **Enforced Standards**
+- **Import Consistency**: All components use named imports exclusively
+- **Icon Standardization**: Lucide React icons used throughout the application
+- **Variant Compliance**: Only officially supported shadcn/ui variants are permitted
+- **Pattern Consistency**: All components follow modern function component patterns with proper TypeScript interfaces
+
+#### **Quality Assurance**
+- **Build Stability**: All components integrate seamlessly without build errors
+- **Type Safety**: Comprehensive TypeScript interfaces and prop definitions
+- **Documentation**: Demo pages serve as living documentation for proper component usage
+- **Maintainability**: Centralized patterns enable efficient updates and scaling
 
 ## Constants and Configuration Management
 
