@@ -62,19 +62,21 @@ function PhotoGallery({
     return (
       <div className={cn('relative', className)}>
         <div className="relative overflow-hidden rounded-lg">
-          <img
-            src={images[currentIndex].src}
-            alt={images[currentIndex].alt}
-            className="w-full h-64 object-cover cursor-pointer"
-            role="img"
-            tabIndex={0}
+          <button
+            type="button"
+            className="w-full h-64 cursor-pointer"
+            onClick={() => handleImageClick(images[currentIndex], currentIndex)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleImageClick(images[currentIndex], currentIndex);
-              }
+              if (e.key === 'Enter' || e.key === ' ') e.preventDefault();
             }}
-          />
+          >
+            <img
+              src={images[currentIndex].src}
+              alt={images[currentIndex].alt}
+              loading="lazy"
+              className="w-full h-full object-cover"
+            />
+          </button>
 
           {images.length > 1 && (
             <>

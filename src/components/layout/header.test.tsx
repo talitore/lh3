@@ -5,7 +5,19 @@
 import React from 'react';
 import { screen, fireEvent } from '@/lib/test-data';
 import { renderWithProviders, mockSession, mockOrganizerSession } from '@/lib/test-data';
-import { signIn, signOut } from 'next-auth/react';
+
+// Must be mocked **before** first import
+jest.mock('next-auth/react', () => {
+  const original = jest.requireActual('next-auth/react');
+  return {
+    ...original,
+    signIn: jest.fn(),
+    signOut: jest.fn(),
+    useSession: jest.fn().mockReturnValue({ data: null, status: 'unauthenticated' }),
+  };
+});
+import { signIn, signOut, useSession } from 'next-auth/react';
+
 import Header from './header';
 
 // Mock the AdminToggle component
@@ -18,7 +30,7 @@ jest.mock('./admin-toggle', () => ({
 // Get access to the mocked functions
 const mockSignIn = signIn as jest.MockedFunction<typeof signIn>;
 const mockSignOut = signOut as jest.MockedFunction<typeof signOut>;
-const mockUseSession = (global as any).mockUseSession;
+const mockUseSession = useSession as jest.MockedFunction<typeof useSession>;
 
 describe('Header Component', () => {
   beforeEach(() => {

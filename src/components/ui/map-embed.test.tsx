@@ -171,7 +171,7 @@ describe('MapEmbed Component', () => {
   it('should handle missing Mapbox token gracefully', async () => {
     // Temporarily remove the mocked token
     const originalToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-    delete process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+    process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN = undefined;
     
     render(<MapEmbed />);
     

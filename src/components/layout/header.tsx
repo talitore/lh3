@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
++import { AUTH_PROVIDERS, USER_ROLES } from '@/constants/app';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AdminToggle } from '@/components/layout/admin-toggle';

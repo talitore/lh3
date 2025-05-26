@@ -13,8 +13,14 @@ export function AdminToggle({ className }: AdminToggleProps) {
   const [isAdminMode, setIsAdminMode] = useState(() => {
     // Initialize from localStorage if available
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.ADMIN_MODE);
-      return saved ? JSON.parse(saved) : false;
++      try {
++        const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.ADMIN_MODE);
++        return saved ? JSON.parse(saved) === true : false;
++      } catch {
++        // Fallback to a safe default and wipe the bad value
++        localStorage.removeItem(LOCAL_STORAGE_KEYS.ADMIN_MODE);
++        return false;
++      }
     }
     return false;
   });
@@ -22,7 +28,14 @@ export function AdminToggle({ className }: AdminToggleProps) {
   // Save to localStorage whenever isAdminMode changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.ADMIN_MODE, JSON.stringify(isAdminMode));
+      try {
+        localStorage.setItem(
+          LOCAL_STORAGE_KEYS.ADMIN_MODE,
+          JSON.stringify(isAdminMode),
+        );
+      } catch {
+        // optional: add a toast or silently ignore
+      }
     }
   }, [isAdminMode]);
 
