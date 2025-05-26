@@ -7,7 +7,7 @@ import { upsertRsvp } from '@/lib/rsvpService';
 import { rsvpParamsSchema, rsvpBodySchema } from '@/lib/schemas';
 
 // Import error handling
-import { createErrorResponse } from '@/lib/errors';
+import { createErrorResponse, RunNotFoundError, UserNotFoundError } from '@/lib/errors';
 
 interface RouteContext {
   params: {
@@ -52,8 +52,25 @@ async function handlePUT(request: NextRequest, context: RouteContext) {
   }
   const { status } = bodyValidationResult.data;
 
-  const rsvp = await upsertRsvp({ runId, userId, status });
-  return NextResponse.json(rsvp, { status: 200 });
+  try {
+    const rsvp = await upsertRsvp({ runId, userId, status });
+    return NextResponse.json(rsvp, { status: 200 });
+  } catch (error) {
+    if (error instanceof RunNotFoundError) {
+      return NextResponse.json(
+        { message: 'Run not found' },
+        { status: 404 }
+      );
+    }
+    if (error instanceof UserNotFoundError) {
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      );
+    }
+    // Re-throw other errors to be handled by the outer error handler
+    throw error;
+  }
 }
 
 // Export handler with error handling

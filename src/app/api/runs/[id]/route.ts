@@ -68,7 +68,6 @@ async function handlePUT(request: NextRequest, context: RouteContext) {
     }
 
     // Authorization: Check if user has 'organizer' or 'admin' role
-    // @ts-expect-error - session.user.role might not be typed by default in NextAuth
     if (session.user.role !== 'ORGANIZER' && session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { message: 'Forbidden: Insufficient permissions' },
@@ -81,8 +80,7 @@ async function handlePUT(request: NextRequest, context: RouteContext) {
     const _userRole = session.user.role;
   }
 
-  // Await context.params itself if it's promise-like, then access id for PUT
-  const resolvedParamsPut = await context.params;
+  const resolvedParamsPut = context.params;
   const runIdFromContextPut = resolvedParamsPut.id;
   const paramsToValidatePut = { id: runIdFromContextPut };
 

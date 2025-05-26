@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
-+import { AUTH_PROVIDERS, USER_ROLES } from '@/constants/app';
+import { AUTH_PROVIDERS, USER_ROLES } from '@/lib/constants';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AdminToggle } from '@/components/layout/admin-toggle';
@@ -44,7 +44,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
       <div className="flex items-center space-x-4">
         {/* Show AdminToggle only for organizers and admins */}
         {status === 'authenticated' && session?.user &&
-         (session.user.role === 'ORGANIZER' || session.user.role === 'ADMIN') && (
+         (session.user.role === USER_ROLES.ORGANIZER || session.user.role === USER_ROLES.ADMIN) && (
           <AdminToggle />
         )}
 
@@ -53,7 +53,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
 
         {status === 'unauthenticated' && (
           <Button
-            onClick={() => signIn('google')}
+            onClick={() => signIn(AUTH_PROVIDERS.GOOGLE)}
             variant="default"
             size="sm"
             className="bg-blue-500 hover:bg-blue-700"

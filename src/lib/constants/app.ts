@@ -81,6 +81,12 @@ export const RSVP_STATUS = {
   MAYBE: "MAYBE",
 } as const;
 
+// Authentication providers
+export const AUTH_PROVIDERS = {
+  GOOGLE: "google",
+  TEST_CREDENTIALS: "test-credentials",
+} as const;
+
 // User roles
 export const USER_ROLES = {
   ADMIN: "ADMIN",
