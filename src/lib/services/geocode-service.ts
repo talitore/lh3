@@ -23,10 +23,6 @@ export async function geocodeAddress(address: string): Promise<GeocodeResult> {
   try {
     const mapboxToken = getMapboxSecretToken();
 
-    if (!mapboxToken) {
-      throw new MapboxTokenError(true);
-    }
-
     const baseClient = mbxClient({ accessToken: mapboxToken });
     const geocodingService = mbxGeocoding(baseClient);
 

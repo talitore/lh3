@@ -1,6 +1,6 @@
 /**
  * Validation rules and limits
- * 
+ *
  * This file contains all validation-related constants including
  * minimum/maximum lengths, validation rules, and error messages
  * for form validation.
@@ -77,7 +77,7 @@ export const VALIDATION_ERROR_TYPES = {
 export const VALIDATION_PATTERNS = {
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   URL: /^https?:\/\/.+/,
-  DATETIME_ISO: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/,
+  DATETIME_ISO: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?(Z|[+-]\d{2}:\d{2})?$/,
 } as const;
 
 // File validation

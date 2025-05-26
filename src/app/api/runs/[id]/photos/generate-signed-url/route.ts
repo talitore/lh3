@@ -62,7 +62,7 @@ async function handlePOST(request: NextRequest, context: RouteContext) {
     uploaderId = session.user.id;
   }
 
-  const resolvedParams = await context.params;
+  const resolvedParams = context.params;
   const paramsToValidate = { id: resolvedParams.id };
   const paramsValidationResult = photoParamsSchema.safeParse(paramsToValidate);
 

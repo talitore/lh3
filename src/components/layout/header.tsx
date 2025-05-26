@@ -21,6 +21,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
           size="sm"
           onClick={onToggleSidebar}
           className="mr-4 text-white hover:bg-gray-700"
+          aria-label="Toggle menu"
         >
           <Menu className="h-6 w-6" />
         </Button>
@@ -40,7 +41,11 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
         </Link>
       </nav>
       <div className="flex items-center space-x-4">
-        <AdminToggle />
+        {/* Show AdminToggle only for organizers and admins */}
+        {status === 'authenticated' && session?.user &&
+         (session.user.role === 'ORGANIZER' || session.user.role === 'ADMIN') && (
+          <AdminToggle />
+        )}
 
         {/* Auth Status Logic */}
         {status === 'loading' && <div className="text-xs">Loading...</div>}

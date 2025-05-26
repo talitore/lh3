@@ -1,6 +1,6 @@
 /**
  * Application-wide constants
- * 
+ *
  * This file contains general application constants including
  * test mode configurations, pagination defaults, and other
  * application-wide settings.
@@ -33,6 +33,11 @@ export const ENV_VARS = {
 export const COOKIES = {
   MOCK_ORGANIZER_SESSION: "mock-organizer-session",
   ROLE_ORGANIZER: "role=ORGANIZER",
+} as const;
+
+// Local storage keys
+export const LOCAL_STORAGE_KEYS = {
+  ADMIN_MODE: "adminMode",
 } as const;
 
 // Pagination defaults

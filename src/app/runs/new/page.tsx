@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 
 // Import constants
 import { DEFAULT_COORDINATES } from "@/lib/constants/ui"
-import { API_ENDPOINTS, HTTP_STATUS } from "@/lib/constants/api"
+import { API_ENDPOINTS } from "@/lib/constants/api"
 
 interface RunFormData {
   number: number | ""

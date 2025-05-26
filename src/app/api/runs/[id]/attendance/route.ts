@@ -52,7 +52,7 @@ async function handlePOST(request: NextRequest, context: RouteContext) {
     );
   }
 
-  const resolvedParams = await context.params;
+  const resolvedParams = context.params;
   const paramsToValidate = { id: resolvedParams.id };
   const paramsValidationResult = attendanceParamsSchema.safeParse(paramsToValidate);
 

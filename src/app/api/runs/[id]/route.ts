@@ -19,8 +19,7 @@ async function handleGET(request: NextRequest, context: RouteContext) {
   // No session check needed for viewing a single run as per current requirements (publicly viewable)
   // If authentication is required later, add session check here.
 
-  // Await context.params itself if it's promise-like, then access id
-  const resolvedParams = await context.params;
+  const resolvedParams = context.params;
   const runIdFromContext = resolvedParams.id;
   const paramsToValidate = { id: runIdFromContext };
 

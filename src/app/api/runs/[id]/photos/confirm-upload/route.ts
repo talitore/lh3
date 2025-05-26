@@ -84,7 +84,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
   }
 
   // Validate runId from path, though not directly used by confirmPhotoUpload if photoId is globally unique
-  const resolvedParams = await context.params; // Await context.params
+  const resolvedParams = context.params;
   const paramsToValidate = { id: resolvedParams.id }; // Use resolvedParams.id
   const paramsValidationResult = paramsSchema.safeParse(paramsToValidate);
 

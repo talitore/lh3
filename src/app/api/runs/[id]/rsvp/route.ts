@@ -23,7 +23,7 @@ async function handlePUT(request: NextRequest, context: RouteContext) {
   }
   const userId = session.user.id;
 
-  const resolvedParams = await context.params; // Await context.params
+  const resolvedParams = context.params;
   const paramsToValidate = { id: resolvedParams.id }; // Use resolvedParams.id
   const paramsValidationResult = rsvpParamsSchema.safeParse(paramsToValidate);
 

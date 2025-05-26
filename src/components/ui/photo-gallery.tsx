@@ -66,9 +66,16 @@ function PhotoGallery({
             src={images[currentIndex].src}
             alt={images[currentIndex].alt}
             className="w-full h-64 object-cover cursor-pointer"
-            onClick={() => handleImageClick(images[currentIndex], currentIndex)}
+            role="img"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleImageClick(images[currentIndex], currentIndex);
+              }
+            }}
           />
-          
+
           {images.length > 1 && (
             <>
               <Button
@@ -76,22 +83,24 @@ function PhotoGallery({
                 size="icon"
                 className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
                 onClick={prevImage}
+                aria-label="Previous image"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              
+
               <Button
                 variant="outline"
                 size="icon"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
                 onClick={nextImage}
+                aria-label="Next image"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </>
           )}
         </div>
-        
+
         {images.length > 1 && (
           <div className="flex justify-center mt-4 space-x-2">
             {images.map((_, index) => (
@@ -102,6 +111,8 @@ function PhotoGallery({
                   index === currentIndex ? 'bg-primary' : 'bg-muted'
                 )}
                 onClick={() => setCurrentIndex(index)}
+                aria-label={`Go to image ${index + 1} of ${images.length}`}
+                aria-current={index === currentIndex ? 'true' : 'false'}
               />
             ))}
           </div>

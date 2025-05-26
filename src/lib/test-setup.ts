@@ -1,6 +1,6 @@
 /**
  * Jest test setup file
- * 
+ *
  * This file configures the testing environment for React component tests
  * and provides global test utilities and mocks.
  */
@@ -21,23 +21,28 @@ jest.mock('next/navigation', () => ({
   usePathname: () => '/',
 }));
 
-// Mock NextAuth
-jest.mock('next-auth/react', () => ({
-  useSession: () => ({
-    data: {
-      user: {
-        id: 'test-user-id',
-        name: 'Test User',
-        email: 'test@example.com',
-        role: 'USER',
-      },
+// Mock NextAuth with flexible session handling
+const mockUseSession = jest.fn(() => ({
+  data: {
+    user: {
+      id: 'test-user-id',
+      name: 'Test User',
+      email: 'test@example.com',
+      role: 'USER',
     },
-    status: 'authenticated',
-  }),
+  },
+  status: 'authenticated',
+}));
+
+jest.mock('next-auth/react', () => ({
+  useSession: mockUseSession,
   signIn: jest.fn(),
   signOut: jest.fn(),
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
+
+// Export the mock function so tests can override it
+(global as any).mockUseSession = mockUseSession;
 
 // Mock Mapbox GL
 jest.mock('mapbox-gl', () => ({

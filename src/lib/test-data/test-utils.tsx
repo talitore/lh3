@@ -1,6 +1,6 @@
 /**
  * Test Utilities
- * 
+ *
  * This file provides utility functions and components for testing React components
  * with proper providers and context setup.
  */
@@ -9,7 +9,6 @@ import React from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { SessionProvider } from 'next-auth/react';
 import { Session } from 'next-auth';
-import { createTestUser, TestUser } from './factories';
 
 // Mock session data
 export const mockSession: Session = {
@@ -79,7 +78,7 @@ export function createMockFetch(responses: Record<string, any>) {
   return jest.fn().mockImplementation((url: string, options?: RequestInit) => {
     const method = options?.method || 'GET';
     const key = `${method} ${url}`;
-    
+
     if (responses[key]) {
       return Promise.resolve({
         ok: true,
@@ -188,7 +187,7 @@ export function waitFor(ms: number): Promise<void> {
 // Mock console methods for testing
 export function mockConsole() {
   const originalConsole = { ...console };
-  
+
   const mockMethods = {
     log: jest.fn(),
     warn: jest.fn(),
