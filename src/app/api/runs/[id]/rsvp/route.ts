@@ -1,23 +1,13 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { z } from 'zod';
 import { upsertRsvp } from '@/lib/rsvpService';
-import { RSVPStatus } from '@/generated/prisma'; // Import the enum
 
-// Schema to validate the ID from the path
-const paramsSchema = z.object({
-  id: z.string().cuid({ message: 'Invalid run ID format' }),
-});
+// Import schemas
+import { rsvpParamsSchema, rsvpBodySchema } from '@/lib/schemas';
 
-// Schema for the request body
-const rsvpBodySchema = z.object({
-  status: z.nativeEnum(RSVPStatus, {
-    errorMap: () => ({
-      message: 'Invalid RSVP status. Must be YES, NO, or MAYBE.',
-    }),
-  }),
-});
+// Import error handling
+import { createErrorResponse } from '@/lib/errors';
 
 interface RouteContext {
   params: {
@@ -25,7 +15,7 @@ interface RouteContext {
   };
 }
 
-export async function PUT(request: NextRequest, context: RouteContext) {
+async function handlePUT(request: NextRequest, context: RouteContext) {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user || !session.user.id) {
@@ -35,7 +25,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
   const resolvedParams = await context.params; // Await context.params
   const paramsToValidate = { id: resolvedParams.id }; // Use resolvedParams.id
-  const paramsValidationResult = paramsSchema.safeParse(paramsToValidate);
+  const paramsValidationResult = rsvpParamsSchema.safeParse(paramsToValidate);
 
   if (!paramsValidationResult.success) {
     return NextResponse.json(
@@ -48,37 +38,29 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   }
   const runId = paramsValidationResult.data.id;
 
-  try {
-    const body = await request.json();
-    const bodyValidationResult = rsvpBodySchema.safeParse(body);
+  const body = await request.json();
+  const bodyValidationResult = rsvpBodySchema.safeParse(body);
 
-    if (!bodyValidationResult.success) {
-      return NextResponse.json(
-        {
-          message: 'Invalid request body',
-          errors: bodyValidationResult.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      );
-    }
-    const { status } = bodyValidationResult.data;
-
-    const rsvp = await upsertRsvp({ runId, userId, status });
-    return NextResponse.json(rsvp, { status: 200 }); // 200 OK for upsert, or 201 if always creates new representation
-  } catch (error: any) {
-    console.error(
-      `Error processing RSVP for run ${runId} by user ${userId}:`,
-      error
-    );
-    if (
-      error.message === 'Run not found' ||
-      error.message === 'User not found'
-    ) {
-      return NextResponse.json({ message: error.message }, { status: 404 });
-    }
+  if (!bodyValidationResult.success) {
     return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 }
+      {
+        message: 'Invalid request body',
+        errors: bodyValidationResult.error.flatten().fieldErrors,
+      },
+      { status: 400 }
     );
+  }
+  const { status } = bodyValidationResult.data;
+
+  const rsvp = await upsertRsvp({ runId, userId, status });
+  return NextResponse.json(rsvp, { status: 200 });
+}
+
+// Export handler with error handling
+export async function PUT(request: NextRequest, context: RouteContext) {
+  try {
+    return await handlePUT(request, context);
+  } catch (error) {
+    return createErrorResponse(error as Error, 'PUT /api/runs/[id]/rsvp');
   }
 }

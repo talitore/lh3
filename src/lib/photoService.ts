@@ -1,34 +1,30 @@
-import { PrismaClient, Prisma } from '@/generated/prisma';
+import { PrismaClient } from '@/generated/prisma';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import crypto from 'crypto'; // For generating unique identifiers
 import { getServiceProvider } from './serviceProvider';
 
 // Import constants
-import { ERROR_MESSAGES } from '@/lib/constants/api';
 import { TIMING } from '@/lib/constants/ui';
 import { TEST_MODE, FILE_UPLOAD } from '@/lib/constants/app';
-import { getS3Config, isTestMode } from '@/lib/config/env';
+import { getS3Config } from '@/lib/config/env';
 
-// Legacy environment variable access - will be replaced with config functions
-const AWS_REGION = process.env.AWS_REGION;
+// Import error classes
+import {
+  PhotoServiceError,
+  S3ConfigurationError,
+  PhotoUploadError,
+  RunNotFoundError
+} from '@/lib/errors';
 
-// In test mode, we'll use mock values if real ones aren't available
-if (!S3_BUCKET_NAME || !AWS_REGION) {
-  if (isTestEnvironment) {
-    console.log('Using mock S3 configuration for tests');
-  } else {
-    console.error(
-      'S3_BUCKET_NAME or AWS_REGION environment variable is not set.'
-    );
-  }
-}
+// Get S3 configuration
+const s3Config = getS3Config();
 
 // Create S3 client with region, or use a mock region in test mode
 const s3Client = new S3Client({
-  region: AWS_REGION || (isTestEnvironment ? 'us-east-1' : undefined),
+  region: s3Config.region || 'us-east-1',
   // In test mode, we can use fake credentials that will be ignored
-  ...(isTestEnvironment && {
+  ...(process.env.NODE_ENV === 'test' && {
     credentials: {
       accessKeyId: 'test-access-key',
       secretAccessKey: 'test-secret-key',
@@ -36,12 +32,7 @@ const s3Client = new S3Client({
   }),
 });
 
-export class PhotoServiceError extends Error {
-  constructor(message: string, public statusCode: number = 500) {
-    super(message);
-    this.name = 'PhotoServiceError';
-  }
-}
+// PhotoServiceError is now imported from @/lib/errors
 
 export interface GenerateSignedUrlData {
   runId: string;
@@ -70,7 +61,7 @@ export async function generateSignedUrlForUpload(
   const bucketName = s3Config.bucketName;
 
   if (!bucketName) {
-    throw new PhotoServiceError(ERROR_MESSAGES.S3_BUCKET_NOT_CONFIGURED, 500);
+    throw new S3ConfigurationError();
   }
 
   try {
@@ -94,14 +85,10 @@ export async function generateSignedUrlForUpload(
       where: { id: data.runId },
     });
     if (!runExists) {
-      throw new PhotoServiceError(
-        'Run not found to associate photo with.',
-        404
-      );
+      throw new RunNotFoundError();
     }
 
     const randomBytes = crypto.randomBytes(FILE_UPLOAD.RANDOM_BYTES_LENGTH).toString('hex');
-    const fileExtension = data.fileName.split('.').pop() || FILE_UPLOAD.DEFAULT_EXTENSION;
     const storageKey = `${FILE_UPLOAD.STORAGE_PATH_PREFIX}/${
       data.runId
     }/${FILE_UPLOAD.PHOTOS_SUBFOLDER}/${randomBytes}-${data.fileName.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
@@ -149,12 +136,11 @@ export async function generateSignedUrlForUpload(
       storageKey, // The key where the file will be stored in S3
     };
   } catch (error) {
-    if (error instanceof PhotoServiceError) throw error;
+    if (error instanceof PhotoServiceError || error instanceof RunNotFoundError) {
+      throw error;
+    }
     console.error('Error in generateSignedUrlForUpload:', error);
-    throw new PhotoServiceError(
-      ERROR_MESSAGES.PHOTO_UPLOAD_FAILED,
-      500
-    );
+    throw new PhotoUploadError();
   }
 }
 
@@ -180,10 +166,10 @@ export async function confirmPhotoUpload(
     prismaClient || getServiceProvider().getDbService().getClient();
   const isTestMode = getServiceProvider().isInTestMode();
 
-  // In test mode, we'll use a mock bucket name if not provided
-  const bucketName =
-    S3_BUCKET_NAME || (isTestEnvironment ? 'test-bucket' : undefined);
-  const region = AWS_REGION || (isTestEnvironment ? 'us-east-1' : undefined);
+  // Get S3 configuration
+  const s3Config = getS3Config();
+  const bucketName = s3Config.bucketName || 'test-bucket';
+  const region = s3Config.region || 'us-east-1';
 
   if (!bucketName) {
     throw new PhotoServiceError('S3 bucket name is not configured.', 500);

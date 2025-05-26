@@ -1,64 +1,23 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'; // Adjust path if necessary
-import { z } from 'zod';
 import { createRun, getAllRuns, GetAllRunsOptions } from '@/lib/runService'; // Updated import
 import { Prisma } from '@/generated/prisma'; // Changed import for PrismaClientKnownRequestError
 import { NextRequest } from 'next/server'; // Import NextRequest
-import { getServiceProvider } from '@/lib/serviceProvider';
-
 // Import constants
 import { HTTP_STATUS, ERROR_MESSAGES, REQUEST_HEADERS } from '@/lib/constants/api';
-import { PAGINATION, SORT_OPTIONS, FILTER_OPTIONS, COOKIES, TEST_MODE } from '@/lib/constants/app';
-import { STRING_VALIDATION, NUMBER_VALIDATION, DATE_VALIDATION, URL_VALIDATION, ENUM_OPTIONS } from '@/lib/constants/validation';
+import { COOKIES, TEST_MODE } from '@/lib/constants/app';
 import { shouldBypassAuth } from '@/lib/config/env';
 
-// Define the schema for input validation using Zod
-const createRunSchema = z.object({
-  number: z.number().int().positive(),
-  descriptor: z
-    .string()
-    .min(STRING_VALIDATION.DESCRIPTOR.MIN_LENGTH, {
-      message: STRING_VALIDATION.DESCRIPTOR.ERROR_MESSAGE
-    }),
-  dateTime: z
-    .string()
-    .datetime({ message: DATE_VALIDATION.DATETIME.ERROR_MESSAGE }),
-  address: z
-    .string()
-    .min(STRING_VALIDATION.ADDRESS.MIN_LENGTH, {
-      message: STRING_VALIDATION.ADDRESS.ERROR_MESSAGE
-    }),
-  lat: z.number().optional(),
-  lng: z.number().optional(),
-  introLink: z
-    .string()
-    .url({ message: URL_VALIDATION.INTRO_LINK.ERROR_MESSAGE })
-    .optional()
-    .or(z.literal('')),
-});
+// Import schemas
+import { createRunSchema, getRunsQuerySchema } from '@/lib/schemas';
 
-// Zod schema for GET query parameters
-const getRunsQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional().default(PAGINATION.DEFAULT_PAGE),
-  limit: z.coerce.number().int().positive().optional().default(PAGINATION.DEFAULT_LIMIT),
-  sortBy: z
-    .enum(ENUM_OPTIONS.SORT_BY)
-    .optional()
-    .default(SORT_OPTIONS.DEFAULTS.FIELD as any),
-  sortOrder: z.enum(ENUM_OPTIONS.SORT_ORDER).optional().default(SORT_OPTIONS.DEFAULTS.ORDER as any),
-  filterStatus: z.enum(ENUM_OPTIONS.FILTER_STATUS).optional().default(FILTER_OPTIONS.DEFAULT_STATUS as any),
-  dateFrom: z
-    .string()
-    .datetime({ message: DATE_VALIDATION.DATE_FROM.ERROR_MESSAGE })
-    .optional(),
-  dateTo: z
-    .string()
-    .datetime({ message: DATE_VALIDATION.DATE_TO.ERROR_MESSAGE })
-    .optional(),
-});
+// Import error handling
+import { createErrorResponse } from '@/lib/errors';
 
-export async function POST(request: Request) {
+// Schemas are now imported from @/lib/schemas
+
+async function handlePOST(request: Request) {
   const headers = request.headers;
   const isTestRequest = headers.get(REQUEST_HEADERS.TEST_MODE) === 'true';
   const isMockAuth = headers.get(REQUEST_HEADERS.MOCK_AUTH) === 'true';
@@ -161,7 +120,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   // No session check needed for listing runs as per current requirements (publicly viewable)
   // If authentication is required later, add session check here.
 
@@ -182,14 +141,23 @@ export async function GET(request: NextRequest) {
 
   const options: GetAllRunsOptions = validationResult.data;
 
+  const result = await getAllRuns(options);
+  return NextResponse.json(result, { status: HTTP_STATUS.OK });
+}
+
+// Export handlers with error handling
+export async function POST(request: Request) {
   try {
-    const result = await getAllRuns(options);
-    return NextResponse.json(result, { status: HTTP_STATUS.OK });
+    return await handlePOST(request);
   } catch (error) {
-    console.error('Error fetching runs:', error);
-    return NextResponse.json(
-      { message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR },
-      { status: HTTP_STATUS.INTERNAL_SERVER_ERROR }
-    );
+    return createErrorResponse(error as Error, 'POST /api/runs');
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    return await handleGET(request);
+  } catch (error) {
+    return createErrorResponse(error as Error, 'GET /api/runs');
   }
 }

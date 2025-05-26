@@ -1,26 +1,13 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { z } from 'zod';
-import { markAttendance, AttendanceError } from '@/lib/attendanceService';
+import { markAttendance } from '@/lib/attendanceService';
 
-// Schema to validate the run ID from the path
-const paramsSchema = z.object({
-  id: z.union([
-    z.string().cuid({ message: 'Invalid run ID format' }),
-    z.string().startsWith('mock-run-id-'), // Allow mock IDs for testing
-    z.literal('mock-run-id-for-attendance'), // Specific mock ID for attendance tests
-  ]), // This is runId
-});
+// Import schemas
+import { attendanceParamsSchema, attendanceBodySchema } from '@/lib/schemas';
 
-// Schema for the request body
-const attendanceBodySchema = z.object({
-  userId: z.union([
-    z.string().cuid({ message: 'Invalid user ID format for attendance' }),
-    z.string().startsWith('mock-user-id'),
-    z.literal('cluser00000000000000000000'), // Test user ID
-  ]), // User to be marked as attended
-});
+// Import error handling
+import { createErrorResponse } from '@/lib/errors';
 
 interface RouteContext {
   params: {
@@ -28,7 +15,7 @@ interface RouteContext {
   };
 }
 
-export async function POST(request: NextRequest, context: RouteContext) {
+async function handlePOST(request: NextRequest, context: RouteContext) {
   // Check if we're in test mode
   const isTestMode = process.env.E2E_TESTING_MODE === 'true';
   const skipAuthChecks = process.env.SKIP_AUTH_CHECKS === 'true';
@@ -67,7 +54,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
   const resolvedParams = await context.params;
   const paramsToValidate = { id: resolvedParams.id };
-  const paramsValidationResult = paramsSchema.safeParse(paramsToValidate);
+  const paramsValidationResult = attendanceParamsSchema.safeParse(paramsToValidate);
 
   if (!paramsValidationResult.success) {
     return NextResponse.json(
@@ -80,48 +67,33 @@ export async function POST(request: NextRequest, context: RouteContext) {
   }
   const runId = paramsValidationResult.data.id;
 
-  try {
-    const body = await request.json();
-    const bodyValidationResult = attendanceBodySchema.safeParse(body);
+  const body = await request.json();
+  const bodyValidationResult = attendanceBodySchema.safeParse(body);
 
-    if (!bodyValidationResult.success) {
-      return NextResponse.json(
-        {
-          message: 'Invalid request body',
-          errors: bodyValidationResult.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      );
-    }
-    const { userId } = bodyValidationResult.data; // User to be marked attended
-
-    const attendanceRecord = await markAttendance({
-      runId,
-      userId,
-      markedByUserId,
-    });
-    return NextResponse.json(attendanceRecord, { status: 201 }); // 201 Created for new record
-  } catch (error) {
-    console.error(`Error marking attendance for run ${runId}:`, error);
-    if (error instanceof AttendanceError) {
-      // Fix the error message for user not found to match the test expectation
-      if (
-        error.message === 'User to mark attended not found' &&
-        error.statusCode === 404
-      ) {
-        return NextResponse.json(
-          { message: 'User not found' },
-          { status: error.statusCode }
-        );
-      }
-      return NextResponse.json(
-        { message: error.message },
-        { status: error.statusCode }
-      );
-    }
+  if (!bodyValidationResult.success) {
     return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 }
+      {
+        message: 'Invalid request body',
+        errors: bodyValidationResult.error.flatten().fieldErrors,
+      },
+      { status: 400 }
     );
+  }
+  const { userId } = bodyValidationResult.data; // User to be marked attended
+
+  const attendanceRecord = await markAttendance({
+    runId,
+    userId,
+    markedByUserId,
+  });
+  return NextResponse.json(attendanceRecord, { status: 201 });
+}
+
+// Export handler with error handling
+export async function POST(request: NextRequest, context: RouteContext) {
+  try {
+    return await handlePOST(request, context);
+  } catch (error) {
+    return createErrorResponse(error as Error, 'POST /api/runs/[id]/attendance');
   }
 }

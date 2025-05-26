@@ -2,9 +2,16 @@ import { PrismaClient, Prisma } from '@/generated/prisma';
 import { getServiceProvider } from './serviceProvider';
 
 // Import constants
-import { ERROR_MESSAGES } from '@/lib/constants/api';
 import { TEST_MODE, DATABASE } from '@/lib/constants/app';
 import { PLACEHOLDER_IMAGE } from '@/lib/constants/ui';
+
+// Import error classes
+import {
+  AttendanceError,
+  UserNotFoundError,
+  UserAlreadyAttendedError,
+  RunNotFoundError
+} from '@/lib/errors';
 
 export interface MarkAttendanceData {
   runId: string;
@@ -12,12 +19,7 @@ export interface MarkAttendanceData {
   markedByUserId: string; // The user (organizer/admin) marking the attendance
 }
 
-export class AttendanceError extends Error {
-  constructor(message: string, public statusCode: number = 500) {
-    super(message);
-    this.name = 'AttendanceError';
-  }
-}
+// AttendanceError is now imported from @/lib/errors
 
 /**
  * Mark a user as attended for a run
@@ -63,7 +65,7 @@ export async function markAttendance(
     // Check if the run exists
     const run = await client.run.findUnique({ where: { id: data.runId } });
     if (!run) {
-      throw new AttendanceError(ERROR_MESSAGES.RUN_NOT_FOUND, 404);
+      throw new RunNotFoundError();
     }
 
     // Check if the user to be marked attended exists
@@ -71,7 +73,7 @@ export async function markAttendance(
       where: { id: data.userId },
     });
     if (!userToMark) {
-      throw new AttendanceError(ERROR_MESSAGES.USER_NOT_FOUND, 404);
+      throw new UserNotFoundError();
     }
 
     // Attempt to create the attendance record
@@ -107,10 +109,7 @@ export async function markAttendance(
           });
           if (existingRecord) return existingRecord; // Return existing record if already marked
           // If for some reason it couldn't be fetched but P2002 occurred, throw a generic conflict
-          throw new AttendanceError(
-            ERROR_MESSAGES.USER_ALREADY_ATTENDED,
-            409
-          );
+          throw new UserAlreadyAttendedError();
         }
       }
       console.error('Prisma error in markAttendance:', error.message);

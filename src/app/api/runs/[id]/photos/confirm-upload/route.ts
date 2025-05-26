@@ -2,8 +2,11 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { z } from 'zod';
-import { confirmPhotoUpload, PhotoServiceError } from '@/lib/photoService';
+import { confirmPhotoUpload } from '@/lib/photoService';
 import { PrismaClient } from '@/generated/prisma';
+
+// Import error handling
+import { PhotoServiceError } from '@/lib/errors';
 
 const prisma = new PrismaClient();
 

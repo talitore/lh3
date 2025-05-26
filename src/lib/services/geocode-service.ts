@@ -1,9 +1,10 @@
 import mbxClient from '@mapbox/mapbox-sdk';
 import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 
-// Import constants
-import { ERROR_MESSAGES } from '@/lib/constants/api';
 import { getMapboxSecretToken } from '@/lib/config/env';
+
+// Import error classes
+import { NoGeocodingResultsError, MapboxTokenError } from '@/lib/errors';
 
 export interface GeocodeResult {
   address: string;
@@ -23,7 +24,7 @@ export async function geocodeAddress(address: string): Promise<GeocodeResult> {
     const mapboxToken = getMapboxSecretToken();
 
     if (!mapboxToken) {
-      throw new Error(ERROR_MESSAGES.MAPBOX_SECRET_TOKEN_REQUIRED);
+      throw new MapboxTokenError(true);
     }
 
     const baseClient = mbxClient({ accessToken: mapboxToken });
@@ -39,7 +40,7 @@ export async function geocodeAddress(address: string): Promise<GeocodeResult> {
     const features = response.body.features;
 
     if (!features || features.length === 0) {
-      throw new Error(ERROR_MESSAGES.NO_GEOCODING_RESULTS);
+      throw new NoGeocodingResultsError();
     }
 
     const [feature] = features;

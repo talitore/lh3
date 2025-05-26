@@ -1,6 +1,8 @@
 import { PrismaClient, RSVPStatus, Prisma } from '@/generated/prisma';
+import { getServiceProvider } from './serviceProvider';
 
-const prisma = new PrismaClient();
+// Import error classes
+import { RunNotFoundError, UserNotFoundError } from '@/lib/errors';
 
 export interface UpsertRsvpData {
   runId: string;
@@ -8,25 +10,32 @@ export interface UpsertRsvpData {
   status: RSVPStatus;
 }
 
-export async function upsertRsvp(data: UpsertRsvpData) {
+export async function upsertRsvp(
+  data: UpsertRsvpData,
+  prismaClient?: PrismaClient
+) {
+  // Get the database client from the service provider if not provided
+  const client =
+    prismaClient || getServiceProvider().getDbService().getClient();
+
   try {
     // Check if the run exists
-    const runExists = await prisma.run.findUnique({
+    const runExists = await client.run.findUnique({
       where: { id: data.runId },
     });
     if (!runExists) {
-      throw new Error('Run not found'); // Or a custom error class
+      throw new RunNotFoundError();
     }
 
     // Check if the user exists
-    const userExists = await prisma.user.findUnique({
+    const userExists = await client.user.findUnique({
       where: { id: data.userId },
     });
     if (!userExists) {
-      throw new Error('User not found'); // Or a custom error class
+      throw new UserNotFoundError();
     }
 
-    const rsvp = await prisma.rSVP.upsert({
+    const rsvp = await client.rSVP.upsert({
       where: {
         runId_userId: {
           // Referencing the @@unique([runId, userId]) constraint

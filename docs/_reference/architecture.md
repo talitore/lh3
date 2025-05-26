@@ -18,6 +18,9 @@ The application follows a standard Next.js project structure with a comprehensiv
   - `src/lib/constants/`: Centralized constants and configuration values
   - `src/lib/config/`: Environment configuration and validation
   - `src/lib/services/`: Business logic and external service integrations
+  - `src/lib/schemas/`: Centralized Zod validation schemas for all API operations
+  - `src/lib/errors/`: Standardized error handling classes and utilities
+  - `src/lib/types/`: TypeScript type definitions for service layer operations
 - `public/`: Static assets
 - `styles/`: Global styles and CSS modules (including `globals.css` for CSS variables and theming)
 
@@ -122,7 +125,7 @@ The application uses Tailwind CSS for utility-first styling. The UX/UI Scaffold 
 
 ## UI Component Architecture & Standards
 
-The application follows a comprehensive shadcn/ui-based component architecture established through Phase 2 standardization. All UI components must adhere to these patterns for consistency and maintainability.
+The application follows a comprehensive shadcn/ui-based component architecture. All UI components must adhere to these patterns for consistency and maintainability.
 
 ### Component Categories
 
@@ -358,6 +361,105 @@ import { getMapboxAccessToken } from '@/lib/config/env';
 ```
 
 This architecture ensures consistency, reduces errors, and improves maintainability across the codebase.
+
+## API & Service Layer Architecture
+
+The application implements a comprehensive API and service layer architecture with standardized error handling, validation, and response formats.
+
+### Error Handling System
+
+The application uses a centralized error handling system located in `src/lib/errors/`:
+
+#### **Base Error Classes** (`src/lib/errors/base.ts`)
+- **BaseError**: Abstract base class for all application errors with consistent structure
+- **ValidationError**: For input validation failures with detailed field errors
+- **AuthenticationError**: For unauthorized access attempts
+- **AuthorizationError**: For insufficient permissions
+- **NotFoundError**: For missing resources
+- **ConflictError**: For resource conflicts
+- **InternalServerError**: For unexpected server errors
+
+#### **Service-Specific Errors** (`src/lib/errors/service-errors.ts`)
+- **RunNotFoundError**, **RunNumberExistsError**: Run-related errors
+- **PhotoServiceError**, **S3ConfigurationError**, **PhotoUploadError**: Photo service errors
+- **AttendanceError**, **UserNotFoundError**, **UserAlreadyAttendedError**: Attendance errors
+- **RSVPError**: RSVP-related errors
+- **GeocodingError**, **NoGeocodingResultsError**, **MapboxTokenError**: Geocoding errors
+
+#### **Error Handling Utilities** (`src/lib/errors/error-handler.ts`)
+- **logError()**: Centralized error logging with appropriate levels
+- **formatErrorResponse()**: Standardized error response formatting
+- **createErrorResponse()**: NextResponse creation from errors
+- **withErrorHandler()**: Higher-order function for wrapping API handlers
+
+### Validation Schema System
+
+All API validation is centralized in `src/lib/schemas/` using Zod:
+
+#### **Schema Organization**
+- **`run-schemas.ts`**: Run creation, updates, and query validation
+- **`rsvp-schemas.ts`**: RSVP operation validation
+- **`attendance-schemas.ts`**: Attendance marking validation
+- **`photo-schemas.ts`**: Photo upload and management validation
+- **`geocoding-schemas.ts`**: Address geocoding validation
+- **`index.ts`**: Centralized exports for convenient importing
+
+#### **Schema Benefits**
+- **Type Safety**: All schemas generate TypeScript types
+- **Consistent Validation**: Standardized error messages and validation rules
+- **Reusability**: Schemas are shared between API routes and services
+- **Maintainability**: Single source of truth for validation logic
+
+### Service Layer Standards
+
+#### **Service Response Format** (`src/lib/types/service-types.ts`)
+```typescript
+interface ServiceResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  statusCode?: number;
+}
+
+interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationInfo;
+}
+```
+
+#### **Dependency Injection Pattern**
+All services use the ServiceProvider pattern for database access:
+- **Testability**: Easy mocking for unit tests
+- **Flexibility**: Configurable database clients
+- **Consistency**: Standardized service instantiation
+
+#### **Error Propagation**
+Services throw typed errors that are caught and handled by API routes:
+- **Service Layer**: Throws specific error types (RunNotFoundError, etc.)
+- **API Layer**: Catches errors and uses withErrorHandler for consistent responses
+- **Client Layer**: Receives standardized error responses
+
+### API Route Architecture
+
+#### **Handler Pattern**
+All API routes follow a consistent pattern:
+```typescript
+async function handlePOST(request: Request) {
+  // Validation using centralized schemas
+  // Business logic using service layer
+  // Return standardized response
+}
+
+export const POST = withErrorHandler(handlePOST, 'POST /api/endpoint');
+```
+
+#### **Benefits**
+- **Consistent Error Handling**: All routes use the same error handling wrapper
+- **Centralized Logging**: Automatic error logging with context
+- **Type Safety**: Full TypeScript coverage from request to response
+- **Maintainability**: Clear separation of concerns between validation, business logic, and error handling
+
+This architecture ensures robust, maintainable, and consistent API behavior across the entire application.
 
 ## Code Quality & Linting
 
