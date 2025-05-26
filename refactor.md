@@ -170,7 +170,6 @@ pnpm dlx shadcn-ui@latest add dropdown-menu
 - Add proper ESLint rules for shadcn/ui
 - Create component development guidelines
 - Add Prettier configuration
-- Set up pre-commit hooks
 
 ## Key Benefits
 

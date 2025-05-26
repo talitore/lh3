@@ -461,6 +461,111 @@ export const POST = withErrorHandler(handlePOST, 'POST /api/endpoint');
 
 This architecture ensures robust, maintainable, and consistent API behavior across the entire application.
 
+## Testing Infrastructure
+
+The application implements a comprehensive testing strategy covering unit tests, integration tests, and end-to-end tests to ensure reliability and maintainability.
+
+### Testing Framework Stack
+
+- **Unit Testing**: Jest with React Testing Library for component and utility testing
+- **E2E Testing**: Playwright for browser automation and user workflow testing
+- **Accessibility Testing**: axe-core integration for automated accessibility validation
+- **Test Environment**: jsdom for DOM simulation in unit tests
+
+### Test Coverage Strategy
+
+#### **Unit Tests**
+- **Component Testing**: All UI components have comprehensive unit tests covering props, user interactions, and edge cases
+- **Utility Testing**: All helper functions and utilities are tested with various input scenarios
+- **Service Testing**: Business logic and service layer functions have dedicated test suites
+- **Hook Testing**: Custom React hooks are tested for state management and side effects
+
+#### **Integration Tests**
+- **Form Submissions**: Complete form workflows tested from user input to API calls
+- **API Integration**: Service layer integration with mocked API responses
+- **Error Handling**: Comprehensive testing of error scenarios and recovery paths
+- **State Management**: Testing of complex state interactions across components
+
+#### **End-to-End Tests**
+- **User Workflows**: Complete user journeys from authentication to task completion
+- **Cross-Browser Testing**: Automated testing across different browser environments
+- **Responsive Testing**: Mobile and desktop viewport testing
+- **Accessibility Testing**: Automated accessibility audits using axe-core
+
+### Test Data Management
+
+#### **Centralized Test Factories** (`src/lib/test-data/`)
+- **Factory Pattern**: Consistent test data creation with sensible defaults and override capabilities
+- **Type Safety**: All test data factories are fully typed with TypeScript interfaces
+- **Dependency Injection**: Mock data services use dependency injection for flexible testing scenarios
+- **Reusable Utilities**: Common test utilities and helpers for consistent test setup
+
+#### **Mock Data Services**
+- **API Mocking**: Comprehensive mock API responses for all endpoints
+- **Database Mocking**: Prisma client mocking for service layer testing
+- **External Service Mocking**: Mapbox, AWS S3, and other external services are properly mocked
+- **Authentication Mocking**: NextAuth.js session mocking for different user roles
+
+### Test Configuration
+
+#### **Jest Configuration** (`jest.config.js`)
+- **JSX Support**: Proper TypeScript and JSX transformation for React component testing
+- **Module Resolution**: Path mapping aligned with application structure
+- **Coverage Reporting**: Comprehensive coverage reports with HTML and LCOV output
+- **Test Environment**: jsdom environment for DOM testing with proper setup files
+
+#### **Playwright Configuration** (`playwright.config.ts`)
+- **Cross-Browser Support**: Automated testing across Chromium, Firefox, and WebKit
+- **Test Isolation**: Each test runs in isolation with proper cleanup
+- **Screenshot/Video**: Automatic capture on test failures for debugging
+- **Accessibility Integration**: Built-in axe-core accessibility testing
+
+### Testing Standards
+
+#### **Component Testing Standards**
+- **Render Testing**: All components tested for proper rendering with various props
+- **Interaction Testing**: User interactions (clicks, form inputs, keyboard navigation) thoroughly tested
+- **Accessibility Testing**: Components tested for proper ARIA attributes and keyboard navigation
+- **Error Boundary Testing**: Error scenarios and boundary conditions covered
+
+#### **API Testing Standards**
+- **Happy Path Testing**: All successful API operations tested
+- **Error Handling**: Network errors, validation errors, and server errors tested
+- **Authentication Testing**: Protected routes and role-based access tested
+- **Data Validation**: Input validation and sanitization tested
+
+#### **E2E Testing Standards**
+- **User Journey Testing**: Complete workflows from start to finish
+- **Mobile Responsiveness**: Testing across different viewport sizes
+- **Performance Testing**: Page load times and interaction responsiveness
+- **Accessibility Compliance**: WCAG 2.1 AA compliance verification
+
+### Test Scripts
+
+- `pnpm test`: Run all unit tests
+- `pnpm test:watch`: Run unit tests in watch mode for development
+- `pnpm test:coverage`: Generate comprehensive coverage reports
+- `pnpm test:e2e`: Run all end-to-end tests
+- `pnpm test:e2e:accessibility`: Run accessibility-focused E2E tests
+- `pnpm test:e2e:workflows`: Run user workflow E2E tests
+- `pnpm test:all`: Run complete test suite (unit + E2E)
+
+### Quality Assurance
+
+#### **Coverage Requirements**
+- **Unit Test Coverage**: 90%+ coverage for utility functions and business logic
+- **Component Coverage**: All components have tests covering primary use cases
+- **Integration Coverage**: All API endpoints and form submissions tested
+- **E2E Coverage**: All critical user workflows covered
+
+#### **Continuous Integration**
+- **Automated Testing**: All tests run automatically on code changes
+- **Quality Gates**: Tests must pass before code can be merged
+- **Performance Monitoring**: Test execution time monitoring and optimization
+- **Accessibility Validation**: Automated accessibility checks in CI pipeline
+
+This comprehensive testing infrastructure ensures high code quality, reduces bugs in production, and provides confidence for refactoring and feature development.
+
 ## Code Quality & Linting
 
 ESLint is configured for Next.js/TypeScript to ensure code quality and consistency.
