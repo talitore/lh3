@@ -86,6 +86,9 @@ export function AddressAutocomplete({
         )}.json?access_token=${mapboxToken}&${MAPBOX.GEOCODING_PARAMS}`;
 
         const response = await fetch(endpoint);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
 
         if (data.features) {
@@ -126,7 +129,7 @@ export function AddressAutocomplete({
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onFocus={() => input.length >= 3 && setShowSuggestions(true)}
+          onFocus={() => input.length >= INPUT_VALIDATION.MIN_ADDRESS_SEARCH_LENGTH && setShowSuggestions(true)}
           className={cn(
             CSS_CLASSES.INPUT_ICON_SPACING, // Space for the icon
             className

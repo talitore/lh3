@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -35,6 +35,19 @@ function PhotoGallery({
   className,
 }: PhotoGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Reset or clamp currentIndex when images array changes
+  useEffect(() => {
+    if (images && images.length > 0) {
+      // If currentIndex is out of bounds, clamp it to valid range
+      if (currentIndex >= images.length) {
+        setCurrentIndex(0);
+      }
+    } else {
+      // Reset to 0 if no images
+      setCurrentIndex(0);
+    }
+  }, [images, currentIndex]);
 
   if (!images || images.length === 0) {
     return (

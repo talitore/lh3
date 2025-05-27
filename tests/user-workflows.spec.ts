@@ -10,7 +10,7 @@ import { loginAsTestUser } from './support/authUtils';
 
 test.describe('Complete User Workflows', () => {
   test.describe('Organizer Workflow: Create Run → Manage Attendance → View Results', () => {
-    test('should complete full organizer workflow', async ({ page }) => {
+    test('should complete full organizer workflow', async ({ page }, testInfo) => {
       // Step 1: Login as organizer
       await loginAsTestUser(page, 'organizer@example.com');
       await page.goto('/');
@@ -23,7 +23,9 @@ test.describe('Complete User Workflows', () => {
       await expect(page).toHaveURL(/.*\/runs\/new/);
 
       // Step 3: Fill out run creation form
-      const runNumber = `test-${testInfo.testId}-${Date.now()}`;
+      const runNumber = `test-${Date.now()}-${Math.floor(
+        Math.random() * 1000
+      )}`;
       await page.fill('[data-testid="run-number"]', runNumber);
       await page.fill('[data-testid="run-descriptor"]', `Test Run #${runNumber}`);
       await page.fill('[data-testid="run-datetime"]', '2024-12-31T10:00');

@@ -10,7 +10,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/components/ui/command"
+} from "@/components/custom/command"
 import {
   Popover,
   PopoverContent,
