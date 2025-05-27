@@ -130,19 +130,30 @@ function PhotoGallery({
         'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4',
         className
       )}
+      role="grid"
+      aria-label="Photo gallery"
     >
       {images.map((image, index) => (
-        <div
+        <button
+          type="button"
           key={index}
-          className="relative overflow-hidden rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+          className="relative overflow-hidden rounded-lg hover:opacity-80 transition-opacity"
           onClick={() => handleImageClick(image, index)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleImageClick(image, index);
+            }
+          }}
+          aria-label={`View image: ${image.alt}`}
         >
           <img
             src={image.src}
             alt={image.alt}
+            loading="lazy"
             className="w-full h-32 object-cover"
           />
-        </div>
+        </button>
       ))}
     </div>
   );
