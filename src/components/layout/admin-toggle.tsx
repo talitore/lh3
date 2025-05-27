@@ -13,14 +13,14 @@ export function AdminToggle({ className }: AdminToggleProps) {
   const [isAdminMode, setIsAdminMode] = useState(() => {
     // Initialize from localStorage if available
     if (typeof window !== 'undefined') {
-+      try {
-+        const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.ADMIN_MODE);
-+        return saved ? JSON.parse(saved) === true : false;
-+      } catch {
-+        // Fallback to a safe default and wipe the bad value
-+        localStorage.removeItem(LOCAL_STORAGE_KEYS.ADMIN_MODE);
-+        return false;
-+      }
+      try {
+        const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.ADMIN_MODE);
+        return saved ? JSON.parse(saved) === true : false;
+      } catch {
+        // Fallback to a safe default and wipe the bad value
+        localStorage.removeItem(LOCAL_STORAGE_KEYS.ADMIN_MODE);
+        return false;
+      }
     }
     return false;
   });
