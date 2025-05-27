@@ -5,6 +5,11 @@ the implementation stage and the folder is referenced in this chat
 
 Instructions:
 
+Gain Context:
+
+- Review the reference docs to understand the context of repo.
+  - [repomix](../../repomix-output.xml)
+
 1.  Analyze Plan: Read and understand the contents of the feature folder,
     focusing on `README.md`, `spec.md`, and `design.md`.
 2.  Generate Task List: Based on the spec, the decision within the spec, and the design, generate a high-level

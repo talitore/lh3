@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Header from '@/components/layout/header';
-import Sidebar from '@/components/layout/sidebar';
+import EnhancedSidebar from '@/components/layout/enhanced-sidebar';
+import { SkipLink } from '@/components/ui/skip-link';
 import { ReactNode } from 'react'; // Import ReactNode
 
 export default function ClientLayoutContent({
@@ -16,12 +17,15 @@ export default function ClientLayoutContent({
 
   return (
     <>
-      {' '}
-      {/* Use a fragment as the root element inside the client component */}
+      {/* Skip link for accessibility */}
+      <SkipLink href="#main-content">Skip to main content</SkipLink>
+
       <Header onToggleSidebar={toggleSidebar} />
       <div className="flex">
-        <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
-        <main className="flex-grow p-4">{children}</main>
+        <EnhancedSidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
+        <main id="main-content" className="flex-grow p-4" role="main">
+          {children}
+        </main>
       </div>
       {/* Footer will go here (optional) */}
     </>

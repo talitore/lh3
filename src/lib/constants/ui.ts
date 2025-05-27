@@ -64,8 +64,9 @@ export const SIDEBAR_CONFIG = {
       title: 'Upcoming Events',
       icon: 'calendar',
       items: [
-        { label: 'Event 1', href: '#' },
-        { label: 'Event 2', href: '#' },
+        { label: 'All Runs', href: '/runs' },
+        { label: 'Create New Run', href: '/runs/new' },
+        { label: 'My RSVPs', href: '/runs/my-rsvps' },
       ],
     },
     {
@@ -73,8 +74,9 @@ export const SIDEBAR_CONFIG = {
       title: 'Quick Stats',
       icon: 'bar-chart',
       items: [
-        { label: 'Active Members', href: '#' },
-        { label: 'Hash Cash Pool', href: '#' },
+        { label: 'Member Stats', href: '/stats/members' },
+        { label: 'Run Statistics', href: '/stats/runs' },
+        { label: 'Hash Cash Pool', href: '/stats/hash-cash' },
       ],
     },
     {
@@ -82,8 +84,10 @@ export const SIDEBAR_CONFIG = {
       title: 'Admin Tools',
       icon: 'settings',
       items: [
-        { label: 'Attendance Tracking', href: '#' },
-        { label: 'User Management', href: '#' },
+        { label: 'Attendance Tracking', href: '/admin/attendance' },
+        { label: 'Hash Cash Management', href: '/admin/hash-cash' },
+        { label: 'Manage Achievements', href: '/admin/achievements' },
+        { label: 'User Management', href: '/admin/users' },
       ],
     },
   ],
