@@ -141,11 +141,10 @@ describe('Form Integration Tests', () => {
 
       render(<TestRunForm onSubmit={mockSubmit} />);
 
-      // Try to submit without required fields
       await user.click(screen.getByTestId('submit-button'));
 
-      // Form should not submit due to HTML5 validation
-      expect(mockSubmit).not.toHaveBeenCalled();
+      // Expect custom validation feedback instead of native HTML5
+      expect(screen.getByText(/required/i)).toBeInTheDocument();
     });
 
     it('should handle API errors gracefully', async () => {

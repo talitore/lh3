@@ -15,17 +15,15 @@ interface SidebarProps {
   onClose: () => void;
 }
 
+const iconMap = {
+  calendar: Calendar,
+  'bar-chart': BarChart3,
+  settings: Settings,
+} as const;
+
 const getIcon = (iconName: string) => {
-  switch (iconName) {
-    case 'calendar':
-      return <Calendar className="h-4 w-4" />;
-    case 'bar-chart':
-      return <BarChart3 className="h-4 w-4" />;
-    case 'settings':
-      return <Settings className="h-4 w-4" />;
-    default:
-      return null;
-  }
+  const IconComponent = iconMap[iconName as keyof typeof iconMap];
+  return IconComponent ? <IconComponent className="h-4 w-4" /> : null;
 };
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {

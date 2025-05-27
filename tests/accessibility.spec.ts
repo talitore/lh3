@@ -216,8 +216,8 @@ test.describe('Accessibility Tests', () => {
                               computedStyle.animationDuration === '0.01s' ||
                               computedStyle.transitionDuration === '0.01s';
       
-      // This is a guideline check - not all animations need to be disabled
-      // but critical ones should respect the preference
+      // Assert that animations respect reduced motion preference
+      expect(hasReducedMotion).toBe(true);
     }
   });
 
