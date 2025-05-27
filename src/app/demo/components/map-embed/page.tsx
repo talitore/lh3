@@ -1,4 +1,4 @@
-import MapEmbed from '@/components/ui/map-embed';
+import MapEmbed from '@/components/custom/map-embed';
 
 export default function MapEmbedDemoPage() {
   const lawrenceKansasCoords =

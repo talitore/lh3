@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
+import { AddressAutocomplete } from "@/components/custom/address-autocomplete"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function AddressAutocompleteDemoPage() {

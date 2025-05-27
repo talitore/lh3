@@ -1,5 +1,8 @@
 import { PrismaClient, User, Role } from '@/generated/prisma';
 
+// Import constants
+import { PLACEHOLDER_IMAGE } from '@/lib/constants/ui';
+
 interface TestUserConfig {
   name: string;
   role: Role;
@@ -52,7 +55,7 @@ export async function authenticateTestCredentialsUser(
       update: {
         name: config.name,
         role: config.role,
-        image: `https://via.placeholder.com/150?text=${config.name.replace(
+        image: `${PLACEHOLDER_IMAGE.BASE_URL}${config.name.replace(
           /\s+/g,
           '+'
         )}`,
@@ -63,7 +66,7 @@ export async function authenticateTestCredentialsUser(
         // id: `test-user-${config.idSuffix}`, // Prisma might not allow setting ID if it's auto-increment or CUID by default. Let's rely on email for unique constraint and let ID be generated.
         email: email,
         name: config.name,
-        image: `https://via.placeholder.com/150?text=${config.name.replace(
+        image: `${PLACEHOLDER_IMAGE.BASE_URL}${config.name.replace(
           /\s+/g,
           '+'
         )}`,

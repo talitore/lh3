@@ -1,31 +1,30 @@
-import { PrismaClient, Prisma } from '@/generated/prisma';
+import { PrismaClient } from '@/generated/prisma';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import crypto from 'crypto'; // For generating unique identifiers
 import { getServiceProvider } from './serviceProvider';
 
-const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
-const AWS_REGION = process.env.AWS_REGION;
-// AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are typically picked up automatically by the SDK from env vars
+// Import constants
+import { TIMING } from '@/lib/constants/ui';
+import { TEST_MODE, FILE_UPLOAD } from '@/lib/constants/app';
+import { getS3Config } from '@/lib/config/env';
 
-const isTestEnvironment = process.env.E2E_TESTING_MODE === 'true';
+// Import error classes
+import {
+  PhotoServiceError,
+  S3ConfigurationError,
+  PhotoUploadError,
+  RunNotFoundError
+} from '@/lib/errors';
 
-// In test mode, we'll use mock values if real ones aren't available
-if (!S3_BUCKET_NAME || !AWS_REGION) {
-  if (isTestEnvironment) {
-    console.log('Using mock S3 configuration for tests');
-  } else {
-    console.error(
-      'S3_BUCKET_NAME or AWS_REGION environment variable is not set.'
-    );
-  }
-}
+// Get S3 configuration
+const s3Config = getS3Config();
 
 // Create S3 client with region, or use a mock region in test mode
 const s3Client = new S3Client({
-  region: AWS_REGION || (isTestEnvironment ? 'us-east-1' : undefined),
+  region: s3Config.region || 'us-east-1',
   // In test mode, we can use fake credentials that will be ignored
-  ...(isTestEnvironment && {
+  ...(process.env.NODE_ENV === 'test' && {
     credentials: {
       accessKeyId: 'test-access-key',
       secretAccessKey: 'test-secret-key',
@@ -33,12 +32,7 @@ const s3Client = new S3Client({
   }),
 });
 
-export class PhotoServiceError extends Error {
-  constructor(message: string, public statusCode: number = 500) {
-    super(message);
-    this.name = 'PhotoServiceError';
-  }
-}
+// PhotoServiceError is now imported from @/lib/errors
 
 export interface GenerateSignedUrlData {
   runId: string;
@@ -62,17 +56,17 @@ export async function generateSignedUrlForUpload(
     prismaClient || getServiceProvider().getDbService().getClient();
   const isTestMode = getServiceProvider().isInTestMode();
 
-  // In test mode, we'll use a mock bucket name if not provided
-  const bucketName =
-    S3_BUCKET_NAME || (isTestEnvironment ? 'test-bucket' : undefined);
+  // Get S3 configuration with test mode fallback
+  const s3Config = getS3Config();
+  const bucketName = s3Config.bucketName;
 
   if (!bucketName) {
-    throw new PhotoServiceError('S3 bucket name is not configured.', 500);
+    throw new S3ConfigurationError();
   }
 
   try {
     // Check if we're in test mode with mock data
-    if (isTestMode && data.runId.startsWith('mock-run-id')) {
+    if (isTestMode && data.runId.startsWith(TEST_MODE.MOCK_RUN_ID_PREFIX)) {
       console.log('Using mock data for generateSignedUrlForUpload');
       const mockPhotoId = `mock-photo-id-${Date.now()}`;
       const mockStorageKey = `runs/${
@@ -91,17 +85,13 @@ export async function generateSignedUrlForUpload(
       where: { id: data.runId },
     });
     if (!runExists) {
-      throw new PhotoServiceError(
-        'Run not found to associate photo with.',
-        404
-      );
+      throw new RunNotFoundError();
     }
 
-    const randomBytes = crypto.randomBytes(16).toString('hex');
-    const fileExtension = data.fileName.split('.').pop() || 'bin';
-    const storageKey = `runs/${
+    const randomBytes = crypto.randomBytes(FILE_UPLOAD.RANDOM_BYTES_LENGTH).toString('hex');
+    const storageKey = `${FILE_UPLOAD.STORAGE_PATH_PREFIX}/${
       data.runId
-    }/photos/${randomBytes}-${data.fileName.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
+    }/${FILE_UPLOAD.PHOTOS_SUBFOLDER}/${randomBytes}-${data.fileName.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
 
     // Create a preliminary photo record in the database
     // The actual 'url' field might be null or point to a placeholder until confirmed
@@ -118,7 +108,7 @@ export async function generateSignedUrlForUpload(
     // In test mode, we might want to skip the actual S3 interaction
     let signedUrl: string;
 
-    if (isTestEnvironment) {
+    if (isTestMode) {
       // For tests, just create a mock signed URL
       signedUrl = `https://${bucketName}.s3.amazonaws.com/${storageKey}?mockSignature=test`;
     } else {
@@ -136,7 +126,7 @@ export async function generateSignedUrlForUpload(
         },
       });
 
-      const expiresIn = 3600; // URL expires in 1 hour
+      const expiresIn = TIMING.S3_URL_EXPIRATION; // URL expires in 1 hour
       signedUrl = await getSignedUrl(s3Client, command, { expiresIn });
     }
 
@@ -146,12 +136,11 @@ export async function generateSignedUrlForUpload(
       storageKey, // The key where the file will be stored in S3
     };
   } catch (error) {
-    if (error instanceof PhotoServiceError) throw error;
+    if (error instanceof PhotoServiceError || error instanceof RunNotFoundError) {
+      throw error;
+    }
     console.error('Error in generateSignedUrlForUpload:', error);
-    throw new PhotoServiceError(
-      'Failed to generate signed URL for photo upload.',
-      500
-    );
+    throw new PhotoUploadError();
   }
 }
 
@@ -177,10 +166,10 @@ export async function confirmPhotoUpload(
     prismaClient || getServiceProvider().getDbService().getClient();
   const isTestMode = getServiceProvider().isInTestMode();
 
-  // In test mode, we'll use a mock bucket name if not provided
-  const bucketName =
-    S3_BUCKET_NAME || (isTestEnvironment ? 'test-bucket' : undefined);
-  const region = AWS_REGION || (isTestEnvironment ? 'us-east-1' : undefined);
+  // Get S3 configuration
+  const s3Config = getS3Config();
+  const bucketName = s3Config.bucketName || 'test-bucket';
+  const region = s3Config.region || 'us-east-1';
 
   if (!bucketName) {
     throw new PhotoServiceError('S3 bucket name is not configured.', 500);

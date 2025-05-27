@@ -13,8 +13,7 @@
 
 3. **Add shadcn/ui**
 
-   - `pnpm add @shadcn/ui`
-   - `pnpm dlx shadcn-ui init` → select Buttons, Forms, Cards, Modals, Gallery, etc.
+   - `pnpm dlx shadcnui@latest init` → select Buttons, Forms, Cards, Modals, Gallery, etc.
    - Audit `components/ui/` and tweak theme tokens (colors, spacing).
 
 4. **Set up Prisma & PostgreSQL**

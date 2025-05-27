@@ -1,22 +1,5 @@
-import Button from '@/components/ui/button';
-
-// Placeholder Icon for demo
-const PlusIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 4.5v15m7.5-7.5h-15"
-    />
-  </svg>
-);
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 export default function ButtonDemoPage() {
   return (
@@ -26,8 +9,9 @@ export default function ButtonDemoPage() {
       <section className="mb-8 p-4 border rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Button Variants</h2>
         <div className="flex flex-wrap gap-4 items-center">
-          <Button variant="primary">Primary</Button>
+          <Button variant="default">Default</Button>
           <Button variant="secondary">Secondary</Button>
+          <Button variant="destructive">Destructive</Button>
           <Button variant="outline">Outline</Button>
           <Button variant="ghost">Ghost</Button>
           <Button variant="link">Link</Button>
@@ -37,14 +21,17 @@ export default function ButtonDemoPage() {
       <section className="mb-8 p-4 border rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Button Sizes</h2>
         <div className="flex flex-wrap gap-4 items-center">
-          <Button variant="primary" size="sm">
+          <Button variant="default" size="sm">
             Small
           </Button>
-          <Button variant="primary" size="md">
-            Medium (Default)
+          <Button variant="default">
+            Default
           </Button>
-          <Button variant="primary" size="lg">
+          <Button variant="default" size="lg">
             Large
+          </Button>
+          <Button variant="default" size="icon">
+            <Plus />
           </Button>
         </div>
       </section>
@@ -52,13 +39,16 @@ export default function ButtonDemoPage() {
       <section className="mb-8 p-4 border rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Button with Icon</h2>
         <div className="flex flex-wrap gap-4 items-center">
-          <Button variant="primary" icon={<PlusIcon />}>
+          <Button variant="default">
+            <Plus />
             Add Item
           </Button>
-          <Button variant="secondary" size="sm" icon={<PlusIcon />}>
+          <Button variant="secondary" size="sm">
+            <Plus />
             New
           </Button>
-          <Button variant="outline" icon={<PlusIcon />}>
+          <Button variant="outline">
+            <Plus />
             Create
           </Button>
         </div>
@@ -67,13 +57,14 @@ export default function ButtonDemoPage() {
       <section className="mb-8 p-4 border rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Disabled Buttons</h2>
         <div className="flex flex-wrap gap-4 items-center">
-          <Button variant="primary" disabled>
-            Primary Disabled
+          <Button variant="default" disabled>
+            Default Disabled
           </Button>
           <Button variant="secondary" disabled>
             Secondary Disabled
           </Button>
-          <Button variant="outline" icon={<PlusIcon />} disabled>
+          <Button variant="outline" disabled>
+            <Plus />
             Outline Disabled
           </Button>
           <Button variant="ghost" disabled>

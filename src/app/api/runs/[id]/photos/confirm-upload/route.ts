@@ -2,8 +2,11 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { z } from 'zod';
-import { confirmPhotoUpload, PhotoServiceError } from '@/lib/photoService';
+import { confirmPhotoUpload } from '@/lib/photoService';
 import { PrismaClient } from '@/generated/prisma';
+
+// Import error handling
+import { PhotoServiceError } from '@/lib/errors';
 
 const prisma = new PrismaClient();
 
@@ -81,7 +84,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
   }
 
   // Validate runId from path, though not directly used by confirmPhotoUpload if photoId is globally unique
-  const resolvedParams = await context.params; // Await context.params
+  const resolvedParams = context.params;
   const paramsToValidate = { id: resolvedParams.id }; // Use resolvedParams.id
   const paramsValidationResult = paramsSchema.safeParse(paramsToValidate);
 

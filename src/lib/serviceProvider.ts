@@ -1,4 +1,4 @@
-import { IDbService, DbService, getDbService } from './db/dbService';
+import { IDbService, getDbService } from './db/dbService';
 import { MockDbService } from './db/mockDbService';
 
 /**
@@ -12,7 +12,7 @@ export class ServiceProvider {
 
   private constructor() {
     this.isTestMode = process.env.E2E_TESTING_MODE === 'true' && process.env.USE_MOCK_DATA === 'true';
-    
+
     // Initialize services based on environment
     if (this.isTestMode) {
       console.log('Using mock database service for tests');

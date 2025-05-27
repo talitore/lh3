@@ -1,6 +1,15 @@
 import { PrismaClient, Prisma } from '@/generated/prisma';
 import { getServiceProvider } from './serviceProvider';
 
+// Import constants
+import { DATABASE, RSVP_STATUS } from '@/lib/constants/app';
+
+// Import error classes
+import { RunNotFoundError, RunNumberExistsError } from '@/lib/errors';
+
+// Import types
+import { PaginatedResponse } from '@/lib/types/service-types';
+
 export interface CreateRunData {
   number: number;
   descriptor: string;
@@ -43,16 +52,12 @@ export async function createRun(
     });
     return newRun;
   } catch (error) {
-    // Log the error or handle specific Prisma errors if needed
+    // Handle specific Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      // Example: Unique constraint violation for run number
+      // Unique constraint violation for run number
       if (error.code === 'P2002' && error.meta?.target === 'Run_number_key') {
-        // This specific error is better handled in the API route for a user-friendly response
-        // Re-throw to be caught by the API route handler
-        throw error;
+        throw new RunNumberExistsError();
       }
-      // Log other Prisma errors
-      console.error('Prisma error in createRun:', error);
     }
     // Re-throw other errors to be caught by the API route handler
     throw error;
@@ -139,11 +144,11 @@ export async function getAllRuns(
       take: limit,
       include: {
         organizer: {
-          select: { id: true, name: true, image: true }, // Select only necessary organizer fields
+          select: DATABASE.SELECT_FIELDS.USER_BASIC, // Select only necessary organizer fields
         },
         _count: {
           select: {
-            rsvps: { where: { status: 'YES' } }, // Count only 'YES' RSVPs
+            rsvps: { where: { status: RSVP_STATUS.YES } }, // Count only 'YES' RSVPs
           },
         },
       },
@@ -153,18 +158,22 @@ export async function getAllRuns(
       where: whereClause,
     });
 
-    return {
-      data: runs.map((run) => ({
+    const paginatedResponse: PaginatedResponse<any> = {
+      data: runs.map((run: unknown) => ({
         ...run,
-        rsvpYesCount: run._count?.rsvps ?? 0, // Make count more accessible
+        rsvpYesCount: (run as { _count?: { rsvps?: number } })._count?.rsvps ?? 0, // Make count more accessible
       })),
       pagination: {
         page,
         limit,
-        totalRuns,
+        totalItems: totalRuns,
         totalPages: Math.ceil(totalRuns / limit),
+        hasNextPage: page < Math.ceil(totalRuns / limit),
+        hasPreviousPage: page > 1,
       },
     };
+
+    return paginatedResponse;
   } catch (error) {
     console.error('Error in getAllRuns:', error);
     // Re-throw to be caught by the API route handler or a global error handler
@@ -188,55 +197,45 @@ export async function getRunById(id: string, prismaClient?: PrismaClient) {
       where: { id },
       include: {
         organizer: {
-          select: { id: true, name: true, email: true, image: true },
+          select: DATABASE.SELECT_FIELDS.USER_DETAILED,
         },
         rsvps: {
           include: {
             user: {
-              select: { id: true, name: true, image: true },
+              select: DATABASE.SELECT_FIELDS.USER_BASIC,
             },
           },
-          orderBy: {
-            createdAt: 'asc',
-          },
+          orderBy: DATABASE.ORDER_BY.CREATED_AT_ASC,
         },
         attendees: {
           include: {
             user: {
-              select: { id: true, name: true, image: true },
+              select: DATABASE.SELECT_FIELDS.USER_BASIC,
             },
           },
-          orderBy: {
-            markedAt: 'asc',
-          },
+          orderBy: DATABASE.ORDER_BY.MARKED_AT_ASC,
         },
         photos: {
           select: {
-            id: true,
-            storageKey: true,
-            url: true,
-            caption: true,
-            createdAt: true,
+            ...DATABASE.SELECT_FIELDS.PHOTO_BASIC,
             uploadedBy: {
-              select: { id: true, name: true, image: true },
+              select: DATABASE.SELECT_FIELDS.USER_BASIC,
             },
           },
-          orderBy: {
-            createdAt: 'desc',
-          },
+          orderBy: DATABASE.ORDER_BY.CREATED_AT_DESC,
         },
       },
     });
 
     if (!run) {
-      return null;
+      throw new RunNotFoundError();
     }
 
     // Process RSVPs into a more structured format if desired, or count them
     const rsvpCounts = {
-      yes: run.rsvps.filter((r) => r.status === 'YES').length,
-      no: run.rsvps.filter((r) => r.status === 'NO').length,
-      maybe: run.rsvps.filter((r) => r.status === 'MAYBE').length,
+      yes: run.rsvps.filter((r) => r.status === RSVP_STATUS.YES).length,
+      no: run.rsvps.filter((r) => r.status === RSVP_STATUS.NO).length,
+      maybe: run.rsvps.filter((r) => r.status === RSVP_STATUS.MAYBE).length,
     };
 
     return {
@@ -280,7 +279,7 @@ export async function updateRun(
     // Check if the run exists first (optional, but good for a clear 404)
     const existingRun = await client.run.findUnique({ where: { id } });
     if (!existingRun) {
-      return null; // Or throw a custom NotFoundError
+      throw new RunNotFoundError();
     }
 
     const updatedRun = await client.run.update({
@@ -296,7 +295,7 @@ export async function updateRun(
       // Optionally include relations if needed in the response, similar to getRunById
       include: {
         organizer: {
-          select: { id: true, name: true, image: true },
+          select: DATABASE.SELECT_FIELDS.USER_BASIC,
         },
       },
     });
@@ -304,12 +303,10 @@ export async function updateRun(
   } catch (error) {
     // Log the error or handle specific Prisma errors if needed
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      // Example: Unique constraint violation for run number if it's being updated
+      // Unique constraint violation for run number if it's being updated
       if (error.code === 'P2002' && error.meta?.target === 'Run_number_key') {
-        // This specific error is better handled in the API route for a user-friendly response
-        throw error;
+        throw new RunNumberExistsError();
       }
-      console.error(`Prisma error updating run ${id}:`, error.message);
     }
     throw error; // Re-throw to be caught by the API route handler
   }

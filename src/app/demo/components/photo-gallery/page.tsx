@@ -1,6 +1,6 @@
 'use client'; // For onClickImage handler if it involves client-side logic
 
-import PhotoGallery from '@/components/ui/photo-gallery';
+import PhotoGallery from '@/components/custom/photo-gallery';
 
 const sampleImages = [
   {

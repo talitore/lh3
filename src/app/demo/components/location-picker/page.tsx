@@ -1,14 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
-import { MapPicker } from "@/components/ui/map-picker"
+import { AddressAutocomplete } from "@/components/custom/address-autocomplete"
+import { MapPicker } from "@/components/custom/map-picker"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
+// Import constants
+import { DEFAULT_COORDINATES } from "@/lib/constants/ui"
+
 export default function LocationPickerDemoPage() {
   const [address, setAddress] = useState("")
-  const [position, setPosition] = useState({ lat: 38.9592, lng: -95.3281 }) // Lawrence, KS
+  const [position, setPosition] = useState({ lat: DEFAULT_COORDINATES.LAT, lng: DEFAULT_COORDINATES.LNG }) // Lawrence, KS
   const [isMapSynced, setIsMapSynced] = useState(true)
 
   const handleAddressSelected = (selectedAddress: string, coords: { lat: number; lng: number }) => {
@@ -24,14 +27,14 @@ export default function LocationPickerDemoPage() {
 
   const handleReset = () => {
     setAddress("")
-    setPosition({ lat: 38.9592, lng: -95.3281 })
+    setPosition({ lat: DEFAULT_COORDINATES.LAT, lng: DEFAULT_COORDINATES.LNG })
   }
 
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-2xl font-bold mb-6">Location Picker Demo</h1>
       <p className="mb-8 text-gray-600 dark:text-gray-400">
-        This demo shows how the AddressAutocomplete and MapPicker components work together 
+        This demo shows how the AddressAutocomplete and MapPicker components work together
         to provide a complete location selection experience.
       </p>
 
@@ -48,7 +51,7 @@ export default function LocationPickerDemoPage() {
               value={address}
               onAddressSelected={handleAddressSelected}
             />
-            
+
             <div className="mt-4 flex items-center gap-2">
               <input
                 type="checkbox"
@@ -79,10 +82,10 @@ export default function LocationPickerDemoPage() {
                     <strong>Coordinates:</strong> {position.lat.toFixed(6)}, {position.lng.toFixed(6)}
                   </div>
                 </div>
-                <Button 
-                  onClick={handleReset} 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  onClick={handleReset}
+                  variant="outline"
+                  size="sm"
                   className="mt-4"
                 >
                   Reset Location
@@ -118,8 +121,8 @@ export default function LocationPickerDemoPage() {
 {`// Example usage in a form
 const [formData, setFormData] = useState({
   address: '',
-  lat: 38.9592,
-  lng: -95.3281
+  lat: ${DEFAULT_COORDINATES.LAT},
+  lng: ${DEFAULT_COORDINATES.LNG}
 });
 
 const handleAddressSelected = (address, coords) => {

@@ -1,30 +1,13 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { z } from 'zod';
-import {
-  generateSignedUrlForUpload,
-  PhotoServiceError,
-} from '@/lib/photoService';
+import { generateSignedUrlForUpload } from '@/lib/photoService';
 
-// Schema to validate the run ID from the path
-const paramsSchema = z.object({
-  id: z.union([
-    z.string().cuid({ message: 'Invalid run ID format' }),
-    z.string().startsWith('mock-run-id-'), // Allow mock IDs for testing
-    z.literal('mock-run-id-for-photo-url'), // Specific mock ID for photo URL tests
-  ]), // This is runId
-});
+// Import schemas
+import { photoParamsSchema, generateUrlBodySchema } from '@/lib/schemas';
 
-// Schema for the request body
-const generateUrlBodySchema = z.object({
-  fileName: z.string().min(1, { message: 'fileName is required' }),
-  contentType: z.string().regex(/^image\/(jpeg|png|gif|webp)$/, {
-    // Basic image types, adjust as needed
-    message:
-      'Invalid contentType. Supported types: image/jpeg, image/png, image/gif, image/webp',
-  }),
-});
+// Import error handling
+import { createErrorResponse } from '@/lib/errors';
 
 interface RouteContext {
   params: {
@@ -32,7 +15,7 @@ interface RouteContext {
   };
 }
 
-export async function POST(request: NextRequest, context: RouteContext) {
+async function handlePOST(request: NextRequest, context: RouteContext) {
   // Check if we're in test mode
   const isTestMode = process.env.E2E_TESTING_MODE === 'true';
   const skipAuthChecks = process.env.SKIP_AUTH_CHECKS === 'true';
@@ -79,9 +62,9 @@ export async function POST(request: NextRequest, context: RouteContext) {
     uploaderId = session.user.id;
   }
 
-  const resolvedParams = await context.params;
+  const resolvedParams = context.params;
   const paramsToValidate = { id: resolvedParams.id };
-  const paramsValidationResult = paramsSchema.safeParse(paramsToValidate);
+  const paramsValidationResult = photoParamsSchema.safeParse(paramsToValidate);
 
   if (!paramsValidationResult.success) {
     return NextResponse.json(
@@ -94,42 +77,34 @@ export async function POST(request: NextRequest, context: RouteContext) {
   }
   const runId = paramsValidationResult.data.id;
 
-  try {
-    const body = await request.json();
-    const bodyValidationResult = generateUrlBodySchema.safeParse(body);
+  const body = await request.json();
+  const bodyValidationResult = generateUrlBodySchema.safeParse(body);
 
-    if (!bodyValidationResult.success) {
-      return NextResponse.json(
-        {
-          message: 'Invalid request body',
-          errors: bodyValidationResult.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      );
-    }
-    const { fileName, contentType } = bodyValidationResult.data;
-
-    const result = await generateSignedUrlForUpload({
-      runId,
-      uploaderId,
-      fileName,
-      contentType,
-    });
-    return NextResponse.json(result, { status: 200 });
-  } catch (error) {
-    console.error(
-      `Error generating signed URL for photo upload for run ${runId}:`,
-      error
-    );
-    if (error instanceof PhotoServiceError) {
-      return NextResponse.json(
-        { message: error.message },
-        { status: error.statusCode }
-      );
-    }
+  if (!bodyValidationResult.success) {
     return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 }
+      {
+        message: 'Invalid request body',
+        errors: bodyValidationResult.error.flatten().fieldErrors,
+      },
+      { status: 400 }
     );
+  }
+  const { fileName, contentType } = bodyValidationResult.data;
+
+  const result = await generateSignedUrlForUpload({
+    runId,
+    uploaderId,
+    fileName,
+    contentType,
+  });
+  return NextResponse.json(result, { status: 200 });
+}
+
+// Export handler with error handling
+export async function POST(request: NextRequest, context: RouteContext) {
+  try {
+    return await handlePOST(request, context);
+  } catch (error) {
+    return createErrorResponse(error as Error, 'POST /api/runs/[id]/photos/generate-signed-url');
   }
 }
