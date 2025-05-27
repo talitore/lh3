@@ -3,9 +3,10 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent } from '@/lib/test-data';
+import { render, screen } from '@/lib/test-data';
 import userEvent from '@testing-library/user-event';
-import AdminToggle from './admin-toggle';
+import { AdminToggle } from './admin-toggle';
+import { LOCAL_STORAGE_KEYS } from '@/lib/constants/app';
 
 // Mock localStorage
 const mockLocalStorage = {
@@ -39,7 +40,7 @@ describe('AdminToggle Component', () => {
 
     render(<AdminToggle />);
 
-    expect(mockLocalStorage.getItem).toHaveBeenCalledWith('adminMode');
+    expect(mockLocalStorage.getItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEYS.ADMIN_MODE);
     expect(screen.getByRole('switch')).toBeChecked();
   });
 
@@ -53,7 +54,7 @@ describe('AdminToggle Component', () => {
     await user.click(toggle);
 
     expect(toggle).toBeChecked();
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('adminMode', 'true');
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEYS.ADMIN_MODE, 'true');
   });
 
   it('should toggle off when clicked again', async () => {
@@ -68,7 +69,7 @@ describe('AdminToggle Component', () => {
     await user.click(toggle);
 
     expect(toggle).not.toBeChecked();
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('adminMode', 'false');
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEYS.ADMIN_MODE, 'false');
   });
 
   it('should handle keyboard interaction', async () => {
@@ -161,15 +162,15 @@ describe('AdminToggle Component', () => {
     // Toggle multiple times and verify state consistency
     await user.click(toggle);
     expect(toggle).toBeChecked();
-    expect(mockLocalStorage.setItem).toHaveBeenLastCalledWith('adminMode', 'true');
+    expect(mockLocalStorage.setItem).toHaveBeenLastCalledWith(LOCAL_STORAGE_KEYS.ADMIN_MODE, 'true');
 
     await user.click(toggle);
     expect(toggle).not.toBeChecked();
-    expect(mockLocalStorage.setItem).toHaveBeenLastCalledWith('adminMode', 'false');
+    expect(mockLocalStorage.setItem).toHaveBeenLastCalledWith(LOCAL_STORAGE_KEYS.ADMIN_MODE, 'false');
 
     await user.click(toggle);
     expect(toggle).toBeChecked();
-    expect(mockLocalStorage.setItem).toHaveBeenLastCalledWith('adminMode', 'true');
+    expect(mockLocalStorage.setItem).toHaveBeenLastCalledWith(LOCAL_STORAGE_KEYS.ADMIN_MODE, 'true');
   });
 
   it('should have proper styling classes', () => {

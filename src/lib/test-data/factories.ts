@@ -1,6 +1,6 @@
 /**
  * Test Data Factories
- * 
+ *
  * This file provides factory functions for creating test data objects
  * with sensible defaults and the ability to override specific properties.
  */
@@ -26,7 +26,7 @@ export interface TestUser {
 
 export function createTestUser(options: FactoryOptions<TestUser> = {}): TestUser {
   const defaults: TestUser = {
-    id: `test-user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: `test-user-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
     name: 'Test User',
     email: 'test@example.com',
     role: Role.USER,
@@ -80,7 +80,7 @@ export interface TestRun {
 export function createTestRun(options: FactoryOptions<TestRun> = {}): TestRun {
   const runNumber = Math.floor(Math.random() * 1000) + 1;
   const defaults: TestRun = {
-    id: `test-run-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: `test-run-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
     number: runNumber,
     descriptor: `Test Run #${runNumber}`,
     dateTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
@@ -108,7 +108,7 @@ export interface TestRSVP {
 
 export function createTestRSVP(options: FactoryOptions<TestRSVP> = {}): TestRSVP {
   const defaults: TestRSVP = {
-    id: `test-rsvp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: `test-rsvp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
     userId: 'test-user-id',
     runId: 'test-run-id',
     status: 'YES',
@@ -131,7 +131,7 @@ export interface TestPhoto {
 }
 
 export function createTestPhoto(options: FactoryOptions<TestPhoto> = {}): TestPhoto {
-  const photoId = `test-photo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const photoId = `test-photo-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   const defaults: TestPhoto = {
     id: photoId,
     runId: 'test-run-id',
@@ -157,7 +157,7 @@ export interface TestAttendance {
 
 export function createTestAttendance(options: FactoryOptions<TestAttendance> = {}): TestAttendance {
   const defaults: TestAttendance = {
-    id: `test-attendance-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: `test-attendance-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
     userId: 'test-user-id',
     runId: 'test-run-id',
     markedById: 'test-organizer-id',

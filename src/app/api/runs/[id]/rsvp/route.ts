@@ -7,7 +7,7 @@ import { upsertRsvp } from '@/lib/rsvpService';
 import { rsvpParamsSchema, rsvpBodySchema } from '@/lib/schemas';
 
 // Import error handling
-import { createErrorResponse, RunNotFoundError, UserNotFoundError } from '@/lib/errors';
+import { createErrorResponse, formatErrorResponse } from '@/lib/errors';
 
 interface RouteContext {
   params: {
@@ -38,7 +38,19 @@ async function handlePUT(request: NextRequest, context: RouteContext) {
   }
   const runId = paramsValidationResult.data.id;
 
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return NextResponse.json(
+        { message: 'Invalid JSON in request body' },
+        { status: 400 }
+      );
+    }
+    throw error;
+  }
+
   const bodyValidationResult = rsvpBodySchema.safeParse(body);
 
   if (!bodyValidationResult.success) {
@@ -56,16 +68,11 @@ async function handlePUT(request: NextRequest, context: RouteContext) {
     const rsvp = await upsertRsvp({ runId, userId, status });
     return NextResponse.json(rsvp, { status: 200 });
   } catch (error) {
-    if (error instanceof RunNotFoundError) {
+    const errorResponse = formatErrorResponse(error as Error);
+    if (errorResponse.statusCode !== 500) {
       return NextResponse.json(
-        { message: 'Run not found' },
-        { status: 404 }
-      );
-    }
-    if (error instanceof UserNotFoundError) {
-      return NextResponse.json(
-        { message: 'User not found' },
-        { status: 404 }
+        { message: errorResponse.message },
+        { status: errorResponse.statusCode }
       );
     }
     // Re-throw other errors to be handled by the outer error handler
