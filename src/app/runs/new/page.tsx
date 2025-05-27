@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
-import { MapPicker } from "@/components/ui/map-picker"
+import { AddressAutocomplete } from "@/components/custom/address-autocomplete"
+import { MapPicker } from "@/components/custom/map-picker"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"

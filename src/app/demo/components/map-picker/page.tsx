@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { MapPicker } from "@/components/ui/map-picker"
+import { MapPicker } from "@/components/custom/map-picker"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 // Import constants

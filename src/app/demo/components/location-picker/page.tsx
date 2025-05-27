@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
-import { MapPicker } from "@/components/ui/map-picker"
+import { AddressAutocomplete } from "@/components/custom/address-autocomplete"
+import { MapPicker } from "@/components/custom/map-picker"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
