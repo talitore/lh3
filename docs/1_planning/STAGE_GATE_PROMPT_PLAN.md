@@ -3,11 +3,6 @@ has been referenced using @filename.md in this chat.
 
 Instructions:
 
-Gain Context:
-
-- Review the reference docs to understand the context of repo.
-  - [repomix](../../repomix-output.xml)
-
 Read the Referenced File: Review the contents of the feature file that was
 referenced using @ (e.g., @chart-feature.md) to understand the feature idea
 and its intended goal.
