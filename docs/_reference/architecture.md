@@ -150,6 +150,7 @@ Application-specific components that extend shadcn/ui patterns:
 ### Component Development Standards
 
 #### **1. Import Patterns**
+
 ```typescript
 // ✅ CORRECT: Always use named imports
 import { Button } from '@/components/ui/button';
@@ -160,6 +161,7 @@ import Button from '@/components/ui/button';
 ```
 
 #### **2. Component Structure**
+
 All components must follow the modern shadcn/ui pattern:
 
 ```typescript
@@ -181,6 +183,7 @@ const ComponentName = React.forwardRef<HTMLElement, ComponentProps>(
 ```
 
 #### **3. Icon Usage**
+
 ```typescript
 // ✅ CORRECT: Use Lucide React icons
 import { Search, User, Settings } from 'lucide-react';
@@ -190,6 +193,7 @@ const CustomIcon = () => <svg>...</svg>;
 ```
 
 #### **4. Variant Definitions**
+
 Only use officially supported variants:
 
 ```typescript
@@ -204,6 +208,7 @@ Only use officially supported variants:
 ### Development Workflow
 
 #### **Component Testing & Documentation**
+
 - **Demo Pages**: All components must have demo pages in `src/app/(demo)/components/` showcasing all variants and states
 - **Isolation Testing**: Components are developed and tested in isolation before integration
 - **No Storybook**: The project explicitly uses in-app demo pages instead of Storybook
@@ -211,6 +216,7 @@ Only use officially supported variants:
 #### **Adding New Components**
 
 1. **Standard shadcn/ui Components**:
+
    ```bash
    # Use the official CLI to add components
    pnpm dlx shadcn@latest add [component-name]
@@ -223,6 +229,7 @@ Only use officially supported variants:
    - Must follow the modern component pattern with `data-slot` attributes
 
 #### **Component Updates**
+
 - Always update components to use the latest shadcn/ui patterns
 - Ensure all components have consistent `data-slot` attributes
 - Update demo pages when component APIs change
@@ -231,6 +238,7 @@ Only use officially supported variants:
 ### Quality Standards
 
 #### **Required Patterns**
+
 - ✅ Named imports only
 - ✅ Modern function component pattern (no forwardRef unless necessary)
 - ✅ Proper `data-slot` attributes
@@ -240,6 +248,7 @@ Only use officially supported variants:
 - ✅ Consistent className merging with `cn()` utility
 
 #### **Forbidden Patterns**
+
 - ❌ Default imports for shadcn/ui components
 - ❌ Custom SVG icon components (use Lucide React)
 - ❌ Magic strings (use constants)
@@ -303,17 +312,20 @@ Layout components utilize centralized configuration from `src/lib/constants/ui.t
 The application maintains strict quality standards to ensure consistency, maintainability, and adherence to modern React patterns:
 
 #### **Current Component Inventory**
+
 - **Standard shadcn/ui Components**: All components follow modern patterns with data-slot attributes and named exports
 - **Custom Components**: Application-specific components that extend shadcn/ui patterns while maintaining consistency
 - **Demo Coverage**: Every component has comprehensive demo pages showcasing all variants and usage patterns
 
 #### **Enforced Standards**
+
 - **Import Consistency**: All components use named imports exclusively
 - **Icon Standardization**: Lucide React icons used throughout the application
 - **Variant Compliance**: Only officially supported shadcn/ui variants are permitted
 - **Pattern Consistency**: All components follow modern function component patterns with proper TypeScript interfaces
 
 #### **Quality Assurance**
+
 - **Build Stability**: All components integrate seamlessly without build errors
 - **Type Safety**: Comprehensive TypeScript interfaces and prop definitions
 - **Documentation**: Demo pages serve as living documentation for proper component usage
@@ -371,6 +383,7 @@ The application implements a comprehensive API and service layer architecture wi
 The application uses a centralized error handling system located in `src/lib/errors/`:
 
 #### **Base Error Classes** (`src/lib/errors/base.ts`)
+
 - **BaseError**: Abstract base class for all application errors with consistent structure
 - **ValidationError**: For input validation failures with detailed field errors
 - **AuthenticationError**: For unauthorized access attempts
@@ -380,6 +393,7 @@ The application uses a centralized error handling system located in `src/lib/err
 - **InternalServerError**: For unexpected server errors
 
 #### **Service-Specific Errors** (`src/lib/errors/service-errors.ts`)
+
 - **RunNotFoundError**, **RunNumberExistsError**: Run-related errors
 - **PhotoServiceError**, **S3ConfigurationError**, **PhotoUploadError**: Photo service errors
 - **AttendanceError**, **UserNotFoundError**, **UserAlreadyAttendedError**: Attendance errors
@@ -387,6 +401,7 @@ The application uses a centralized error handling system located in `src/lib/err
 - **GeocodingError**, **NoGeocodingResultsError**, **MapboxTokenError**: Geocoding errors
 
 #### **Error Handling Utilities** (`src/lib/errors/error-handler.ts`)
+
 - **logError()**: Centralized error logging with appropriate levels
 - **formatErrorResponse()**: Standardized error response formatting
 - **createErrorResponse()**: NextResponse creation from errors
@@ -397,6 +412,7 @@ The application uses a centralized error handling system located in `src/lib/err
 All API validation is centralized in `src/lib/schemas/` using Zod:
 
 #### **Schema Organization**
+
 - **`run-schemas.ts`**: Run creation, updates, and query validation
 - **`rsvp-schemas.ts`**: RSVP operation validation
 - **`attendance-schemas.ts`**: Attendance marking validation
@@ -405,6 +421,7 @@ All API validation is centralized in `src/lib/schemas/` using Zod:
 - **`index.ts`**: Centralized exports for convenient importing
 
 #### **Schema Benefits**
+
 - **Type Safety**: All schemas generate TypeScript types
 - **Consistent Validation**: Standardized error messages and validation rules
 - **Reusability**: Schemas are shared between API routes and services
@@ -413,6 +430,7 @@ All API validation is centralized in `src/lib/schemas/` using Zod:
 ### Service Layer Standards
 
 #### **Service Response Format** (`src/lib/types/service-types.ts`)
+
 ```typescript
 interface ServiceResponse<T = any> {
   success: boolean;
@@ -428,13 +446,17 @@ interface PaginatedResponse<T> {
 ```
 
 #### **Dependency Injection Pattern**
+
 All services use the ServiceProvider pattern for database access:
+
 - **Testability**: Easy mocking for unit tests
 - **Flexibility**: Configurable database clients
 - **Consistency**: Standardized service instantiation
 
 #### **Error Propagation**
+
 Services throw typed errors that are caught and handled by API routes:
+
 - **Service Layer**: Throws specific error types (RunNotFoundError, etc.)
 - **API Layer**: Catches errors and uses withErrorHandler for consistent responses
 - **Client Layer**: Receives standardized error responses
@@ -442,7 +464,9 @@ Services throw typed errors that are caught and handled by API routes:
 ### API Route Architecture
 
 #### **Handler Pattern**
+
 All API routes follow a consistent pattern:
+
 ```typescript
 async function handlePOST(request: Request) {
   // Validation using centralized schemas
@@ -454,6 +478,7 @@ export const POST = withErrorHandler(handlePOST, 'POST /api/endpoint');
 ```
 
 #### **Benefits**
+
 - **Consistent Error Handling**: All routes use the same error handling wrapper
 - **Centralized Logging**: Automatic error logging with context
 - **Type Safety**: Full TypeScript coverage from request to response
@@ -475,18 +500,21 @@ The application implements a comprehensive testing strategy covering unit tests,
 ### Test Coverage Strategy
 
 #### **Unit Tests**
+
 - **Component Testing**: All UI components have comprehensive unit tests covering props, user interactions, and edge cases
 - **Utility Testing**: All helper functions and utilities are tested with various input scenarios
 - **Service Testing**: Business logic and service layer functions have dedicated test suites
 - **Hook Testing**: Custom React hooks are tested for state management and side effects
 
 #### **Integration Tests**
+
 - **Form Submissions**: Complete form workflows tested from user input to API calls
 - **API Integration**: Service layer integration with mocked API responses
 - **Error Handling**: Comprehensive testing of error scenarios and recovery paths
 - **State Management**: Testing of complex state interactions across components
 
 #### **End-to-End Tests**
+
 - **User Workflows**: Complete user journeys from authentication to task completion
 - **Cross-Browser Testing**: Automated testing across different browser environments
 - **Responsive Testing**: Mobile and desktop viewport testing
@@ -495,12 +523,14 @@ The application implements a comprehensive testing strategy covering unit tests,
 ### Test Data Management
 
 #### **Centralized Test Factories** (`src/lib/test-data/`)
+
 - **Factory Pattern**: Consistent test data creation with sensible defaults and override capabilities
 - **Type Safety**: All test data factories are fully typed with TypeScript interfaces
 - **Dependency Injection**: Mock data services use dependency injection for flexible testing scenarios
 - **Reusable Utilities**: Common test utilities and helpers for consistent test setup
 
 #### **Mock Data Services**
+
 - **API Mocking**: Comprehensive mock API responses for all endpoints
 - **Database Mocking**: Prisma client mocking for service layer testing
 - **External Service Mocking**: Mapbox, AWS S3, and other external services are properly mocked
@@ -509,12 +539,14 @@ The application implements a comprehensive testing strategy covering unit tests,
 ### Test Configuration
 
 #### **Jest Configuration** (`jest.config.js`)
+
 - **JSX Support**: Proper TypeScript and JSX transformation for React component testing
 - **Module Resolution**: Path mapping aligned with application structure
 - **Coverage Reporting**: Comprehensive coverage reports with HTML and LCOV output
 - **Test Environment**: jsdom environment for DOM testing with proper setup files
 
 #### **Playwright Configuration** (`playwright.config.ts`)
+
 - **Cross-Browser Support**: Automated testing across Chromium, Firefox, and WebKit
 - **Test Isolation**: Each test runs in isolation with proper cleanup
 - **Screenshot/Video**: Automatic capture on test failures for debugging
@@ -523,18 +555,21 @@ The application implements a comprehensive testing strategy covering unit tests,
 ### Testing Standards
 
 #### **Component Testing Standards**
+
 - **Render Testing**: All components tested for proper rendering with various props
 - **Interaction Testing**: User interactions (clicks, form inputs, keyboard navigation) thoroughly tested
 - **Accessibility Testing**: Components tested for proper ARIA attributes and keyboard navigation
 - **Error Boundary Testing**: Error scenarios and boundary conditions covered
 
 #### **API Testing Standards**
+
 - **Happy Path Testing**: All successful API operations tested
 - **Error Handling**: Network errors, validation errors, and server errors tested
 - **Authentication Testing**: Protected routes and role-based access tested
 - **Data Validation**: Input validation and sanitization tested
 
 #### **E2E Testing Standards**
+
 - **User Journey Testing**: Complete workflows from start to finish
 - **Mobile Responsiveness**: Testing across different viewport sizes
 - **Performance Testing**: Page load times and interaction responsiveness
@@ -553,12 +588,14 @@ The application implements a comprehensive testing strategy covering unit tests,
 ### Quality Assurance
 
 #### **Coverage Requirements**
+
 - **Unit Test Coverage**: 90%+ coverage for utility functions and business logic
 - **Component Coverage**: All components have tests covering primary use cases
 - **Integration Coverage**: All API endpoints and form submissions tested
 - **E2E Coverage**: All critical user workflows covered
 
 #### **Continuous Integration**
+
 - **Automated Testing**: All tests run automatically on code changes
 - **Quality Gates**: Tests must pass before code can be merged
 - **Performance Monitoring**: Test execution time monitoring and optimization
