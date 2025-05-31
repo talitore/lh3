@@ -1,10 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
@@ -30,17 +29,18 @@ interface Run {
 }
 
 interface RunsResponse {
-  runs: Run[]
+  data: Run[]
   pagination: {
     page: number
     limit: number
-    total: number
+    totalItems: number
     totalPages: number
+    hasNextPage: boolean
+    hasPreviousPage: boolean
   }
 }
 
 export default function RunsPage() {
-  const router = useRouter()
   const [runs, setRuns] = useState<Run[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -50,7 +50,7 @@ export default function RunsPage() {
 
   useEffect(() => {
     fetchRuns()
-  }, [sortBy, sortOrder])
+  }, [sortBy, sortOrder]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchRuns = async () => {
     try {
@@ -60,15 +60,15 @@ export default function RunsPage() {
         sortOrder,
         limit: "20",
       })
-      
+
       const response = await fetch(`${API_ENDPOINTS.RUNS}?${params}`)
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch runs')
       }
-      
+
       const data: RunsResponse = await response.json()
-      setRuns(data.runs)
+      setRuns(data.data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -216,7 +216,7 @@ export default function RunsPage() {
                         <Badge variant="default">Upcoming</Badge>
                       )}
                     </div>
-                    
+
                     <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-muted-foreground">
                       <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-1" />
@@ -231,12 +231,12 @@ export default function RunsPage() {
                         {run._count.rsvps} RSVPs
                       </div>
                     </div>
-                    
+
                     <p className="text-sm text-muted-foreground mt-2">
                       Organized by {run.organizer.name}
                     </p>
                   </div>
-                  
+
                   <div className="ml-4">
                     <Button variant="outline" size="sm" asChild>
                       <Link href={`/runs/${run.id}`}>

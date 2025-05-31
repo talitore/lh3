@@ -5,12 +5,12 @@ import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { 
-  Users, 
-  Calendar, 
-  DollarSign, 
-  Award, 
-  BarChart3, 
+import {
+  Users,
+  Calendar,
+  DollarSign,
+  Award,
+  BarChart3,
   FileText,
   Settings,
   ChevronRight
@@ -21,9 +21,8 @@ import { USER_ROLES } from "@/lib/constants"
 
 export default function AdminDashboard() {
   const { data: session } = useSession()
-  
+
   const isAdmin = session?.user?.role === USER_ROLES.ADMIN
-  const isOrganizer = session?.user?.role === USER_ROLES.ORGANIZER
 
   const adminTools = [
     {
@@ -139,8 +138,8 @@ export default function AdminDashboard() {
         <h2 className="text-xl font-semibold mb-4">Admin Tools</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {adminTools.map((tool, index) => (
-            <Card 
-              key={index} 
+            <Card
+              key={index}
               className={`hover:shadow-md transition-shadow ${
                 tool.available ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'
               }`}
@@ -150,7 +149,7 @@ export default function AdminDashboard() {
                   <Link href={tool.href} className="block">
                     <div className="flex items-start justify-between mb-3">
                       <tool.icon className="h-8 w-8 text-primary" />
-                      <Badge 
+                      <Badge
                         variant={tool.badge === "Admin Only" ? "destructive" : "secondary"}
                         className="text-xs"
                       >
@@ -207,7 +206,7 @@ export default function AdminDashboard() {
                 </div>
                 <span className="text-xs text-muted-foreground">2 hours ago</span>
               </div>
-              
+
               <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                 <Calendar className="h-5 w-5 text-green-600" />
                 <div className="flex-1">
@@ -216,7 +215,7 @@ export default function AdminDashboard() {
                 </div>
                 <span className="text-xs text-muted-foreground">1 day ago</span>
               </div>
-              
+
               <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                 <Award className="h-5 w-5 text-purple-600" />
                 <div className="flex-1">
@@ -225,7 +224,7 @@ export default function AdminDashboard() {
                 </div>
                 <span className="text-xs text-muted-foreground">2 days ago</span>
               </div>
-              
+
               <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                 <DollarSign className="h-5 w-5 text-yellow-600" />
                 <div className="flex-1">
@@ -235,7 +234,7 @@ export default function AdminDashboard() {
                 <span className="text-xs text-muted-foreground">3 days ago</span>
               </div>
             </div>
-            
+
             <div className="mt-4 pt-4 border-t">
               <Button variant="outline" className="w-full">
                 View All Activity

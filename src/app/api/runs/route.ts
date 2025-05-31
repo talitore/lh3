@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'; // Adjust path if necessary
+import { authOptions } from '@/lib/auth';
 import { createRun, getAllRuns, GetAllRunsOptions } from '@/lib/runService'; // Updated import
 import { Prisma } from '@/generated/prisma'; // Changed import for PrismaClientKnownRequestError
 import { NextRequest } from 'next/server'; // Import NextRequest

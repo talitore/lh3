@@ -14,7 +14,7 @@ export interface CreateRunData {
   number: number;
   descriptor: string;
   dateTime: Date;
-  address: string;
+  address?: string;
   lat?: number;
   lng?: number;
   introLink?: string | null;
@@ -41,7 +41,7 @@ export async function createRun(
         number: data.number,
         descriptor: data.descriptor,
         dateTime: data.dateTime,
-        address: data.address,
+        address: data.address || '',
         lat: data.lat,
         lng: data.lng,
         introLink: data.introLink,
@@ -159,9 +159,9 @@ export async function getAllRuns(
     });
 
     const paginatedResponse: PaginatedResponse<any> = {
-      data: runs.map((run: unknown) => ({
+      data: runs.map((run: any) => ({
         ...run,
-        rsvpYesCount: (run as { _count?: { rsvps?: number } })._count?.rsvps ?? 0, // Make count more accessible
+        rsvpYesCount: run._count?.rsvps ?? 0, // Make count more accessible
       })),
       pagination: {
         page,

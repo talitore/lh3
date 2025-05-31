@@ -8,7 +8,7 @@ import { IDbService } from './dbService';
 export class MockDbService implements IDbService {
   private static instance: MockDbService;
   private mockClient: any;
-  private mockData: {
+  public mockData: {
     runs: any[];
     rsvps: any[];
     attendances: any[];
@@ -340,7 +340,7 @@ export class MockDbService implements IDbService {
               updatedAt: new Date(),
             };
 
-            const result = { ...mockRun };
+            const result: any = { ...mockRun };
 
             // Add related data if include is specified
             if (args.include) {

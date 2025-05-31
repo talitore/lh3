@@ -86,10 +86,10 @@ export function MapPicker({
       center: [position.lng, position.lat],
       zoom: zoom,
       interactive: !disabled,
-    });
+    }) as any;
 
     // Add navigation controls (zoom buttons)
-    map.current.addControl(
+    (map.current as any).addControl(
       new mapboxgl.NavigationControl(),
       MAP_CONFIG.NAVIGATION_CONTROL_POSITION as any
     );
@@ -100,10 +100,10 @@ export function MapPicker({
       color: MAP_CONFIG.MARKER_COLOR,
     })
       .setLngLat([position.lng, position.lat])
-      .addTo(map.current);
+      .addTo(map.current as any) as any;
 
     // Handle marker drag events
-    if (!disabled) {
+    if (!disabled && marker.current) {
       marker.current.on('dragend', () => {
         if (marker.current) {
           const { lng, lat } = marker.current.getLngLat();
@@ -114,9 +114,11 @@ export function MapPicker({
     }
 
     // Handle map load complete
-    map.current.on('load', () => {
-      setIsLoading(false);
-    });
+    if (map.current) {
+      map.current.on('load', () => {
+        setIsLoading(false);
+      });
+    }
 
     // Clean up on unmount
     return () => {

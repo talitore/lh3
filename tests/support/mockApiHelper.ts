@@ -20,6 +20,12 @@ export interface MockApiResponse<T> {
   text?: () => Promise<string>;
 }
 
+// Error response types
+export interface ErrorResponse {
+  message: string;
+  errors?: Record<string, string>;
+}
+
 // Helper class to create mock API responses
 export class MockApiHelper {
   // Create a mock response for GET /api/runs
@@ -71,7 +77,7 @@ export class MockApiHelper {
   }
 
   // Create a mock response for GET /api/runs/[id]
-  static createGetRunByIdResponse(id: string): MockApiResponse<MockRun> {
+  static createGetRunByIdResponse(id: string): MockApiResponse<MockRun | ErrorResponse> {
     const run = mockDataService.getMockRunById(id);
 
     if (!run) {
@@ -90,6 +96,7 @@ export class MockApiHelper {
             id: organizer.id,
             name: organizer.name,
             email: organizer.email,
+            role: organizer.role,
           }
         : undefined,
     };
@@ -101,7 +108,7 @@ export class MockApiHelper {
   }
 
   // Create a mock response for POST /api/runs
-  static createPostRunResponse(data: any): MockApiResponse<MockRun> {
+  static createPostRunResponse(data: any): MockApiResponse<MockRun | ErrorResponse> {
     // Check for required fields
     if (!data.number) {
       return {
@@ -163,7 +170,7 @@ export class MockApiHelper {
     id: string,
     data: any,
     cookie?: string
-  ): MockApiResponse<MockRun> {
+  ): MockApiResponse<MockRun | ErrorResponse> {
     // Check if run exists
     const run = mockDataService.getMockRunById(id);
     if (!run) {
@@ -220,7 +227,7 @@ export class MockApiHelper {
     runId: string,
     data: any,
     cookie?: string
-  ): MockApiResponse<MockRSVP> {
+  ): MockApiResponse<MockRSVP | ErrorResponse> {
     // Check if run exists
     const run = mockDataService.getMockRunById(runId);
     if (!run) {
@@ -276,7 +283,7 @@ export class MockApiHelper {
     runId: string,
     data: any,
     cookie?: string
-  ): MockApiResponse<MockAttendance> {
+  ): MockApiResponse<MockAttendance | ErrorResponse> {
     // Check if run exists
     const run = mockDataService.getMockRunById(runId);
     if (!run || runId === 'clrunxxxxxx0000yyyyyyyyyyyy') {
@@ -371,7 +378,7 @@ export class MockApiHelper {
     runId: string,
     data: any,
     cookie?: string
-  ): MockApiResponse<MockPhoto> {
+  ): MockApiResponse<MockPhoto | ErrorResponse> {
     // Check if run exists
     const run = mockDataService.getMockRunById(runId);
     if (!run) {
@@ -467,7 +474,7 @@ export class MockApiHelper {
     data: any,
     cookie?: string,
     run?: any
-  ): MockApiResponse<MockAttendance> {
+  ): MockApiResponse<MockAttendance | ErrorResponse> {
     // Check for authentication
     if (!cookie) {
       return {

@@ -233,7 +233,7 @@ export class TestErrorBoundary extends React.Component<
 
 // Accessibility testing helpers
 export async function checkA11y(container: HTMLElement) {
-  const { axe } = await import('@axe-core/playwright');
+  const { axe } = await import('jest-axe');
   // Note: This is a placeholder for axe integration
   // In actual tests, you would use @testing-library/jest-axe
   return Promise.resolve();

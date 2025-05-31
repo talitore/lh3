@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getRunById } from '@/lib/runService';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { updateRun, UpdateRunData } from '@/lib/runService';
 // Import schemas
 import { runIdParamsSchema, updateRunSchema } from '@/lib/schemas';
@@ -10,16 +10,16 @@ import { runIdParamsSchema, updateRunSchema } from '@/lib/schemas';
 import { createErrorResponse } from '@/lib/errors';
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 async function handleGET(request: NextRequest, context: RouteContext) {
   // No session check needed for viewing a single run as per current requirements (publicly viewable)
   // If authentication is required later, add session check here.
 
-  const resolvedParams = context.params;
+  const resolvedParams = await context.params;
   const runIdFromContext = resolvedParams.id;
   const paramsToValidate = { id: runIdFromContext };
 
@@ -75,12 +75,10 @@ async function handlePUT(request: NextRequest, context: RouteContext) {
       );
     }
 
-    // Variables for potential future use
-    const _userId = session.user.id;
-    const _userRole = session.user.role;
+    // Authentication successful - user can proceed
   }
 
-  const resolvedParamsPut = context.params;
+  const resolvedParamsPut = await context.params;
   const runIdFromContextPut = resolvedParamsPut.id;
   const paramsToValidatePut = { id: runIdFromContextPut };
 

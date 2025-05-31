@@ -6,10 +6,8 @@ import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft, Calendar, MapPin, Users, Info, Camera, CheckCircle, Clock, Edit, Save, X } from "lucide-react"
 import { RSVPButtons, type RSVPCounts, type RSVPStatus } from "@/components/ui/rsvp-buttons"
@@ -82,7 +80,7 @@ export default function RunDetailsPage() {
     if (runId) {
       fetchRunDetails()
     }
-  }, [runId])
+  }, [runId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchRunDetails = async () => {
     try {
@@ -113,12 +111,12 @@ export default function RunDetailsPage() {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
-      weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
+      timeZone: 'UTC'
     })
   }
 
@@ -136,7 +134,7 @@ export default function RunDetailsPage() {
 
   const getUserRsvp = (): RSVPStatus | null => {
     if (!session?.user?.id || !run?.rsvps) return null
-    const userRsvp = run.rsvps.find(rsvp => rsvp.user.id === session.user.id)
+    const userRsvp = run.rsvps.find(rsvp => rsvp.user.id === session.user!.id)
     return userRsvp?.status || null
   }
 
@@ -153,7 +151,7 @@ export default function RunDetailsPage() {
     }
   }
 
-  const handlePhotosChange = (newPhotos: typeof run.photos) => {
+  const handlePhotosChange = (newPhotos: RunDetails['photos']) => {
     if (run) {
       setRun({
         ...run,
@@ -257,6 +255,9 @@ export default function RunDetailsPage() {
     return (
       <div className="container mx-auto p-8 max-w-4xl">
         <div className="space-y-6">
+          <div className="text-center">
+            <p className="text-muted-foreground">Loading run details...</p>
+          </div>
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-32 w-full" />
           <Skeleton className="h-24 w-full" />
@@ -272,7 +273,7 @@ export default function RunDetailsPage() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <h2 className="text-xl font-semibold mb-2">Error Loading Run</h2>
+              <h2 className="text-xl font-semibold mb-2">Error loading run details</h2>
               <p className="text-muted-foreground mb-4">
                 {error || 'Run not found'}
               </p>
@@ -291,7 +292,7 @@ export default function RunDetailsPage() {
   const userRsvp = getUserRsvp()
 
   return (
-    <div className="container mx-auto p-8 max-w-4xl">
+    <main className="container mx-auto p-8 max-w-4xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <Button
@@ -300,11 +301,11 @@ export default function RunDetailsPage() {
           className="flex items-center"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Feed
+          Back to Runs
         </Button>
 
         <div className="flex space-x-2">
-          {session?.user?.id === run.organizer.id && (
+          {session?.user?.id === run.organizerId && (
             <>
               {isEditing ? (
                 <>
@@ -322,7 +323,7 @@ export default function RunDetailsPage() {
                     ) : (
                       <>
                         <Save className="h-4 w-4 mr-1" />
-                        Save
+                        Save Changes
                       </>
                     )}
                   </Button>
@@ -417,8 +418,10 @@ export default function RunDetailsPage() {
                 </div>
               ) : (
                 <>
-                  <CardTitle className="text-2xl">
-                    Run #{run.number}: {run.descriptor}
+                  <CardTitle>
+                    <h1 className="text-2xl">
+                      Run #{run.number}: {run.descriptor}
+                    </h1>
                   </CardTitle>
                   <CardDescription className="text-lg mt-2">
                     <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
@@ -449,7 +452,7 @@ export default function RunDetailsPage() {
             </div>
             <Badge variant="secondary" className="ml-4">
               <Users className="h-3 w-3 mr-1" />
-              {run._count.rsvps} RSVPs
+              {run._count?.rsvps || 0} RSVPs
             </Badge>
           </div>
         </CardHeader>
@@ -482,7 +485,7 @@ export default function RunDetailsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-center text-green-600">
                     <CheckCircle className="h-8 w-8 mr-2" />
-                    <span className="text-lg font-medium">You're checked in!</span>
+                    <span className="text-lg font-medium">You&apos;re checked in!</span>
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Thanks for joining us today. Have a great run!
@@ -491,7 +494,7 @@ export default function RunDetailsPage() {
               ) : isEventTime() ? (
                 <div className="space-y-3">
                   <p className="text-sm text-muted-foreground mb-4">
-                    Check in to confirm your attendance at today's run
+                    Check in to confirm your attendance at today&apos;s run
                   </p>
                   <Button
                     onClick={handleCheckIn}
@@ -506,7 +509,7 @@ export default function RunDetailsPage() {
                       </>
                     ) : (
                       <>
-                        🏃‍♂️ Check In Now
+                        Check In
                       </>
                     )}
                   </Button>
@@ -549,7 +552,7 @@ export default function RunDetailsPage() {
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center">
               <Users className="h-5 w-5 mr-2" />
-              Who's Coming ({rsvpCounts.yes + rsvpCounts.maybe})
+              Attendees ({rsvpCounts.yes + rsvpCounts.maybe})
             </div>
             <Badge variant="outline">
               {rsvpCounts.yes} Yes, {rsvpCounts.maybe} Maybe, {rsvpCounts.no} No
@@ -557,18 +560,18 @@ export default function RunDetailsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {run.rsvps.length > 0 ? (
+          {(run.rsvps?.length || 0) > 0 ? (
             <div className="space-y-3">
               {/* Yes RSVPs */}
-              {run.rsvps.filter(rsvp => rsvp.status === 'YES').length > 0 && (
+              {(run.rsvps?.filter(rsvp => rsvp.status === 'YES').length || 0) > 0 && (
                 <div>
                   <h4 className="font-medium text-green-700 mb-2 flex items-center">
                     <Badge variant="default" className="mr-2 bg-green-600">
-                      Yes ({rsvpCounts.yes})
+                      Going ({rsvpCounts.yes})
                     </Badge>
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {run.rsvps
+                    {(run.rsvps || [])
                       .filter(rsvp => rsvp.status === 'YES')
                       .map(rsvp => (
                         <div key={rsvp.id} className="flex items-center space-x-2 p-2 bg-green-50 rounded-lg">
@@ -581,7 +584,7 @@ export default function RunDetailsPage() {
               )}
 
               {/* Maybe RSVPs */}
-              {run.rsvps.filter(rsvp => rsvp.status === 'MAYBE').length > 0 && (
+              {(run.rsvps?.filter(rsvp => rsvp.status === 'MAYBE').length || 0) > 0 && (
                 <div>
                   <h4 className="font-medium text-yellow-700 mb-2 flex items-center">
                     <Badge variant="secondary" className="mr-2 bg-yellow-500">
@@ -589,7 +592,7 @@ export default function RunDetailsPage() {
                     </Badge>
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {run.rsvps
+                    {(run.rsvps || [])
                       .filter(rsvp => rsvp.status === 'MAYBE')
                       .map(rsvp => (
                         <div key={rsvp.id} className="flex items-center space-x-2 p-2 bg-yellow-50 rounded-lg">
@@ -602,7 +605,7 @@ export default function RunDetailsPage() {
               )}
 
               {/* No RSVPs - Collapsed by default */}
-              {run.rsvps.filter(rsvp => rsvp.status === 'NO').length > 0 && (
+              {(run.rsvps?.filter(rsvp => rsvp.status === 'NO').length || 0) > 0 && (
                 <details className="group">
                   <summary className="cursor-pointer font-medium text-red-700 mb-2 flex items-center">
                     <Badge variant="outline" className="mr-2 border-red-500 text-red-700">
@@ -612,7 +615,7 @@ export default function RunDetailsPage() {
                     <span className="text-sm text-muted-foreground hidden group-open:inline">Click to hide</span>
                   </summary>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
-                    {run.rsvps
+                    {(run.rsvps || [])
                       .filter(rsvp => rsvp.status === 'NO')
                       .map(rsvp => (
                         <div key={rsvp.id} className="flex items-center space-x-2 p-2 bg-red-50 rounded-lg">
@@ -639,7 +642,7 @@ export default function RunDetailsPage() {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Camera className="h-5 w-5 mr-2" />
-            Photos ({run.photos.length})
+            Photos ({run.photos?.length || 0})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -654,7 +657,7 @@ export default function RunDetailsPage() {
           }>
             <PhotoGallery
               runId={run.id}
-              photos={run.photos}
+              photos={run.photos || []}
               onPhotosChange={handlePhotosChange}
               allowUpload={true}
               maxPhotos={50}
@@ -662,6 +665,6 @@ export default function RunDetailsPage() {
           </Suspense>
         </CardContent>
       </Card>
-    </div>
+    </main>
   )
 }

@@ -10,24 +10,28 @@ interface AdminToggleProps {
 }
 
 export function AdminToggle({ className }: AdminToggleProps) {
-  const [isAdminMode, setIsAdminMode] = useState(() => {
-    // Initialize from localStorage if available
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.ADMIN_MODE);
-        return saved ? JSON.parse(saved) === true : false;
-      } catch {
-        // Fallback to a safe default and wipe the bad value
-        localStorage.removeItem(LOCAL_STORAGE_KEYS.ADMIN_MODE);
-        return false;
-      }
-    }
-    return false;
-  });
+  // Always start with false to ensure server/client consistency
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  // Save to localStorage whenever isAdminMode changes
+  // Load from localStorage after hydration
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    setIsHydrated(true);
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.ADMIN_MODE);
+      if (saved) {
+        setIsAdminMode(JSON.parse(saved) === true);
+      }
+    } catch {
+      // Fallback to a safe default and wipe the bad value
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.ADMIN_MODE);
+      setIsAdminMode(false);
+    }
+  }, []);
+
+  // Save to localStorage whenever isAdminMode changes (but only after hydration)
+  useEffect(() => {
+    if (isHydrated) {
       try {
         localStorage.setItem(
           LOCAL_STORAGE_KEYS.ADMIN_MODE,
@@ -37,7 +41,7 @@ export function AdminToggle({ className }: AdminToggleProps) {
         // optional: add a toast or silently ignore
       }
     }
-  }, [isAdminMode]);
+  }, [isAdminMode, isHydrated]);
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>

@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" data-google-analytics-opt-out="">
       <body className={`${inter.className} pt-16`}>
         <AuthProvider>
           <ClientLayoutContent>{children}</ClientLayoutContent>

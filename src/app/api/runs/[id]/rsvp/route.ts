@@ -1,18 +1,18 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { upsertRsvp } from '@/lib/rsvpService';
 
 // Import schemas
 import { rsvpParamsSchema, rsvpBodySchema } from '@/lib/schemas';
 
 // Import error handling
-import { createErrorResponse, formatErrorResponse } from '@/lib/errors';
+import { createErrorResponse } from '@/lib/errors';
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     id: string; // This is runId
-  };
+  }>;
 }
 
 async function handlePUT(request: NextRequest, context: RouteContext) {
@@ -23,7 +23,7 @@ async function handlePUT(request: NextRequest, context: RouteContext) {
   }
   const userId = session.user.id;
 
-  const resolvedParams = context.params;
+  const resolvedParams = await context.params;
   const paramsToValidate = { id: resolvedParams.id }; // Use resolvedParams.id
   const paramsValidationResult = rsvpParamsSchema.safeParse(paramsToValidate);
 
@@ -68,15 +68,7 @@ async function handlePUT(request: NextRequest, context: RouteContext) {
     const rsvp = await upsertRsvp({ runId, userId, status });
     return NextResponse.json(rsvp, { status: 200 });
   } catch (error) {
-    const errorResponse = formatErrorResponse(error as Error);
-    if (errorResponse.statusCode !== 500) {
-      return NextResponse.json(
-        { message: errorResponse.message },
-        { status: errorResponse.statusCode }
-      );
-    }
-    // Re-throw other errors to be handled by the outer error handler
-    throw error;
+    return createErrorResponse(error as Error, 'Failed to update RSVP');
   }
 }
 

@@ -1,17 +1,17 @@
 /**
  * Run-related validation schemas
- * 
+ *
  * This file contains all Zod schemas for run-related operations
  * including creation, updates, and queries.
  */
 
 import { z } from 'zod';
-import { 
-  STRING_VALIDATION, 
-  NUMBER_VALIDATION, 
-  DATE_VALIDATION, 
-  URL_VALIDATION, 
-  ENUM_OPTIONS 
+import {
+  STRING_VALIDATION,
+  NUMBER_VALIDATION,
+  DATE_VALIDATION,
+  URL_VALIDATION,
+  ENUM_OPTIONS
 } from '@/lib/constants/validation';
 
 /**
@@ -43,7 +43,9 @@ export const createRunSchema = z.object({
     .string()
     .min(STRING_VALIDATION.ADDRESS.MIN_LENGTH, {
       message: STRING_VALIDATION.ADDRESS.ERROR_MESSAGE,
-    }),
+    })
+    .optional()
+    .or(z.literal('')),
   lat: z.number().optional(),
   lng: z.number().optional(),
   introLink: z

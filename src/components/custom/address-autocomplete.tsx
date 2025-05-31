@@ -17,6 +17,7 @@ interface AddressAutocompleteProps
     address: string,
     coordinates: { lat: number; lng: number }
   ) => void;
+  onInputChange?: (value: string) => void;
   defaultValue?: string;
   apiKey?: string;
 }
@@ -32,12 +33,14 @@ interface AddressAutocompleteProps
  */
 export function AddressAutocomplete({
   onAddressSelected,
+  onInputChange,
   defaultValue = '',
   apiKey,
   className,
+  value,
   ...props
 }: AddressAutocompleteProps) {
-  const [input, setInput] = useState(defaultValue);
+  const [input, setInput] = useState(String(value || defaultValue));
   const [suggestions, setSuggestions] = useState<
     Array<{ text: string; place_name: string; center: [number, number] }>
   >([]);
@@ -45,6 +48,13 @@ export function AddressAutocomplete({
   const [isLoading, setIsLoading] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Sync with parent value prop
+  useEffect(() => {
+    if (value !== undefined) {
+      setInput(String(value));
+    }
+  }, [value]);
 
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -109,12 +119,18 @@ export function AddressAutocomplete({
     return () => clearTimeout(debounceTimer);
   }, [input, apiKey]);
 
+  const handleInputChange = (newValue: string) => {
+    setInput(newValue);
+    onInputChange?.(newValue);
+  };
+
   const handleSelectAddress = (suggestion: {
     place_name: string;
     center: [number, number];
   }) => {
     setInput(suggestion.place_name);
     setShowSuggestions(false);
+    onInputChange?.(suggestion.place_name);
     onAddressSelected(suggestion.place_name, {
       lat: suggestion.center[1],
       lng: suggestion.center[0],
@@ -128,7 +144,7 @@ export function AddressAutocomplete({
           ref={inputRef}
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => handleInputChange(e.target.value)}
           onFocus={() => input.length >= INPUT_VALIDATION.MIN_ADDRESS_SEARCH_LENGTH && setShowSuggestions(true)}
           className={cn(
             CSS_CLASSES.INPUT_ICON_SPACING, // Space for the icon

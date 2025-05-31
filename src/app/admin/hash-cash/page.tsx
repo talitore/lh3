@@ -9,21 +9,16 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
-import { 
-  DollarSign, 
-  Plus, 
-  Minus,
+import {
+  DollarSign,
+  Plus,
   TrendingUp,
   TrendingDown,
   Calendar,
-  User,
   Receipt,
   Download
 } from "lucide-react"
 import { toast } from "sonner"
-
-// Import constants
-import { API_ENDPOINTS } from "@/lib/constants/api"
 
 interface HashCashTransaction {
   id: string
@@ -55,8 +50,13 @@ export default function HashCashManagement() {
   const [summary, setSummary] = useState<HashCashSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [showAddTransaction, setShowAddTransaction] = useState(false)
-  const [newTransaction, setNewTransaction] = useState({
-    type: 'COLLECTION' as const,
+  const [newTransaction, setNewTransaction] = useState<{
+    type: 'COLLECTION' | 'EXPENSE' | 'ADJUSTMENT';
+    amount: string;
+    description: string;
+    runId: string;
+  }>({
+    type: 'COLLECTION',
     amount: '',
     description: '',
     runId: ''
@@ -70,7 +70,7 @@ export default function HashCashManagement() {
   const fetchHashCashData = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch transactions
       const transactionsResponse = await fetch('/api/admin/hash-cash/transactions')
       if (transactionsResponse.ok) {
@@ -101,7 +101,7 @@ export default function HashCashManagement() {
           }
         ])
       }
-      
+
       // Fetch summary
       const summaryResponse = await fetch('/api/admin/hash-cash/summary')
       if (summaryResponse.ok) {
@@ -118,7 +118,7 @@ export default function HashCashManagement() {
           averagePerRun: 15
         })
       }
-      
+
     } catch (error) {
       console.error('Error fetching hash cash data:', error)
       toast.error('Failed to load hash cash data')
@@ -135,7 +135,7 @@ export default function HashCashManagement() {
 
     try {
       setSubmitting(true)
-      
+
       const response = await fetch('/api/admin/hash-cash/transactions', {
         method: 'POST',
         headers: {
@@ -160,7 +160,7 @@ export default function HashCashManagement() {
         })
         setShowAddTransaction(false)
         toast.success('Transaction added successfully')
-        
+
         // Refresh summary
         fetchHashCashData()
       } else {
@@ -306,9 +306,9 @@ export default function HashCashManagement() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="type">Transaction Type</Label>
-                <Select 
-                  value={newTransaction.type} 
-                  onValueChange={(value: 'COLLECTION' | 'EXPENSE' | 'ADJUSTMENT') => 
+                <Select
+                  value={newTransaction.type}
+                  onValueChange={(value: 'COLLECTION' | 'EXPENSE' | 'ADJUSTMENT') =>
                     setNewTransaction(prev => ({ ...prev, type: value }))
                   }
                 >
@@ -347,8 +347,8 @@ export default function HashCashManagement() {
             </div>
 
             <div className="flex justify-end space-x-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setShowAddTransaction(false)}
                 disabled={submitting}
               >
@@ -389,7 +389,7 @@ export default function HashCashManagement() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="text-right">
                   <p className={`font-semibold ${getTransactionColor(transaction.type)}`}>
                     {transaction.type === 'EXPENSE' ? '-' : '+'}

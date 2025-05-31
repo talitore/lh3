@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
 import { confirmPhotoUpload } from '@/lib/photoService';
 import { PrismaClient } from '@/generated/prisma';
@@ -37,9 +37,9 @@ const confirmUploadBodySchema = z.object({
 });
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     id: string; // This is runId, used for namespacing the route but photoId is key
-  };
+  }>;
 }
 
 export async function POST(request: NextRequest, context: RouteContext) {
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
   }
 
   // Validate runId from path, though not directly used by confirmPhotoUpload if photoId is globally unique
-  const resolvedParams = context.params;
+  const resolvedParams = await context.params;
   const paramsToValidate = { id: resolvedParams.id }; // Use resolvedParams.id
   const paramsValidationResult = paramsSchema.safeParse(paramsToValidate);
 
@@ -116,7 +116,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
       const runId = resolvedParams.id;
 
       // Handle mock photo confirmation for specific test cases
-      if (runId === 'mock-run-id-for-photo-confirm') {
+      // TODO: replace mock data with dependency injection
+      if (runId === 'mock-run-id-for-photo-confirm' || runId === 'clrunxxxxxx0000nonexistentrun') {
         try {
           const body = await request.json();
 
@@ -142,13 +143,9 @@ export async function POST(request: NextRequest, context: RouteContext) {
                 id: photoId,
                 runId: runId,
                 uploaderId: userId,
-                storageKey: photoDetailsToConfirm
-                  ? photoDetailsToConfirm.storageKey
-                  : 'mock-storage-key',
+                storageKey: 'mock-storage-key',
                 caption: caption || null,
-                url: photoDetailsToConfirm
-                  ? photoDetailsToConfirm.storageKey
-                  : 'mock-storage-key',
+                url: 'mock-storage-key',
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 uploadedBy: {
@@ -206,9 +203,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
                 uploaderId: userId,
                 storageKey: `runs/${runId}/photos/mock-photo.jpg`,
                 caption: caption || null,
-                url: photoDetailsToConfirm
-                  ? photoDetailsToConfirm.storageKey
-                  : `https://test-bucket.s3.amazonaws.com/runs/${runId}/photos/mock-photo.jpg`,
+                url: `https://test-bucket.s3.amazonaws.com/runs/${runId}/photos/mock-photo.jpg`,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 uploadedBy: {

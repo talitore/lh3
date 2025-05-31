@@ -1,10 +1,10 @@
 'use client'; // Ensure this is a client component
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { AUTH_PROVIDERS, USER_ROLES } from '@/lib/constants';
-import { Menu, Home, Calendar, Users, Settings, Plus, X } from 'lucide-react';
+import { Menu, Home, Calendar, Settings, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -17,18 +17,29 @@ interface HeaderProps {
 export default function Header({ onToggleSidebar }: HeaderProps) {
   const { data: session, status } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Ensure hydration consistency
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  // Only show auth-dependent items after hydration to prevent mismatches
+  const isAuthenticated = isHydrated && status === 'authenticated';
+  const isAdmin = isAuthenticated && session?.user?.role === USER_ROLES.ADMIN;
+  const isOrganizer = isAuthenticated && session?.user?.role === USER_ROLES.ORGANIZER;
+  const showAdminNav = isAuthenticated && (isAdmin || isOrganizer);
 
   const navigationItems = [
     { href: '/', label: 'Home', icon: Home, show: true },
     { href: '/runs', label: 'Runs', icon: Calendar, show: true },
-    { href: '/runs/new', label: 'New Run', icon: Plus, show: status === 'authenticated' },
+    { href: '/runs/new', label: 'New Run', icon: Plus, show: isAuthenticated },
     {
       href: '/admin',
       label: 'Admin',
       icon: Settings,
-      show: status === 'authenticated' && session?.user &&
-            (session.user.role === USER_ROLES.ORGANIZER || session.user.role === USER_ROLES.ADMIN),
-      badge: session?.user?.role === USER_ROLES.ADMIN ? 'Admin' : 'Org'
+      show: showAdminNav,
+      badge: isAdmin ? 'Admin' : 'Org'
     }
   ];
 
@@ -114,15 +125,14 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
       </nav>
       <div className="flex items-center space-x-4">
         {/* Show AdminToggle only for organizers and admins */}
-        {status === 'authenticated' && session?.user &&
-         (session.user.role === USER_ROLES.ORGANIZER || session.user.role === USER_ROLES.ADMIN) && (
+        {showAdminNav && (
           <AdminToggle />
         )}
 
-        {/* Auth Status Logic */}
-        {status === 'loading' && <div className="text-xs">Loading...</div>}
+        {/* Auth Status Logic - only show after hydration */}
+        {!isHydrated && <div className="text-xs">Loading...</div>}
 
-        {status === 'unauthenticated' && (
+        {isHydrated && status === 'unauthenticated' && (
           <Button
             onClick={() => signIn(AUTH_PROVIDERS.GOOGLE)}
             variant="default"
@@ -133,7 +143,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
           </Button>
         )}
 
-        {status === 'authenticated' && session?.user && (
+        {isAuthenticated && session?.user && (
           <div className="flex items-center space-x-2">
             {session.user.image && (
               <img

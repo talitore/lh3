@@ -98,7 +98,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
               <p className="text-muted-foreground mb-4">
-                You don't have permission to access admin tools.
+                You don&apos;t have permission to access admin tools.
               </p>
               <Button asChild>
                 <Link href="/">

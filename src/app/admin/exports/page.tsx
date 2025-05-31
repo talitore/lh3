@@ -8,12 +8,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { 
-  Download, 
-  FileText, 
+import {
+  Download,
+  FileText,
   Users,
   Calendar,
-  Camera,
   DollarSign,
   Award,
   Database,
@@ -174,7 +173,7 @@ export default function DataExports() {
   const handleFieldToggle = (fieldId: string, checked: boolean) => {
     setExportConfig(prev => ({
       ...prev,
-      fields: checked 
+      fields: checked
         ? [...prev.fields, fieldId]
         : prev.fields.filter(f => f !== fieldId)
     }))
@@ -188,7 +187,7 @@ export default function DataExports() {
 
     try {
       setExporting(true)
-      
+
       const response = await fetch('/api/admin/exports', {
         method: 'POST',
         headers: {
@@ -202,16 +201,16 @@ export default function DataExports() {
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        
+
         const timestamp = new Date().toISOString().split('T')[0]
         const filename = `${selectedType}_export_${timestamp}.${exportConfig.format.toLowerCase()}`
         a.download = filename
-        
+
         document.body.appendChild(a)
         a.click()
         window.URL.revokeObjectURL(url)
         document.body.removeChild(a)
-        
+
         toast.success('Export completed successfully')
       } else {
         throw new Error('Export failed')
@@ -254,8 +253,8 @@ export default function DataExports() {
                   <div
                     key={type.id}
                     className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                      selectedType === type.id 
-                        ? 'border-primary bg-primary/5' 
+                      selectedType === type.id
+                        ? 'border-primary bg-primary/5'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                     onClick={() => handleTypeSelect(type.id)}
@@ -287,9 +286,9 @@ export default function DataExports() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <Label htmlFor="format">Format</Label>
-                      <Select 
-                        value={exportConfig.format} 
-                        onValueChange={(value: 'CSV' | 'JSON' | 'PDF') => 
+                      <Select
+                        value={exportConfig.format}
+                        onValueChange={(value: 'CSV' | 'JSON' | 'PDF') =>
                           setExportConfig(prev => ({ ...prev, format: value }))
                         }
                       >
@@ -337,17 +336,17 @@ export default function DataExports() {
                       <Filter className="h-4 w-4 mr-2" />
                       Filters
                     </h4>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {selectedType === 'runs' && (
                         <div>
                           <Label>Run Status</Label>
-                          <Select 
-                            value={exportConfig.filters.runStatus} 
-                            onValueChange={(value: any) => 
+                          <Select
+                            value={exportConfig.filters.runStatus}
+                            onValueChange={(value: string) =>
                               setExportConfig(prev => ({
                                 ...prev,
-                                filters: { ...prev.filters, runStatus: value }
+                                filters: { ...prev.filters, runStatus: value as ExportConfig['filters']['runStatus'] }
                               }))
                             }
                           >
@@ -366,12 +365,12 @@ export default function DataExports() {
                       {selectedType === 'rsvps' && (
                         <div>
                           <Label>RSVP Status</Label>
-                          <Select 
-                            value={exportConfig.filters.rsvpStatus} 
-                            onValueChange={(value: any) => 
+                          <Select
+                            value={exportConfig.filters.rsvpStatus}
+                            onValueChange={(value: string) =>
                               setExportConfig(prev => ({
                                 ...prev,
-                                filters: { ...prev.filters, rsvpStatus: value }
+                                filters: { ...prev.filters, rsvpStatus: value as ExportConfig['filters']['rsvpStatus'] }
                               }))
                             }
                           >
@@ -392,7 +391,7 @@ export default function DataExports() {
                         <Checkbox
                           id="includeInactive"
                           checked={exportConfig.filters.includeInactive}
-                          onCheckedChange={(checked) => 
+                          onCheckedChange={(checked) =>
                             setExportConfig(prev => ({
                               ...prev,
                               filters: { ...prev.filters, includeInactive: checked as boolean }
@@ -435,19 +434,19 @@ export default function DataExports() {
                       {exportConfig.fields.length} of {selectedTypeData?.availableFields.length} fields selected
                     </div>
                     <div className="space-x-2">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => setExportConfig(prev => ({ ...prev, fields: [] }))}
                       >
                         Clear All
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
-                        onClick={() => setExportConfig(prev => ({ 
-                          ...prev, 
-                          fields: selectedTypeData?.availableFields.map(f => f.id) || [] 
+                        onClick={() => setExportConfig(prev => ({
+                          ...prev,
+                          fields: selectedTypeData?.availableFields.map(f => f.id) || []
                         }))}
                       >
                         Select All
@@ -467,7 +466,7 @@ export default function DataExports() {
                         {selectedTypeData?.name} • {exportConfig.format} format • {exportConfig.fields.length} fields
                       </p>
                     </div>
-                    <Button 
+                    <Button
                       onClick={handleExport}
                       disabled={exporting || exportConfig.fields.length === 0}
                       className="min-w-32"

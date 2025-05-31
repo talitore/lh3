@@ -77,7 +77,7 @@ test.describe('Complete User Workflows', () => {
       await expect(page.locator('[data-testid="run-card"]').first()).toBeVisible();
 
       // Step 3: Select a run to view details
-      await page.click('[data-testid="run-card"]').first();
+      await page.locator('[data-testid="run-card"]').first().click();
       await expect(page).toHaveURL(/.*\/runs\/\w+/);
 
       // Step 4: RSVP to the run
@@ -136,7 +136,7 @@ test.describe('Complete User Workflows', () => {
       await expect(runCards.first()).toBeVisible();
 
       // Test mobile form interaction
-      await page.click(runCards.first());
+      await runCards.first().click();
 
       // Test mobile RSVP
       const mobileRsvpButton = page.locator('[data-testid="mobile-rsvp"]');

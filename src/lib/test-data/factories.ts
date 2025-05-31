@@ -75,6 +75,11 @@ export interface TestRun {
   organizerId: string;
   createdAt: Date;
   updatedAt: Date;
+  _count?: {
+    rsvps: number;
+    photos: number;
+    attendance: number;
+  };
 }
 
 export function createTestRun(options: FactoryOptions<TestRun> = {}): TestRun {
@@ -91,6 +96,11 @@ export function createTestRun(options: FactoryOptions<TestRun> = {}): TestRun {
     organizerId: 'test-organizer-id',
     createdAt: new Date(),
     updatedAt: new Date(),
+    _count: {
+      rsvps: 5,
+      photos: 3,
+      attendance: 4,
+    },
   };
 
   return { ...defaults, ...options.overrides };

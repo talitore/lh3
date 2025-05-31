@@ -46,6 +46,13 @@ export default function NewRunPage() {
     }))
   }
 
+  const handleAddressInputChange = (address: string) => {
+    setFormData(prev => ({
+      ...prev,
+      address,
+    }))
+  }
+
   const handlePositionChange = (lat: number, lng: number) => {
     setFormData(prev => ({
       ...prev,
@@ -75,7 +82,7 @@ export default function NewRunPage() {
           number: Number(formData.number),
           descriptor: formData.descriptor,
           dateTime: new Date(formData.dateTime).toISOString(),
-          address: formData.address,
+          address: formData.address || "",
           lat: formData.lat,
           lng: formData.lng,
           introLink: formData.introLink || null,
@@ -167,12 +174,13 @@ export default function NewRunPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address">Address (Optional)</Label>
                 <AddressAutocomplete
                   id="address"
                   placeholder="Search for an address..."
                   value={formData.address}
                   onAddressSelected={handleAddressSelected}
+                  onInputChange={handleAddressInputChange}
                 />
               </div>
 

@@ -1,8 +1,13 @@
 import {
   markAttendance,
   MarkAttendanceData,
-  AttendanceError,
 } from './attendanceService';
+import {
+  AttendanceError,
+  RunNotFoundError,
+  UserNotFoundError,
+  UserAlreadyAttendedError
+} from '@/lib/errors';
 import { PrismaClient, Prisma } from '@/generated/prisma';
 
 // Mock Prisma Client
@@ -87,23 +92,19 @@ describe('markAttendance', () => {
     expect(result).toEqual(expectedAttendance);
   });
 
-  it('should throw AttendanceError with status 404 if the run does not exist', async () => {
+  it('should throw RunNotFoundError if the run does not exist', async () => {
     (prismaMock.run.findUnique as jest.Mock).mockResolvedValue(null);
     (prismaMock.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
-    await expect(markAttendance(attendanceInput)).rejects.toThrowError(
-      new AttendanceError('Run not found', 404)
-    );
+    await expect(markAttendance(attendanceInput)).rejects.toThrow(RunNotFoundError);
     expect(prismaMock.attendance.create).not.toHaveBeenCalled();
   });
 
-  it('should throw AttendanceError with status 404 if the user to be marked does not exist', async () => {
+  it('should throw UserNotFoundError if the user to be marked does not exist', async () => {
     (prismaMock.run.findUnique as jest.Mock).mockResolvedValue(mockRun);
     (prismaMock.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-    await expect(markAttendance(attendanceInput)).rejects.toThrowError(
-      new AttendanceError('User to mark attended not found', 404)
-    );
+    await expect(markAttendance(attendanceInput)).rejects.toThrow(UserNotFoundError);
     expect(prismaMock.attendance.create).not.toHaveBeenCalled();
   });
 
@@ -142,7 +143,7 @@ describe('markAttendance', () => {
     expect(result).toEqual(existingAttendance);
   });
 
-  it('should throw AttendanceError 409 if P2002 on runId_userId occurs but fetching existing record fails', async () => {
+  it('should throw UserAlreadyAttendedError if P2002 on runId_userId occurs but fetching existing record fails', async () => {
     const p2002Error = new Prisma.PrismaClientKnownRequestError(
       'Unique constraint failed',
       {
@@ -157,12 +158,10 @@ describe('markAttendance', () => {
     (prismaMock.attendance.create as jest.Mock).mockRejectedValue(p2002Error);
     (prismaMock.attendance.findUnique as jest.Mock).mockResolvedValue(null); // Simulate existing record not found
 
-    await expect(markAttendance(attendanceInput)).rejects.toThrowError(
-      new AttendanceError('User already marked as attended for this run.', 409)
-    );
+    await expect(markAttendance(attendanceInput)).rejects.toThrow(UserAlreadyAttendedError);
   });
 
-  it('should throw AttendanceError 500 for P2002 error not on runId_userId target', async () => {
+  it('should throw AttendanceError for P2002 error not on runId_userId target', async () => {
     const p2002ErrorOtherTarget = new Prisma.PrismaClientKnownRequestError(
       'Unique constraint failed on other fields',
       {
@@ -177,13 +176,11 @@ describe('markAttendance', () => {
       p2002ErrorOtherTarget
     );
 
-    await expect(markAttendance(attendanceInput)).rejects.toThrowError(
-      new AttendanceError('Database error while marking attendance.', 500)
-    );
+    await expect(markAttendance(attendanceInput)).rejects.toThrow(AttendanceError);
     expect(prismaMock.attendance.findUnique).not.toHaveBeenCalled();
   });
 
-  it('should throw AttendanceError 500 for other PrismaClientKnownRequestError codes', async () => {
+  it('should throw AttendanceError for other PrismaClientKnownRequestError codes', async () => {
     const otherPrismaError = new Prisma.PrismaClientKnownRequestError(
       'Some other DB error',
       { code: 'P1000', clientVersion: 'dummy' }
@@ -194,9 +191,7 @@ describe('markAttendance', () => {
       otherPrismaError
     );
 
-    await expect(markAttendance(attendanceInput)).rejects.toThrowError(
-      new AttendanceError('Database error while marking attendance.', 500)
-    );
+    await expect(markAttendance(attendanceInput)).rejects.toThrow(AttendanceError);
   });
 
   it('should re-throw AttendanceError if it is already an AttendanceError', async () => {
@@ -209,7 +204,7 @@ describe('markAttendance', () => {
     );
   });
 
-  it('should throw generic AttendanceError 500 for unexpected errors', async () => {
+  it('should throw AttendanceError for unexpected errors', async () => {
     const unexpectedError = new Error('Something totally unexpected');
     (prismaMock.run.findUnique as jest.Mock).mockResolvedValue(mockRun);
     (prismaMock.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
@@ -217,11 +212,6 @@ describe('markAttendance', () => {
       unexpectedError
     );
 
-    await expect(markAttendance(attendanceInput)).rejects.toThrowError(
-      new AttendanceError(
-        'An unexpected error occurred while marking attendance.',
-        500
-      )
-    );
+    await expect(markAttendance(attendanceInput)).rejects.toThrow(AttendanceError);
   });
 });

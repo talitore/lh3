@@ -591,10 +591,12 @@ test.describe('GET /api/runs/[id]', () => {
       expect(mockResponse.status()).toBe(200);
       const run = await mockResponse.json();
 
-      expect(run.id).toBe(testRun.id);
-      expect(run.descriptor).toBeDefined();
-      expect(run.organizer).toBeDefined();
-      expect(run.organizer.id).toBeDefined();
+      // Type assertion since we know this is a successful response
+      const runData = run as any;
+      expect(runData.id).toBe(testRun.id);
+      expect(runData.descriptor).toBeDefined();
+      expect(runData.organizer).toBeDefined();
+      expect(runData.organizer?.id).toBeDefined();
       return;
     }
 
@@ -623,7 +625,9 @@ test.describe('GET /api/runs/[id]', () => {
         MockApiHelper.createGetRunByIdResponse(nonExistentRunId);
       expect(mockResponse.status()).toBe(404);
       const body = await mockResponse.json();
-      expect(body.message).toBe('Run not found');
+      // Type assertion since we know this is an error response
+      const errorData = body as any;
+      expect(errorData.message).toBe('Run not found');
       return;
     }
 
@@ -736,10 +740,12 @@ test.describe('PUT /api/runs/[id]', () => {
       expect(mockResponse.status()).toBe(200);
       const updatedRun = await mockResponse.json();
 
-      expect(updatedRun.id).toBe(runToUpdate.id);
-      expect(updatedRun.descriptor).toBe(updatedData.descriptor);
-      expect(updatedRun.address).toBe(updatedData.address);
-      expect(updatedRun.introLink).toBeNull();
+      // Type assertion since we know this is a successful response
+      const runData = updatedRun as any;
+      expect(runData.id).toBe(runToUpdate.id);
+      expect(runData.descriptor).toBe(updatedData.descriptor);
+      expect(runData.address).toBe(updatedData.address);
+      expect(runData.introLink).toBeNull();
       return;
     }
 
@@ -787,8 +793,10 @@ test.describe('PUT /api/runs/[id]', () => {
       );
       expect(mockResponse.status()).toBe(400);
       const body = await mockResponse.json();
-      expect(body.message).toBe('Invalid input');
-      expect(body.errors.descriptor).toBeDefined();
+      // Type assertion since we know this is an error response
+      const errorData = body as any;
+      expect(errorData.message).toBe('Invalid input');
+      expect(errorData.errors.descriptor).toBeDefined();
       return;
     }
 
@@ -850,7 +858,9 @@ test.describe('PUT /api/runs/[id]', () => {
       );
       expect(mockResponse.status()).toBe(403);
       const body = await mockResponse.json();
-      expect(body.message).toBe('Forbidden: Insufficient permissions');
+      // Type assertion since we know this is an error response
+      const errorData = body as any;
+      expect(errorData.message).toBe('Forbidden: Insufficient permissions');
       return;
     }
 
@@ -885,7 +895,9 @@ test.describe('PUT /api/runs/[id]', () => {
       );
       expect(mockResponse.status()).toBe(200);
       const updatedRun = await mockResponse.json();
-      expect(updatedRun.descriptor).toBe(newDescriptor);
+      // Type assertion since we know this is a successful response
+      const runData = updatedRun as any;
+      expect(runData.descriptor).toBe(newDescriptor);
       return;
     }
 
@@ -1049,9 +1061,11 @@ test.describe('PUT /api/runs/[id]/rsvp', () => {
       );
       expect(mockResponse.status()).toBe(200);
       const rsvp = await mockResponse.json();
-      expect(rsvp.runId).toBe(runForRsvp.id);
-      expect(rsvp.userId).toBeDefined();
-      expect(rsvp.status).toBe('YES');
+      // Type assertion since we know this is a successful response
+      const rsvpData = rsvp as any;
+      expect(rsvpData.runId).toBe(runForRsvp.id);
+      expect(rsvpData.userId).toBeDefined();
+      expect(rsvpData.status).toBe('YES');
       return;
     }
 
@@ -1102,7 +1116,9 @@ test.describe('PUT /api/runs/[id]/rsvp', () => {
       );
       expect(updateMockResponse.status()).toBe(200);
       const updatedRsvp = await updateMockResponse.json();
-      expect(updatedRsvp.status).toBe('NO');
+      // Type assertion since we know this is a successful response
+      const rsvpData = updatedRsvp as any;
+      expect(rsvpData.status).toBe('NO');
       return;
     }
 
@@ -1146,7 +1162,9 @@ test.describe('PUT /api/runs/[id]/rsvp', () => {
       );
       expect(mockResponse.status()).toBe(200);
       const rsvp = await mockResponse.json();
-      expect(rsvp.status).toBe('MAYBE');
+      // Type assertion since we know this is a successful response
+      const rsvpData = rsvp as any;
+      expect(rsvpData.status).toBe('MAYBE');
       return;
     }
 
@@ -1183,8 +1201,10 @@ test.describe('PUT /api/runs/[id]/rsvp', () => {
       );
       expect(mockResponse.status()).toBe(400);
       const body = await mockResponse.json();
-      expect(body.message).toBe('Invalid request body');
-      expect(body.errors.status).toBeDefined();
+      // Type assertion since we know this is an error response
+      const errorData = body as any;
+      expect(errorData.message).toBe('Invalid request body');
+      expect(errorData.errors.status).toBeDefined();
       return;
     }
 
@@ -1295,7 +1315,10 @@ test.describe('PUT /api/runs/[id]/rsvp', () => {
       expect(secondMockResponse.status()).toBe(200);
       const rsvp2 = await secondMockResponse.json();
 
-      expect(rsvp1.userId).not.toBe(rsvp2.userId);
+      // Type assertions since we know these are successful responses
+      const rsvp1Data = rsvp1 as any;
+      const rsvp2Data = rsvp2 as any;
+      expect(rsvp1Data.userId).not.toBe(rsvp2Data.userId);
       return;
     }
 
@@ -1507,7 +1530,7 @@ test.describe('POST /api/runs/[id]/attendance', () => {
       expect(attendance.userId).toBe(basicTestUserId);
 
       // Check that there's only one record in the mock database
-      const attendances = mockDb.getClient().attendance.findMany({
+      const attendances = await mockDb.getClient().attendance.findMany({
         where: { runId: runForAttendance.id, userId: basicTestUserId },
       });
       expect(attendances.length).toBe(1);

@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { markAttendance } from '@/lib/attendanceService';
 
 // Import schemas
@@ -10,9 +10,9 @@ import { attendanceParamsSchema, attendanceBodySchema } from '@/lib/schemas';
 import { createErrorResponse } from '@/lib/errors';
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     id: string; // This is runId
-  };
+  }>;
 }
 
 async function handlePOST(request: NextRequest, context: RouteContext) {
@@ -52,7 +52,7 @@ async function handlePOST(request: NextRequest, context: RouteContext) {
     );
   }
 
-  const resolvedParams = context.params;
+  const resolvedParams = await context.params;
   const paramsToValidate = { id: resolvedParams.id };
   const paramsValidationResult = attendanceParamsSchema.safeParse(paramsToValidate);
 

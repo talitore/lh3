@@ -4,15 +4,14 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { Calendar, MapPin, Users, Plus, TrendingUp, Camera, Clock, Filter } from "lucide-react"
+import { Plus, TrendingUp, Camera, Clock, Filter } from "lucide-react"
 import Image from "next/image"
-import { RSVPButtons, type RSVPCounts, type RSVPStatus } from "@/components/ui/rsvp-buttons"
+import { type RSVPCounts, type RSVPStatus } from "@/components/ui/rsvp-buttons"
 import { RunCard } from "@/components/ui/run-card"
 import { FeedSkeleton } from "@/components/ui/loading-states"
 
@@ -43,12 +42,14 @@ interface Run {
 }
 
 interface RunsResponse {
-  runs: Run[]
+  data: Run[]
   pagination: {
     page: number
     limit: number
-    total: number
+    totalItems: number
     totalPages: number
+    hasNextPage: boolean
+    hasPreviousPage: boolean
   }
 }
 
@@ -89,14 +90,14 @@ export default function Home() {
 
   useEffect(() => {
     fetchFeedData()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     // Reset pagination and refetch when filters change
     setCurrentPage(1)
     setRecentRuns([])
     fetchRecentRuns(true)
-  }, [sortBy, sortOrder])
+  }, [sortBy, sortOrder]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchFeedData = async () => {
     try {
@@ -114,7 +115,7 @@ export default function Home() {
 
       if (upcomingResponse.ok) {
         const upcomingData: RunsResponse = await upcomingResponse.json()
-        setUpcomingRuns(upcomingData.runs)
+        setUpcomingRuns(upcomingData.data)
       }
 
       // Fetch recent runs
@@ -128,7 +129,7 @@ export default function Home() {
 
       if (recentResponse.ok) {
         const recentData: RunsResponse = await recentResponse.json()
-        setRecentRuns(recentData.runs)
+        setRecentRuns(recentData.data)
       }
 
       // Fetch community stats
@@ -155,7 +156,7 @@ export default function Home() {
             hashCashPool: 1250 // Mock data - would come from financial tracking
           })
         }
-      } catch (statsError) {
+      } catch {
         console.log('Stats API not available, using fallback data')
         setCommunityStats({
           totalMembers: 247,
@@ -174,7 +175,7 @@ export default function Home() {
           const photosData = await photosResponse.json()
           setRecentPhotos(photosData.photos || [])
         }
-      } catch (photosError) {
+      } catch {
         console.log('Photos API not available')
         setRecentPhotos([])
       }
@@ -208,9 +209,9 @@ export default function Home() {
         const recentData: RunsResponse = await recentResponse.json()
 
         if (reset) {
-          setRecentRuns(recentData.runs)
+          setRecentRuns(recentData.data)
         } else {
-          setRecentRuns(prev => [...prev, ...recentData.runs])
+          setRecentRuns(prev => [...prev, ...recentData.data])
         }
 
         setHasMoreRuns(recentData.pagination.page < recentData.pagination.totalPages)
@@ -233,6 +234,8 @@ export default function Home() {
   }
 
   const getFilteredRuns = () => {
+    if (!recentRuns || !Array.isArray(recentRuns)) return []
+
     let filtered = recentRuns
 
     // Apply search filter
@@ -257,40 +260,22 @@ export default function Home() {
     return filtered
   }
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    })
-  }
+
 
   const isUpcoming = (dateString: string) => {
     return new Date(dateString) > new Date()
   }
 
   const getNextRun = () => {
+    if (!upcomingRuns || upcomingRuns.length === 0) return null
     return upcomingRuns.find(run => isUpcoming(run.dateTime))
   }
 
-  const getRsvpCounts = (run: Run): RSVPCounts => {
-    if (!run?.rsvps) return { yes: 0, maybe: 0, no: 0 }
 
-    return run.rsvps.reduce(
-      (counts, rsvp) => {
-        counts[rsvp.status.toLowerCase() as keyof typeof counts]++
-        return counts
-      },
-      { yes: 0, maybe: 0, no: 0 }
-    )
-  }
 
   const getUserRsvp = (run: Run): RSVPStatus | null => {
     if (!session?.user?.id || !run?.rsvps) return null
-    const userRsvp = run.rsvps.find(rsvp => rsvp.user.id === session.user.id)
+    const userRsvp = run.rsvps.find(rsvp => rsvp.user.id === session.user!.id)
     return userRsvp?.status || null
   }
 
@@ -423,7 +408,7 @@ export default function Home() {
             </CardContent>
           </Card>
         ) : (
-          getFilteredRuns().map((run, index) => (
+          getFilteredRuns().map((run) => (
             <RunCard
               key={run.id}
               run={run}

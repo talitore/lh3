@@ -31,11 +31,4 @@ export default defineConfig({
   },
   // Global timeout for tests
   timeout: 30000,
-  // Set environment variables for tests
-  env: {
-    E2E_TESTING_MODE: 'true',
-    SKIP_AUTH_CHECKS: 'true',
-    MOCK_AUTH_FOR_TESTS: 'true',
-    USE_MOCK_DATA: 'true',
-  },
 });

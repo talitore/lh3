@@ -9,11 +9,10 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { 
-  Award, 
-  Plus, 
-  Users,
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Award,
+  Plus,
   Trophy,
   Star,
   Target,
@@ -73,12 +72,18 @@ export default function AchievementManagement() {
   const [showAwardDialog, setShowAwardDialog] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
-  
-  const [newAchievement, setNewAchievement] = useState({
+
+  const [newAchievement, setNewAchievement] = useState<{
+    name: string;
+    description: string;
+    icon: string;
+    category: Achievement['category'];
+    criteria: string;
+  }>({
     name: '',
     description: '',
     icon: 'trophy',
-    category: 'ATTENDANCE' as const,
+    category: 'ATTENDANCE',
     criteria: ''
   })
 
@@ -97,7 +102,7 @@ export default function AchievementManagement() {
     try {
       setLoading(true)
       const response = await fetch('/api/admin/achievements')
-      
+
       if (response.ok) {
         const data = await response.json()
         setAchievements(data.achievements || [])
@@ -146,7 +151,7 @@ export default function AchievementManagement() {
   const fetchUserAchievements = async () => {
     try {
       const response = await fetch('/api/admin/achievements/awards')
-      
+
       if (response.ok) {
         const data = await response.json()
         setUserAchievements(data.awards || [])
@@ -374,10 +379,10 @@ export default function AchievementManagement() {
                         {achievement.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </div>
-                    
+
                     <h3 className="font-semibold text-lg mb-2">{achievement.name}</h3>
                     <p className="text-sm text-muted-foreground mb-3">{achievement.description}</p>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Category:</span>
@@ -402,8 +407,8 @@ export default function AchievementManagement() {
                 <div className="text-center">
                   <Award className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    {searchTerm || selectedCategory !== "all" 
-                      ? "No achievements match your filters" 
+                    {searchTerm || selectedCategory !== "all"
+                      ? "No achievements match your filters"
                       : "No achievements created yet"
                     }
                   </p>
@@ -485,9 +490,9 @@ export default function AchievementManagement() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="category">Category</Label>
-                <Select 
-                  value={newAchievement.category} 
-                  onValueChange={(value: any) => setNewAchievement(prev => ({ ...prev, category: value }))}
+                <Select
+                  value={newAchievement.category}
+                  onValueChange={(value: string) => setNewAchievement(prev => ({ ...prev, category: value as Achievement['category'] }))}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -504,8 +509,8 @@ export default function AchievementManagement() {
 
               <div>
                 <Label htmlFor="icon">Icon</Label>
-                <Select 
-                  value={newAchievement.icon} 
+                <Select
+                  value={newAchievement.icon}
                   onValueChange={(value) => setNewAchievement(prev => ({ ...prev, icon: value }))}
                 >
                   <SelectTrigger>
@@ -553,8 +558,8 @@ export default function AchievementManagement() {
           <div className="space-y-4">
             <div>
               <Label htmlFor="achievement">Achievement</Label>
-              <Select 
-                value={awardForm.achievementId} 
+              <Select
+                value={awardForm.achievementId}
                 onValueChange={(value) => setAwardForm(prev => ({ ...prev, achievementId: value }))}
               >
                 <SelectTrigger>

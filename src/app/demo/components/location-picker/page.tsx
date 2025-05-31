@@ -11,7 +11,7 @@ import { DEFAULT_COORDINATES } from "@/lib/constants/ui"
 
 export default function LocationPickerDemoPage() {
   const [address, setAddress] = useState("")
-  const [position, setPosition] = useState({ lat: DEFAULT_COORDINATES.LAT, lng: DEFAULT_COORDINATES.LNG }) // Lawrence, KS
+  const [position, setPosition] = useState<{ lat: number; lng: number }>({ lat: DEFAULT_COORDINATES.LAT, lng: DEFAULT_COORDINATES.LNG }) // Lawrence, KS
   const [isMapSynced, setIsMapSynced] = useState(true)
 
   const handleAddressSelected = (selectedAddress: string, coords: { lat: number; lng: number }) => {

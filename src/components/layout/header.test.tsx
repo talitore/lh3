@@ -42,6 +42,7 @@ describe('Header Component', () => {
     mockUseSession.mockReturnValue({
       data: mockSession,
       status: 'authenticated',
+      update: jest.fn(),
     });
   });
 
@@ -79,6 +80,7 @@ describe('Header Component', () => {
     mockUseSession.mockReturnValue({
       data: null,
       status: 'unauthenticated',
+      update: jest.fn(),
     });
 
     renderWithProviders(<Header onToggleSidebar={jest.fn()} />);
@@ -99,6 +101,7 @@ describe('Header Component', () => {
     mockUseSession.mockReturnValue({
       data: mockOrganizerSession,
       status: 'authenticated',
+      update: jest.fn(),
     });
 
     renderWithProviders(<Header onToggleSidebar={jest.fn()} />);
@@ -141,6 +144,7 @@ describe('Header Component', () => {
     mockUseSession.mockReturnValue({
       data: null,
       status: 'unauthenticated',
+      update: jest.fn(),
     });
 
     renderWithProviders(<Header onToggleSidebar={jest.fn()} />);

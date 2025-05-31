@@ -8,8 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { DEFAULT_COORDINATES } from "@/lib/constants/ui"
 
 export default function MapPickerDemoPage() {
-  const [position, setPosition] = useState({ lat: DEFAULT_COORDINATES.LAT, lng: DEFAULT_COORDINATES.LNG }) // Lawrence, KS
-  const [customPosition, setCustomPosition] = useState({ lat: 39.0458, lng: -76.6413 }) // Baltimore, MD
+  const [position, setPosition] = useState<{ lat: number; lng: number }>({ lat: DEFAULT_COORDINATES.LAT, lng: DEFAULT_COORDINATES.LNG }) // Lawrence, KS
+  const [customPosition, setCustomPosition] = useState<{ lat: number; lng: number }>({ lat: 39.0458, lng: -76.6413 }) // Baltimore, MD
 
   const handlePositionChange = (lat: number, lng: number) => {
     setPosition({ lat, lng })

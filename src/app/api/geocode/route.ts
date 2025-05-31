@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { geocodeAddress, validateAddress } from '@/lib/services/geocode-service';
 
 // Import constants
-import { HTTP_STATUS, ERROR_MESSAGES } from '@/lib/constants/api';
+import { HTTP_STATUS } from '@/lib/constants/api';
 
 /**
  * POST /api/geocode

@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
-import { 
-  Users, 
-  Calendar, 
-  Search, 
-  Check, 
+import {
+  Users,
+  Calendar,
+  Search,
+  Check,
   X,
   UserCheck,
   Filter
@@ -64,14 +64,14 @@ export default function AttendanceTracking() {
         sortOrder: "desc",
         limit: "20"
       })
-      
+
       const response = await fetch(`${API_ENDPOINTS.RUNS}?${params}`)
       if (response.ok) {
         const data = await response.json()
-        setRuns(data.runs)
-        
+        setRuns(data.data)
+
         // Auto-select the most recent completed run
-        const completedRuns = data.runs.filter((run: Run) => new Date(run.dateTime) < new Date())
+        const completedRuns = data.data.filter((run: Run) => new Date(run.dateTime) < new Date())
         if (completedRuns.length > 0) {
           setSelectedRun(completedRuns[0])
         }
@@ -100,17 +100,17 @@ export default function AttendanceTracking() {
         // Update local state
         setSelectedRun(prev => {
           if (!prev) return prev
-          
-          const updatedAttendees = attended 
+
+          const updatedAttendees = attended
             ? [...prev.attendees, { id: `temp-${userId}`, user: prev.rsvps.find(r => r.user.id === userId)!.user }]
             : prev.attendees.filter(a => a.user.id !== userId)
-          
+
           return {
             ...prev,
             attendees: updatedAttendees
           }
         })
-        
+
         toast.success(attended ? 'Marked as attended' : 'Removed from attendance')
       } else {
         throw new Error('Failed to update attendance')
@@ -136,30 +136,30 @@ export default function AttendanceTracking() {
 
   const getFilteredRSVPs = () => {
     if (!selectedRun) return []
-    
+
     let filtered = selectedRun.rsvps
-    
+
     if (searchTerm) {
-      filtered = filtered.filter(rsvp => 
+      filtered = filtered.filter(rsvp =>
         rsvp.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         rsvp.user.email.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
-    
+
     if (statusFilter !== "all") {
       if (statusFilter === "attended") {
-        filtered = filtered.filter(rsvp => 
+        filtered = filtered.filter(rsvp =>
           selectedRun.attendees.some(a => a.user.id === rsvp.user.id)
         )
       } else if (statusFilter === "not-attended") {
-        filtered = filtered.filter(rsvp => 
+        filtered = filtered.filter(rsvp =>
           !selectedRun.attendees.some(a => a.user.id === rsvp.user.id)
         )
       } else {
         filtered = filtered.filter(rsvp => rsvp.status === statusFilter)
       }
     }
-    
+
     return filtered
   }
 
@@ -204,8 +204,8 @@ export default function AttendanceTracking() {
                 <div
                   key={run.id}
                   className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                    selectedRun?.id === run.id 
-                      ? 'border-primary bg-primary/5' 
+                    selectedRun?.id === run.id
+                      ? 'border-primary bg-primary/5'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                   onClick={() => setSelectedRun(run)}
@@ -289,7 +289,7 @@ export default function AttendanceTracking() {
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {getFilteredRSVPs().map((rsvp) => {
                     const attended = isUserAttended(rsvp.user.id)
-                    
+
                     return (
                       <div
                         key={rsvp.id}
@@ -304,15 +304,15 @@ export default function AttendanceTracking() {
                             <p className="text-sm text-muted-foreground">{rsvp.user.email}</p>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-2">
-                          <Badge 
+                          <Badge
                             variant={rsvp.status === 'YES' ? 'default' : 'secondary'}
                             className="text-xs"
                           >
                             {rsvp.status}
                           </Badge>
-                          
+
                           {isCompleted(selectedRun.dateTime) && (
                             <div className="flex space-x-1">
                               <Button
@@ -343,8 +343,8 @@ export default function AttendanceTracking() {
                   <div className="text-center py-8">
                     <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <p className="text-muted-foreground">
-                      {searchTerm || statusFilter !== "all" 
-                        ? "No members match your filters" 
+                      {searchTerm || statusFilter !== "all"
+                        ? "No members match your filters"
                         : "No RSVPs for this run"
                       }
                     </p>
