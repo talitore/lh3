@@ -93,17 +93,17 @@
    - In `vite.config.ts`, configure:
 
      ```ts
-     import { defineConfig } from 'vite';
-     import RubyPlugin from 'vite-plugin-ruby';
+     import { defineConfig } from "vite";
+     import RubyPlugin from "vite-plugin-ruby";
 
      export default defineConfig({
        plugins: [
          RubyPlugin({
            input: [
-             'app/frontend/entrypoints/application.tsx',
+             "app/frontend/entrypoints/application.tsx",
              // any other entrypoints—e.g. admin_panel.tsx
            ],
-           publicFolder: 'app/assets/builds',
+           publicFolder: "app/assets/builds",
          }),
        ],
      });
@@ -115,8 +115,8 @@
      {
        "scripts": {
          "dev": "vite dev",
-         "build": "vite build"
-       }
+         "build": "vite build",
+       },
      }
      ```
 
@@ -157,12 +157,12 @@
    - Create `app/frontend/entrypoints/application.tsx`:
 
      ```tsx
-     import React from 'react';
-     import { createRoot } from 'react-dom/client';
-     import { InertiaApp } from '@inertiajs/inertia-react';
-     import '../styles/application.css';
+     import React from "react";
+     import { createRoot } from "react-dom/client";
+     import { InertiaApp } from "@inertiajs/inertia-react";
+     import "../styles/application.css";
 
-     const el = document.getElementById('app');
+     const el = document.getElementById("app");
      const root = createRoot(el!);
 
      root.render(
@@ -171,7 +171,7 @@
          resolveComponent={(name) =>
            import(`../Pages/${name}`).then((module) => module.default)
          }
-       />
+       />,
      );
      ```
 
@@ -193,7 +193,7 @@
 
      ```js
      module.exports = {
-       content: ['./app/frontend/**/*.{js,jsx,ts,tsx}', './app/views/**/*.erb'],
+       content: ["./app/frontend/**/*.{js,jsx,ts,tsx}", "./app/views/**/*.erb"],
        theme: { extend: {} },
        plugins: [],
      };
@@ -687,9 +687,9 @@
    - Use **React Hook Form** + **Zod** validation:
 
      ```ts
-     import { useForm } from 'react-hook-form';
-     import { zodResolver } from '@hookform/resolvers/zod';
-     import { eventSchema, EventSchemaType } from '../ZodSchemas/eventSchema';
+     import { useForm } from "react-hook-form";
+     import { zodResolver } from "@hookform/resolvers/zod";
+     import { eventSchema, EventSchemaType } from "../ZodSchemas/eventSchema";
      ```
 
    - UI fields:
@@ -769,29 +769,29 @@
      ```tsx
      interface RSVPButtonProps {
        eventId: number;
-       initialStatus?: 'pending' | 'yes' | 'no';
+       initialStatus?: "pending" | "yes" | "no";
      }
 
      export function RSVPButton({ eventId, initialStatus }: RSVPButtonProps) {
-       const [status, setStatus] = useState(initialStatus || 'pending');
+       const [status, setStatus] = useState(initialStatus || "pending");
        const handleClick = async () => {
-         if (status === 'pending') {
+         if (status === "pending") {
            const res = await fetch(`/events/${eventId}/rsvps`, {
-             method: 'POST',
-             headers: { 'Content-Type': 'application/json' },
-             body: JSON.stringify({ status: 'yes' }),
+             method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify({ status: "yes" }),
            });
            if (res.ok) {
-             setStatus('yes');
+             setStatus("yes");
            }
          } else {
            const res = await fetch(`/events/${eventId}/rsvps`, {
-             method: 'PATCH',
-             headers: { 'Content-Type': 'application/json' },
-             body: JSON.stringify({ status: 'pending' }),
+             method: "PATCH",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify({ status: "pending" }),
            });
            if (res.ok) {
-             setStatus('pending');
+             setStatus("pending");
            }
          }
        };
@@ -800,12 +800,12 @@
          <button
            onClick={handleClick}
            className={`px-4 py-2 rounded ${
-             status === 'yes'
-               ? 'bg-gray-300 text-gray-800'
-               : 'bg-blue-600 text-white'
+             status === "yes"
+               ? "bg-gray-300 text-gray-800"
+               : "bg-blue-600 text-white"
            }`}
          >
-           {status === 'yes' ? 'Cancel RSVP' : 'RSVP'}
+           {status === "yes" ? "Cancel RSVP" : "RSVP"}
          </button>
        );
      }
@@ -828,8 +828,8 @@
        const handleAttendance = async () => {
          const now = new Date().toISOString();
          const res = await fetch(`/events/${eventId}/rsvps/${userRsvp!.id}`, {
-           method: 'PATCH',
-           headers: { 'Content-Type': 'application/json' },
+           method: "PATCH",
+           headers: { "Content-Type": "application/json" },
            body: JSON.stringify({ attended_at: now }),
          });
          if (res.ok) {
@@ -1088,26 +1088,26 @@
 
      ```js
      module.exports = {
-       parser: '@typescript-eslint/parser',
+       parser: "@typescript-eslint/parser",
        parserOptions: {
          ecmaVersion: 2021,
-         sourceType: 'module',
+         sourceType: "module",
          ecmaFeatures: {
            jsx: true,
          },
        },
        settings: {
-         react: { version: 'detect' },
+         react: { version: "detect" },
        },
-       plugins: ['react', '@typescript-eslint'],
+       plugins: ["react", "@typescript-eslint"],
        extends: [
-         'eslint:recommended',
-         'plugin:react/recommended',
-         'plugin:@typescript-eslint/recommended',
-         'prettier',
+         "eslint:recommended",
+         "plugin:react/recommended",
+         "plugin:@typescript-eslint/recommended",
+         "prettier",
        ],
        rules: {
-         'react/react-in-jsx-scope': 'off',
+         "react/react-in-jsx-scope": "off",
          // your custom rules
        },
      };
@@ -1163,7 +1163,7 @@
            dockerfile: Dockerfile
          command: bundle exec puma -C config/puma.rb
          ports:
-           - '3000:3000'
+           - "3000:3000"
          env_file: .env.production
          depends_on:
            - db
