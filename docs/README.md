@@ -1,83 +1,104 @@
-# ignition
+# Cerulean Documentation
 
-## Project Structure and Workflow Guide
+This directory contains comprehensive documentation for the Cerulean application architecture and development practices.
 
-This project uses a specific folder structure within the `docs/` directory to manage features from idea to completion. This system is designed to streamline the development process, especially when working with AI-assisted coding.
+## 📚 Available Documentation
 
-### Folder Structure Overview
+### Core Architecture
+- **[Multitenancy System](multitenancy.md)** - How the subdomain-based multi-tenant architecture works
+- **[Authorization System](authorization.md)** - Complete RBAC implementation guide with Pundit
+- **[Authorization Quick Reference](authorization_quick_reference.md)** - Developer cheat sheet for authorization
+
+### Development Practices  
+- **[Testing Strategy](testing_strategy.md)** - Comprehensive testing approach for Inertia.js Rails apps
+
+## 🚀 Quick Start for New Developers
+
+### Understanding the System
+1. Start with [Multitenancy System](multitenancy.md) to understand how accounts and subdomains work
+2. Read [Authorization System](authorization.md) to understand the four-tier role system
+3. Keep [Authorization Quick Reference](authorization_quick_reference.md) handy while coding
+
+### Before Writing Code
+- **New Controllers**: Always implement authorization following the patterns in the quick reference
+- **New Features**: Consider which roles should have access and document authorization decisions
+- **Testing**: Follow the testing strategy and include authorization tests
+
+## 🔐 Security Requirements
+
+### Every Controller Must:
+- ✅ Include `Pundit::Authorization`
+- ✅ Call `authorize` before every action
+- ✅ Use `policy_scope` for data filtering  
+- ✅ Use `permitted_attributes` for strong parameters
+- ✅ Have comprehensive authorization tests
+
+### Every Policy Must:
+- ✅ Inherit from `ApplicationPolicy`
+- ✅ Implement all CRUD methods (`index?`, `show?`, `create?`, `update?`, `destroy?`)
+- ✅ Include a `Scope` class for data filtering
+- ✅ Define `permitted_attributes` method
+- ✅ Have complete test coverage
+
+## 🏗️ Architecture Overview
 
 ```
-docs/
-├── 0_backlog/
-│   └── feature-idea.md              # Raw ideas and feature requests start here
-│
-├── 1_planning/
-│   ├── STAGE_GATE_PROMPT_PLAN.md    # Prompt to use when moving a feature INTO the planning stage
-│   └── feature-x/                   # Directory for a specific feature being planned
-│       ├── README.md                # Auto-populated by the planning prompt; contains open questions for feature feedback
-│       ├── spec.md                  # Detailed specification, structure suggested by prompt
-│       └── design.md                # Design document, structure suggested by prompt
-│
-├── 2_inprogress/
-│   ├── STAGE_GATE_PROMPT_PROG.md    # Prompt to use when a feature moves INTO the in-progress stage
-│   └── feature-x/                   # Directory for a specific feature being implemented
-│       ├── README.md                # Potentially updated by the in-progress prompt (e.g., task list)
-│       ├── spec.md                  # (from planning)
-│       ├── design.md                # (from planning)
-│       └── implementation_notes.md  # Notes related to implementation, guided by prompt
-│
-├── 3_completed/
-│   ├── STAGE_GATE_PROMPT_COMPL.md   # Prompt to use when a feature moves INTO the completed stage
-│   └── feature-x/                   # Directory for a specific feature that has been completed
-│       ├── README.md                # (from in-progress)
-│       ├── ... (final spec/design)  # Finalized versions of spec and design documents
-│       └── summary.md               # Summary of the completed feature, potentially auto-generated
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Multitenancy  │    │  Authorization  │    │     Testing     │
+│                 │    │                 │    │                 │
+│ • Subdomains    │◄──►│ • 4-Tier Roles  │◄──►│ • Request Specs │
+│ • Account Scope │    │ • Pundit Policies│   │ • Policy Tests  │
+│ • Current Object│    │ • Tenant Isolation│  │ • System Tests  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-### Workflow
+## 🎯 Role System Summary
 
-_Note: After files are moved in each step in the process, recommended to start a new chat/session and force a codebase index rebuild._
+| Role | Scope | Key Permissions |
+|------|-------|----------------|
+| **Member** | Account | Dashboard access only |
+| **Admin** | Account | Manage resources (limited user management) |
+| **Owner** | Account | Full account management |
+| **Internal Admin** | Global | Manage any resource across all accounts |
 
-1.  **Idea**:
+## 📝 Documentation Standards
 
-    - Add a new ideas to `docs/0_backlog/`. Name them something like `chart-feature-idea.md`.
+When adding new documentation:
 
-2.  **Planning**:
+1. **Use clear headings** with emoji for visual hierarchy
+2. **Include code examples** for implementation guidance  
+3. **Add cross-references** to related documentation
+4. **Update this README** when adding new docs
+5. **Keep examples current** with the actual codebase
 
-    - **Move the idea file**: Move the idea file (e.g., `docs/0_backlog/chart-feature-idea.md`) into the feature planning folder (e.g., `docs/1_planning/chart-feature/chart-feature-idea.md`).
-    - **Instruct the AI**: Attach the relevant files and the `STAGE_GATE_PROMPT` file. Send it.
+## 🔍 Finding Information
 
-      - For example:
-        - Attach `docs/1_planning/STAGE_GATE_PROMPT_PLAN.md`
-        - Attach `docs/1_planning/chart-feature/chart-feature-idea.md`
+### I need to understand...
+- **How subdomains work** → [Multitenancy System](multitenancy.md)
+- **Who can access what** → [Authorization System](authorization.md)  
+- **How to implement authorization** → [Authorization Quick Reference](authorization_quick_reference.md)
+- **How to write tests** → [Testing Strategy](testing_strategy.md)
 
-      ![alt text](plan.png)
+### I'm implementing...
+- **A new controller** → [Authorization Quick Reference](authorization_quick_reference.md)
+- **A new policy** → [Authorization System](authorization.md) + [Quick Reference](authorization_quick_reference.md)
+- **Tests** → [Testing Strategy](testing_strategy.md)
+- **Multi-tenant features** → [Multitenancy System](multitenancy.md)
 
-    - The AI will create the following files: `README.md`, `spec.md`, and `design.md` within `docs/1_planning/your-feature-name/`.
+## 🆘 Getting Help
 
-      ![alt text](plan_after.png)
+1. **Check the documentation** - Most questions are answered here
+2. **Look at existing code** - Follow established patterns in the codebase
+3. **Run the tests** - They demonstrate expected behavior
+4. **Ask the team** - For complex scenarios or architectural decisions
 
-3.  **In Progress**:
+## 🔄 Keeping Documentation Updated
 
-    - **Move the feature folder**: Move the entire feature folder (e.g., `docs/1_planning/chart-feature/`) from the `1_planning` directory to the `2_inprogress/` directory. So it becomes `docs/2_inprogress/chart-feature/`.
-    - **Instruct the AI**: Attach the relevant files and the `STAGE_GATE_PROMPT` file. Send it.
+This documentation should be updated when:
+- New authorization patterns are established
+- Role permissions change
+- New testing patterns are adopted
+- Architecture decisions are made
+- New developers join and find gaps
 
-      - For example:
-        - Attach `docs/2_inprogress/STAGE_GATE_PROMPT_PROG.md`
-        - Attach all files from the feature's directory, e.g., `docs/2_inprogress/chart-feature/`.
-
-    - The AI will help move/set up the feature in `docs/2_inprogress/your-feature-name/` and prepare it for coding (e.g., creating task lists, `implementation_notes.md`).
-
-4.  **Completed**:
-    - **Move the feature folder**: Manually move the entire feature folder (e.g., `docs/2_inprogress/chart-feature/`) from the `2_inprogress` directory to the `docs/3_completed/` directory. So it becomes `docs/3_completed/chart-feature/`.
-    - **Instruct the AI**: In your AI assistant, attach the relevant files and provide instructions.
-      - For example:
-        - Attach `docs/3_completed/STAGE_GATE_PROMPT_COMPL.md`
-        - Attach all files from the feature's directory, e.g., `docs/3_completed/chart-feature/`.
-      - Then type:
-      ```
-      Implement the instructions in @STAGE_GATE_PROMPT_COMPL.md for the @chart-feature files.
-      ```
-    - The AI will generate a `summary.md`.
-
-This system helps maintain clarity and context for each feature throughout its lifecycle. Remember to customize the `STAGE_GATE_PROMPT_*.md` files with prompts that best suit your workflow and AI assistant's capabilities.
+Remember: Good documentation prevents security vulnerabilities and speeds up development!

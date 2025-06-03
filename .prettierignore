@@ -1,13 +1,5 @@
-# Ignore configuration files that Prettier might misinterpret or that are formatted by other tools
-eslint.config.js
-.eslintrc.js
-.prettierrc.js
-
-# Standard ignores
-node_modules
+# Ignore artifacts:
+build
 coverage
-dist
-app/assets/builds
-public/vite*
-*.local
-.vscode
+
+app/frontend/routes

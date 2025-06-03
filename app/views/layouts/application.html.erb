@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Lh3" %></title>
+    <title inertia><%= content_for(:title) || "Inertia Rails Shadcn Starter" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -17,29 +17,23 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <script>
+      <%# Enable dark mode based on localStorage or system preference. Inline to avoid FOUC. %>
+      document.documentElement.classList.toggle(
+        "dark",
+        localStorage.appearance === "dark" ||
+          (!("appearance" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches),
+      );
+    </script>
+
+    <%= vite_stylesheet_tag "application" %>
+    <%= vite_react_refresh_tag %>
     <%= vite_client_tag %>
-    <%= vite_javascript_tag 'application', defer: true %>
-    <%# vite_stylesheet_tag 'application' %>
-    <%= inertia_tags %>
-    <!--
-      If using a TypeScript entrypoint file:
-        vite_typescript_tag 'application'
-
-      If using a .jsx or .tsx entrypoint, add the extension:
-        vite_javascript_tag 'application.jsx'
-
-      Visit the guide for more information: https://vite-ruby.netlify.app/guide/rails
-    -->
-
+    <%= vite_typescript_tag "inertia" %>
+    <%= inertia_ssr_head %>
   </head>
 
   <body>
     <%= yield %>
-    <%# OR, if you want Inertia to control the whole page content %>
-    <%# <div id="app" data-page="<%= inertia_data.to_json.html_safe %>"></div> %>
-    <%# More commonly for Inertia, you'd replace yield with inertia_page %>
-    <%# <%= inertia_page %> %>
   </body>
 </html>

@@ -3,9 +3,36 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
+  lint_js:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Check prettier formatting
+        run: pnpm run format
+
+      - name: Check for linting errors
+        run: pnpm run lint
+
+      - name: Check type errors
+        run: pnpm run check
+
   scan_ruby:
     runs-on: ubuntu-latest
 
@@ -40,28 +67,42 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    # services:
     services:
       postgres:
-        image: postgres
+        image: postgres:17-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
         ports:
           - 5432:5432
-        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
-
-      # redis:
-      #   image: redis
-      #   ports:
-      #     - 6379:6379
-      #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    #  redis:
+    #    image: valkey/valkey:8
+    #    ports:
+    #      - 6379:6379
+    #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev node-gyp pkg-config python-is-python3 google-chrome-stable
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git node-gyp pkg-config python-is-python3 google-chrome-stable
 
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install pnpm dependencies
+        run: pnpm install
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -71,15 +112,16 @@ jobs:
 
       - name: Run tests
         env:
+          NODE_ENV: test
           RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
+        run: bin/rails db:test:prepare spec
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: screenshots
-          path: ${{ github.workspace }}/tmp/screenshots
+          path: ${{ github.workspace }}/tmp/capybara
           if-no-files-found: ignore

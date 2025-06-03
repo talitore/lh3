@@ -1,7 +1,9 @@
-class HomeController < ApplicationController
+# frozen_string_literal: true
+
+class HomeController < InertiaController
+  skip_before_action :authenticate
+  before_action :perform_authentication
+
   def index
-    inertia_render "Home", props: {
-      message: "Hello from Rails! This is your Inertia-powered Home page."
-    }
   end
 end
