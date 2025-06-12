@@ -18,11 +18,11 @@ _(These are textual descriptions. Actual wireframes/mockups would be created in 
 
 - **Main Layout (Option 2 - Modern Collapsible Overlay Sidebar):**
   - **Desktop:**
-    - Header: Full-width, fixed at the top. "LH3 (Larryville Hash House Harriers)" Logo left, navigation links ("Feed", "Events", "Members") center/right. "Admin Mode" toggle and user profile icon on the far right. A toggle icon (e.g., hamburger or a specific sidebar icon) to open the sidebar.
+    - Header: Full-width, fixed at the top. Application logo left, navigation links ("Feed", "Events", "Members") center/right. "Admin Mode" toggle and user profile icon on the far right. A toggle icon (e.g., hamburger or a specific sidebar icon) to open the sidebar.
     - Main Content: Occupies full viewport width below the header. Example content: a scrollable feed of user posts, event cards.
     - Sidebar: Slides in as an overlay from the left or right when toggled. Width ~280-320px. Contains sections like "Upcoming Events" (list of events), "Quick Stats" (e.g., Active Members, Hash Cash Pool), and "Admin Tools" (e.g., Attendance Tracking, Hash Cash Management).
   - **Mobile/Tablet:**
-    - Header: Similar to desktop, primary navigation links ("Feed", "Events", "Members") might collapse into a menu triggered by an icon, or be part of the main sidebar. "LH3" Logo, Admin toggle, Profile icon, and Sidebar toggle visible.
+    - Header: Similar to desktop, primary navigation links ("Feed", "Events", "Members") might collapse into a menu triggered by an icon, or be part of the main sidebar. Application logo, Admin toggle, Profile icon, and Sidebar toggle visible.
     - Sidebar: Always an overlay, toggled by its icon. Contains same sections as desktop.
     - Main Content: Full width.
 - **Card Component:**

@@ -7,8 +7,8 @@ import AuthProvider from '@/components/layout/AuthProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'LH3 Application',
-  description: 'Larryville Hash House Harriers',
+  title: 'Application',
+  description: 'A community platform',
 };
 
 export default function RootLayout({

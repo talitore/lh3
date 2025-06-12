@@ -49,7 +49,7 @@ describe('Header Component', () => {
     renderWithProviders(<Header onToggleSidebar={jest.fn()} />);
 
     expect(screen.getByRole('banner')).toBeInTheDocument();
-    expect(screen.getByText('LH3')).toBeInTheDocument();
+    expect(screen.getByText('App')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /toggle menu/i })).toBeInTheDocument();
   });
 
@@ -203,7 +203,7 @@ describe('Header Component', () => {
 
     // Should still render the basic header structure
     expect(screen.getByRole('banner')).toBeInTheDocument();
-    expect(screen.getByText('LH3')).toBeInTheDocument();
+    expect(screen.getByText('App')).toBeInTheDocument();
   });
 
   it('should maintain header positioning', () => {
