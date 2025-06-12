@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Geocoding & Maps feature has been successfully implemented, providing robust location-based functionality for the LH3 application. This feature enhances the user experience when entering and visualizing location data for runs through address autocomplete, interactive map selection, and server-side geocoding capabilities.
+The Geocoding & Maps feature has been successfully implemented, providing robust location-based functionality for the application. This feature enhances the user experience when entering and visualizing location data for runs through address autocomplete, interactive map selection, and server-side geocoding capabilities.
 
 ## Completed Components
 
@@ -138,4 +138,4 @@ The Geocoding & Maps feature has been successfully implemented, providing robust
 - Environment setup instructions in `.env.local.example`
 - Technical decisions documented in `implementation_notes.md`
 
-This feature successfully enhances the LH3 application with modern, user-friendly location selection capabilities while maintaining the existing architecture and design patterns.
+This feature successfully enhances the application with modern, user-friendly location selection capabilities while maintaining the existing architecture and design patterns.

@@ -27,7 +27,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
           <Menu className="h-6 w-6" />
         </Button>
         <Link href="/" className="text-xl font-bold">
-          LH3
+          App
         </Link>
       </div>
       <nav className="hidden md:flex space-x-4">
