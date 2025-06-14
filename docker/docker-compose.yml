@@ -34,7 +34,7 @@ services:
       RAILS_ENV: development
       # Skip credentials in development mode
       RAILS_DEVELOPMENT_SKIP_CREDENTIALS: 'true'
-      VITE_APP_NAME: ${VITE_APP_NAME:-Cerulean}
+      VITE_APP_NAME: ${VITE_APP_NAME:-LH3}
       VITE_RUBY_HOST: 0.0.0.0
     ports:
       - '3000:3000'
