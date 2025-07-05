@@ -553,7 +553,7 @@ const __jsr = // eslint-disable-next-line
       );
     }
     is_array(object) {
-      return object instanceof Array;
+      return Array.isArray(object);
     }
     is_callable(object) {
       return typeof object === "function" && !!object.call;
