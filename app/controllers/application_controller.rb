@@ -30,6 +30,7 @@ class ApplicationController < ActionController::Base
     if session_record
       Current.user = session_record.user
     else
+      cookies.delete(:session_token)
       redirect_to sign_in_path
     end
   end
