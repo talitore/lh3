@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: lh3_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8'
+    ports:
+      - '5432:5432'
+    volumes:
+      - lh3_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    user: postgres
+
+  web:
+    build:
+      context: ..
+      dockerfile: docker/dev/Dockerfile
+    container_name: lh3_web
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_PORT: 5432
+      RAILS_ENV: development
+      # Skip credentials in development mode
+      VITE_APP_NAME: ${VITE_APP_NAME:-lh3}
+      VITE_RUBY_HOST: 0.0.0.0
+      # Ensure Node.js and pnpm are available in PATH
+      PATH: /usr/local/node/bin:$PATH
+    ports:
+      - '3000:3000'
+      - '3036:3036'
+    volumes:
+      - ..:/rails:cached
+      - lh3_node_modules:/rails/node_modules
+      - lh3_bundle:/usr/local/bundle
+    # command: bash -c "rm -f tmp/pids/server.pid && bin/rails server -b 0.0.0.0 & VITE_RUBY_HOST=0.0.0.0 bin/vite dev"
+    # command: bash -c "rm -f tmp/pids/server.pid && bin/rails server -b 0.0.0.0"
+    command: bash -c "rm -f tmp/pids/server.pid && bin/dev"
+    tty: true
+    stdin_open: true
+
+volumes:
+  lh3_postgres_data:
+  lh3_node_modules:
+  lh3_bundle:
