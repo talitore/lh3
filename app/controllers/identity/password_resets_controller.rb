@@ -20,7 +20,7 @@ module Identity
           redirect_to new_identity_password_reset_path, alert: I18n.t('password_reset.email_not_verified')
         end
       else
-        redirect_to sign_in_path, notice: I18n.t('password_reset.success')
+        redirect_to new_identity_password_reset_path, alert: I18n.t('password_reset.email_not_verified')
       end
     end
 
@@ -35,7 +35,8 @@ module Identity
     private
 
     def set_user
-      @user = User.find_by_token_for!(:password_reset, params[:token])
+      @user = User.find_by_token_for(:password_reset, params[:sid])
+      redirect_to new_identity_password_reset_path, alert: I18n.t('password_reset.invalid_link') if @user.nil?
     rescue StandardError
       redirect_to new_identity_password_reset_path, alert: I18n.t('password_reset.invalid_link')
     end

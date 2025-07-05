@@ -3,7 +3,7 @@
 module Identity
   # Controller for handling email verification process
   class EmailVerificationsController < ApplicationController
-    skip_before_action :authenticate
+    skip_before_action :authenticate, only: :show
 
     before_action :set_user, only: :show
 
@@ -24,7 +24,8 @@ module Identity
     private
 
     def set_user
-      @user = User.find_by_token_for!(:email_verification, params[:token])
+      @user = User.find_by_token_for(:email_verification, params[:sid])
+      redirect_to edit_identity_email_path, alert: I18n.t('email_verification.invalid') if @user.nil?
     rescue StandardError
       redirect_to edit_identity_email_path, alert: I18n.t('email_verification.invalid')
     end

@@ -37,6 +37,6 @@ class SessionsController < ApplicationController
   end
 
   def handle_failed_login
-    redirect_to sign_in_path, alert: I18n.t('session.invalid_credentials')
+    redirect_to sign_in_path(email_hint: params[:email]), alert: I18n.t('session.invalid_credentials')
   end
 end

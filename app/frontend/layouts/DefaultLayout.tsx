@@ -3,7 +3,7 @@ import { Link, usePage } from "@inertiajs/react";
 import { User } from "../types";
 
 interface PageProps {
-  user: User;
+  user: User | null;
 }
 
 interface DefaultLayoutProps {
@@ -20,7 +20,7 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Link href="/" className="text-xl font-semibold text-gray-900">
-                {user.display_name}
+                {user?.display_name || "Guest"}
               </Link>
             </div>
             <nav className="flex space-x-4">
@@ -30,18 +30,29 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
               >
                 Home
               </Link>
-              <Link
-                href="/sessions"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Sessions
-              </Link>
-              <Link
-                href="/edit_password"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Change Password
-              </Link>
+              {user ? (
+                <>
+                  <Link
+                    href="/sessions"
+                    className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  >
+                    Sessions
+                  </Link>
+                  <Link
+                    href="/edit_password"
+                    className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  >
+                    Change Password
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  href="/sign_in"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Sign In
+                </Link>
+              )}
             </nav>
           </div>
         </div>

@@ -9,3 +9,12 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+# Create a default user for development
+User.find_or_create_by!(email: 'admin@app.local') do |user|
+  user.display_name = 'Admin User'
+  user.password = 'password123'
+  user.verified = true
+end
+
+Rails.logger.debug '✅ Seed user created: admin@app.local'

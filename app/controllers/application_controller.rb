@@ -8,6 +8,21 @@ class ApplicationController < ActionController::Base
   before_action :authenticate
   before_action :set_current_request_details
 
+  # Share user data globally with all Inertia pages
+  inertia_share do
+    if Current.user
+      {
+        user: {
+          id: Current.user.id,
+          email: Current.user.email,
+          display_name: Current.user.display_name,
+          avatar_url: Current.user.avatar_url,
+          verified: Current.user.verified?
+        }
+      }
+    end
+  end
+
   private
 
   def authenticate
