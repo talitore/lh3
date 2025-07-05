@@ -1,14 +1,13 @@
-import React from "react";
-import { Link } from "@inertiajs/react";
-import DefaultLayout from "../layouts/DefaultLayout";
-import styles from "./InertiaExample.module.css";
+import React from 'react';
+import { Link } from '@inertiajs/react';
+import DefaultLayout from '../layouts/DefaultLayout';
 
 interface InertiaExampleProps {
   name?: string;
 }
 
 export default function InertiaExample({
-  name = "World",
+  name = 'World',
 }: InertiaExampleProps) {
   return (
     <DefaultLayout>
