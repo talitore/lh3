@@ -30,6 +30,11 @@
 **To create the skeleton:**
 
 - Initialize a new Rails 8 application with PostgreSQL.
+
+```bash
+rails new . --minimal --database=postgresql
+```
+
 - Add the `vite_rails` gem and set up Vite with React and TypeScript.
 - Install `inertia_rails` and configure it for React.
 - Set up Tailwind CSS with Vite, including `prettier-plugin-tailwindcss` and other relevant Tailwind plugins (`@tailwindcss/forms`, `@tailwindcss/typography`).

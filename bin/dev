@@ -1,2 +1,11 @@
-#!/usr/bin/env ruby
-exec "./bin/rails", "server", *ARGV
+#!/usr/bin/env sh
+# exec "./bin/rails", "server", *ARGV
+
+export PORT="${PORT:-3000}"
+
+if gem list --no-installed --exact --silent foreman; then
+  echo "Installing foreman..."
+  gem install foreman
+fi
+
+bundle exec foreman start -f Procfile.dev "$@"

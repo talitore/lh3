@@ -84,12 +84,16 @@ GEM
       irb (~> 1.10)
       reline (>= 0.3.8)
     drb (2.2.3)
+    dry-cli (1.2.0)
     erb (5.0.1)
     erubi (1.13.1)
+    foreman (0.88.1)
     globalid (1.2.1)
       activesupport (>= 6.1)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
+    inertia_rails (3.9.0)
+      railties (>= 6)
     io-console (0.8.0)
     irb (1.15.2)
       pp (>= 0.6.0)
@@ -107,6 +111,7 @@ GEM
     marcel (1.0.4)
     mini_mime (1.1.5)
     minitest (5.25.5)
+    mutex_m (0.3.0)
     net-imap (0.5.9)
       date
       net-protocol
@@ -149,6 +154,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.1.16)
+    rack-proxy (0.7.7)
+      rack
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -199,6 +206,15 @@ GEM
       concurrent-ruby (~> 1.0)
     uri (1.0.3)
     useragent (0.16.11)
+    vite_rails (3.0.19)
+      railties (>= 5.1, < 9)
+      vite_ruby (~> 3.0, >= 3.2.2)
+    vite_ruby (3.9.2)
+      dry-cli (>= 0.7, < 2)
+      logger (~> 1.6)
+      mutex_m
+      rack-proxy (~> 0.6, >= 0.6.1)
+      zeitwerk (~> 2.2)
     websocket-driver (0.8.0)
       base64
       websocket-extensions (>= 0.1.0)
@@ -219,11 +235,14 @@ PLATFORMS
 
 DEPENDENCIES
   debug
+  foreman (~> 0.88.1)
+  inertia_rails (~> 3.9)
   pg (~> 1.1)
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.2)
   tzinfo-data
+  vite_rails (~> 3.0)
 
 BUNDLED WITH
    2.6.7

@@ -39,13 +39,14 @@ services:
       PATH: /usr/local/node/bin:$PATH
     ports:
       - '3000:3000'
-      - '5173:5173'
+      - '3036:3036'
     volumes:
       - ..:/rails:cached
       - lh3_node_modules:/rails/node_modules
       - lh3_bundle:/usr/local/bundle
     # command: bash -c "rm -f tmp/pids/server.pid && bin/rails server -b 0.0.0.0 & VITE_RUBY_HOST=0.0.0.0 bin/vite dev"
-    command: bash -c "rm -f tmp/pids/server.pid && bin/rails server -b 0.0.0.0"
+    # command: bash -c "rm -f tmp/pids/server.pid && bin/rails server -b 0.0.0.0"
+    command: bash -c "rm -f tmp/pids/server.pid && bin/dev"
     tty: true
     stdin_open: true
 

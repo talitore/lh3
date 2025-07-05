@@ -40,4 +40,6 @@ ENTRYPOINT ["entrypoint.sh"]
 
 # Start server
 EXPOSE 3000
-CMD ["bin/rails", "server", "-b", "0.0.0.0"]
+# CMD not needed when using docker compose
+# CMD ["bin/rails", "server", "-b", "0.0.0.0"]
+# CMD ["foreman", "start", "-f", "Procfile.dev"]
