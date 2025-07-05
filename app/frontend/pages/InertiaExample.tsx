@@ -1,13 +1,14 @@
-import React from 'react';
-import { Link } from '@inertiajs/react';
-import DefaultLayout from '../layouts/DefaultLayout';
+import React from "react";
+import { Link } from "@inertiajs/react";
+import DefaultLayout from "../layouts/DefaultLayout";
+import { editPasswordPath } from "../routes";
 
 interface InertiaExampleProps {
   name?: string;
 }
 
 export default function InertiaExample({
-  name = 'World',
+  name = "World",
 }: InertiaExampleProps) {
   return (
     <DefaultLayout>
@@ -23,23 +24,11 @@ export default function InertiaExample({
 
             <div className="space-y-4">
               <div className="flex justify-center space-x-4">
-                <img
-                  src="/app/assets/images/rails.svg"
-                  alt="Rails"
-                  className={styles.logo}
-                />
+                <img src="/app/assets/images/rails.svg" alt="Rails" />
                 <span className="text-2xl">+</span>
-                <img
-                  src="/app/assets/images/inertia.svg"
-                  alt="Inertia.js"
-                  className={styles.logo}
-                />
+                <img src="/app/assets/images/inertia.svg" alt="Inertia.js" />
                 <span className="text-2xl">+</span>
-                <img
-                  src="/app/assets/images/react.svg"
-                  alt="React"
-                  className={styles.logo}
-                />
+                <img src="/app/assets/images/react.svg" alt="React" />
               </div>
 
               <div className="mt-8">
@@ -52,7 +41,7 @@ export default function InertiaExample({
                     Manage Sessions
                   </Link>
                   <Link
-                    href="/edit_password"
+                    href={editPasswordPath()}
                     className="block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                   >
                     Change Password

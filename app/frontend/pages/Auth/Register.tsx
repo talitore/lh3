@@ -1,5 +1,5 @@
-import React from 'react';
-import { useForm, Head, Link } from '@inertiajs/react';
+import React from "react";
+import { useForm, Head, Link } from "@inertiajs/react";
 
 interface RegisterErrors {
   display_name?: string[];
@@ -14,15 +14,15 @@ interface RegisterProps {
 
 export default function Register({ errors }: RegisterProps) {
   const { data, setData, post, processing } = useForm({
-    display_name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
+    display_name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/sign_up');
+    post("/sign_up");
   };
 
   return (
@@ -46,7 +46,7 @@ export default function Register({ errors }: RegisterProps) {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Display Name"
                 value={data.display_name}
-                onChange={(e) => setData('display_name', e.target.value)}
+                onChange={(e) => setData("display_name", e.target.value)}
               />
               {errors?.display_name && (
                 <div className="text-red-600 text-sm">
@@ -64,7 +64,7 @@ export default function Register({ errors }: RegisterProps) {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
                 value={data.email}
-                onChange={(e) => setData('email', e.target.value)}
+                onChange={(e) => setData("email", e.target.value)}
               />
               {errors?.email && (
                 <div className="text-red-600 text-sm">{errors.email[0]}</div>
@@ -80,7 +80,7 @@ export default function Register({ errors }: RegisterProps) {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
                 value={data.password}
-                onChange={(e) => setData('password', e.target.value)}
+                onChange={(e) => setData("password", e.target.value)}
               />
               {errors?.password && (
                 <div className="text-red-600 text-sm">{errors.password[0]}</div>
@@ -97,7 +97,7 @@ export default function Register({ errors }: RegisterProps) {
                 placeholder="Confirm Password"
                 value={data.password_confirmation}
                 onChange={(e) =>
-                  setData('password_confirmation', e.target.value)
+                  setData("password_confirmation", e.target.value)
                 }
               />
             </div>

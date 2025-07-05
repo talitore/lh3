@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, usePage } from "@inertiajs/react";
 import { User } from "../types";
+import { editPasswordPath } from "../routes";
 
 interface PageProps {
   user: User | null;
@@ -39,7 +40,7 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
                     Sessions
                   </Link>
                   <Link
-                    href="/edit_password"
+                    href={editPasswordPath()}
                     className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Change Password

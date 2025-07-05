@@ -55,7 +55,8 @@ module ActionDispatch
     end
 
     def assert_inertia_response
-      assert response.content_type.start_with?('application/json'), "Expected JSON response, got #{response.content_type}"
+      assert response.content_type.start_with?('application/json'),
+             "Expected JSON response, got #{response.content_type}"
       json_response = JSON.parse(response.body)
       assert json_response.key?('component'), 'Response is not an Inertia response'
       assert json_response.key?('props'), 'Response is not an Inertia response'

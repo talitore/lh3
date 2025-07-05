@@ -35,7 +35,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
       assert_equal @user.email, props['user']['email']
       assert props['errors'], 'Errors should be present'
       assert props['errors']['password_challenge'], 'Password challenge error should be present'
-      assert_match /is invalid/, props['errors']['password_challenge'].first
+      assert_match(/is invalid/, props['errors']['password_challenge'].first)
     end
   end
 end

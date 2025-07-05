@@ -40,7 +40,7 @@ module Identity
 
     def inertia_props
       {
-        user: @user.as_json(only: [:id, :email])
+        user: @user.as_json(only: %i[id email])
       }
     end
 

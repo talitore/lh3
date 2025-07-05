@@ -4,87 +4,111 @@
  * @see https://github.com/railsware/js-routes
  */
 declare type Optional<T> = {
-    [P in keyof T]?: T[P] | null;
+  [P in keyof T]?: T[P] | null;
 };
 declare type Collection<T> = Record<string, T>;
 declare type BaseRouteParameter = string | boolean | Date | number | bigint;
-declare type MethodRouteParameter = BaseRouteParameter | (() => BaseRouteParameter);
-declare type ModelRouteParameter = {
-    id: MethodRouteParameter;
-} | {
-    to_param: MethodRouteParameter;
-} | {
-    toParam: MethodRouteParameter;
-};
+declare type MethodRouteParameter =
+  | BaseRouteParameter
+  | (() => BaseRouteParameter);
+declare type ModelRouteParameter =
+  | {
+      id: MethodRouteParameter;
+    }
+  | {
+      to_param: MethodRouteParameter;
+    }
+  | {
+      toParam: MethodRouteParameter;
+    };
 declare type RequiredRouteParameter = BaseRouteParameter | ModelRouteParameter;
 declare type OptionalRouteParameter = undefined | null | RequiredRouteParameter;
-declare type QueryRouteParameter = OptionalRouteParameter | QueryRouteParameter[] | {
-    [k: string]: QueryRouteParameter;
-};
+declare type QueryRouteParameter =
+  | OptionalRouteParameter
+  | QueryRouteParameter[]
+  | {
+      [k: string]: QueryRouteParameter;
+    };
 declare type RouteParameters = Collection<QueryRouteParameter>;
 declare type Serializable = Collection<unknown>;
 declare type Serializer = (value: Serializable) => string;
 declare type RouteHelperExtras = {
-    requiredParams(): string[];
-    toString(): string;
+  requiredParams(): string[];
+  toString(): string;
 };
-declare type RequiredParameters<T extends number> = T extends 1 ? [RequiredRouteParameter] : T extends 2 ? [RequiredRouteParameter, RequiredRouteParameter] : T extends 3 ? [RequiredRouteParameter, RequiredRouteParameter, RequiredRouteParameter] : T extends 4 ? [
-    RequiredRouteParameter,
-    RequiredRouteParameter,
-    RequiredRouteParameter,
-    RequiredRouteParameter
-] : RequiredRouteParameter[];
-declare type RouteHelperOptions = RouteOptions & Collection<OptionalRouteParameter>;
-declare type RouteHelper<T extends number = number> = ((...args: [...RequiredParameters<T>, RouteHelperOptions]) => string) & RouteHelperExtras;
+declare type RequiredParameters<T extends number> = T extends 1
+  ? [RequiredRouteParameter]
+  : T extends 2
+    ? [RequiredRouteParameter, RequiredRouteParameter]
+    : T extends 3
+      ? [RequiredRouteParameter, RequiredRouteParameter, RequiredRouteParameter]
+      : T extends 4
+        ? [
+            RequiredRouteParameter,
+            RequiredRouteParameter,
+            RequiredRouteParameter,
+            RequiredRouteParameter,
+          ]
+        : RequiredRouteParameter[];
+declare type RouteHelperOptions = RouteOptions &
+  Collection<OptionalRouteParameter>;
+declare type RouteHelper<T extends number = number> = ((
+  ...args: [...RequiredParameters<T>, RouteHelperOptions]
+) => string) &
+  RouteHelperExtras;
 declare type RouteHelpers = Collection<RouteHelper>;
 declare type Configuration = {
-    prefix: string;
-    default_url_options: RouteParameters;
-    special_options_key: string;
-    serializer: Serializer;
+  prefix: string;
+  default_url_options: RouteParameters;
+  special_options_key: string;
+  serializer: Serializer;
 };
 interface RouterExposedMethods {
-    config(): Configuration;
-    configure(arg: Partial<Configuration>): Configuration;
-    serialize: Serializer;
+  config(): Configuration;
+  configure(arg: Partial<Configuration>): Configuration;
+  serialize: Serializer;
 }
 declare type KeywordUrlOptions = Optional<{
-    host: string;
-    protocol: string;
-    subdomain: string;
-    port: string | number;
-    anchor: string;
-    trailing_slash: boolean;
-    script_name: string;
-    params: RouteParameters;
+  host: string;
+  protocol: string;
+  subdomain: string;
+  port: string | number;
+  anchor: string;
+  trailing_slash: boolean;
+  script_name: string;
+  params: RouteParameters;
 }>;
 declare type RouteOptions = KeywordUrlOptions & RouteParameters;
 declare type PartsTable = Collection<{
-    r?: boolean;
-    d?: OptionalRouteParameter;
+  r?: boolean;
+  d?: OptionalRouteParameter;
 }>;
 declare type ModuleType = "CJS" | "AMD" | "UMD" | "ESM" | "DTS" | "NIL";
 declare const RubyVariables: {
-    PREFIX: string;
-    DEPRECATED_FALSE_PARAMETER_BEHAVIOR: boolean;
-    SPECIAL_OPTIONS_KEY: string;
-    DEFAULT_URL_OPTIONS: RouteParameters;
-    SERIALIZER: Serializer;
-    ROUTES_OBJECT: RouteHelpers;
-    MODULE_TYPE: ModuleType;
-    WRAPPER: <T>(callback: T) => T;
+  PREFIX: string;
+  DEPRECATED_FALSE_PARAMETER_BEHAVIOR: boolean;
+  SPECIAL_OPTIONS_KEY: string;
+  DEFAULT_URL_OPTIONS: RouteParameters;
+  SERIALIZER: Serializer;
+  ROUTES_OBJECT: RouteHelpers;
+  MODULE_TYPE: ModuleType;
+  WRAPPER: <T>(callback: T) => T;
 };
-declare const define: undefined | (((arg: unknown[], callback: () => unknown) => void) & {
-    amd?: unknown;
-});
-declare const module: {
-    exports: unknown;
-} | undefined;
-export const configure: RouterExposedMethods['configure'];
+declare const define:
+  | undefined
+  | (((arg: unknown[], callback: () => unknown) => void) & {
+      amd?: unknown;
+    });
+declare const module:
+  | {
+      exports: unknown;
+    }
+  | undefined;
+export const configure: RouterExposedMethods["configure"];
 
-export const config: RouterExposedMethods['config'];
+export const config: RouterExposedMethods["config"];
 
-export const serialize: RouterExposedMethods['serialize'];
+export const serialize: RouterExposedMethods["serialize"];
 
 /**
  * Generates rails route to
@@ -93,8 +117,9 @@ export const serialize: RouterExposedMethods['serialize'];
  * @returns {string} route path
  */
 export const editIdentityEmailPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -103,8 +128,9 @@ export const editIdentityEmailPath: ((
  * @returns {string} route path
  */
 export const editIdentityPasswordResetPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -113,8 +139,9 @@ export const editIdentityPasswordResetPath: ((
  * @returns {string} route path
  */
 export const editPasswordPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -123,8 +150,9 @@ export const editPasswordPath: ((
  * @returns {string} route path
  */
 export const identityEmailPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -133,8 +161,9 @@ export const identityEmailPath: ((
  * @returns {string} route path
  */
 export const identityEmailVerificationPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -143,8 +172,9 @@ export const identityEmailVerificationPath: ((
  * @returns {string} route path
  */
 export const identityPasswordResetPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -153,8 +183,9 @@ export const identityPasswordResetPath: ((
  * @returns {string} route path
  */
 export const inertiaExamplePath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -163,8 +194,9 @@ export const inertiaExamplePath: ((
  * @returns {string} route path
  */
 export const logoutPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -173,8 +205,9 @@ export const logoutPath: ((
  * @returns {string} route path
  */
 export const newIdentityPasswordResetPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -183,8 +216,9 @@ export const newIdentityPasswordResetPath: ((
  * @returns {string} route path
  */
 export const newRailsConductorInboundEmailPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -193,8 +227,9 @@ export const newRailsConductorInboundEmailPath: ((
  * @returns {string} route path
  */
 export const newRailsConductorInboundEmailSourcePath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -203,8 +238,9 @@ export const newRailsConductorInboundEmailSourcePath: ((
  * @returns {string} route path
  */
 export const passwordPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -219,8 +255,9 @@ export const railsBlobRepresentationPath: ((
   signedBlobId: RequiredRouteParameter,
   variationKey: RequiredRouteParameter,
   filename: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -235,8 +272,9 @@ export const railsBlobRepresentationProxyPath: ((
   signedBlobId: RequiredRouteParameter,
   variationKey: RequiredRouteParameter,
   filename: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -247,8 +285,9 @@ export const railsBlobRepresentationProxyPath: ((
  */
 export const railsConductorInboundEmailPath: ((
   id: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -259,8 +298,9 @@ export const railsConductorInboundEmailPath: ((
  */
 export const railsConductorInboundEmailIncineratePath: ((
   inboundEmailId: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -271,8 +311,9 @@ export const railsConductorInboundEmailIncineratePath: ((
  */
 export const railsConductorInboundEmailReroutePath: ((
   inboundEmailId: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -281,8 +322,9 @@ export const railsConductorInboundEmailReroutePath: ((
  * @returns {string} route path
  */
 export const railsConductorInboundEmailSourcesPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -291,8 +333,9 @@ export const railsConductorInboundEmailSourcesPath: ((
  * @returns {string} route path
  */
 export const railsConductorInboundEmailsPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -301,8 +344,9 @@ export const railsConductorInboundEmailsPath: ((
  * @returns {string} route path
  */
 export const railsDirectUploadsPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -315,8 +359,9 @@ export const railsDirectUploadsPath: ((
 export const railsDiskServicePath: ((
   encodedKey: RequiredRouteParameter,
   filename: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -325,8 +370,9 @@ export const railsDiskServicePath: ((
  * @returns {string} route path
  */
 export const railsHealthCheckPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -335,8 +381,9 @@ export const railsHealthCheckPath: ((
  * @returns {string} route path
  */
 export const railsInfoPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -345,8 +392,9 @@ export const railsInfoPath: ((
  * @returns {string} route path
  */
 export const railsInfoNotesPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -355,8 +403,9 @@ export const railsInfoNotesPath: ((
  * @returns {string} route path
  */
 export const railsInfoPropertiesPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -365,8 +414,9 @@ export const railsInfoPropertiesPath: ((
  * @returns {string} route path
  */
 export const railsInfoRoutesPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -375,8 +425,9 @@ export const railsInfoRoutesPath: ((
  * @returns {string} route path
  */
 export const railsMailersPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -385,8 +436,9 @@ export const railsMailersPath: ((
  * @returns {string} route path
  */
 export const railsMailgunInboundEmailsPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -395,8 +447,9 @@ export const railsMailgunInboundEmailsPath: ((
  * @returns {string} route path
  */
 export const railsMandrillInboundEmailsPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -405,8 +458,9 @@ export const railsMandrillInboundEmailsPath: ((
  * @returns {string} route path
  */
 export const railsMandrillInboundHealthCheckPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -415,8 +469,9 @@ export const railsMandrillInboundHealthCheckPath: ((
  * @returns {string} route path
  */
 export const railsPostmarkInboundEmailsPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -425,8 +480,9 @@ export const railsPostmarkInboundEmailsPath: ((
  * @returns {string} route path
  */
 export const railsRelayInboundEmailsPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -435,8 +491,9 @@ export const railsRelayInboundEmailsPath: ((
  * @returns {string} route path
  */
 export const railsSendgridInboundEmailsPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -449,8 +506,9 @@ export const railsSendgridInboundEmailsPath: ((
 export const railsServiceBlobPath: ((
   signedId: RequiredRouteParameter,
   filename: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -463,8 +521,9 @@ export const railsServiceBlobPath: ((
 export const railsServiceBlobProxyPath: ((
   signedId: RequiredRouteParameter,
   filename: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -472,9 +531,7 @@ export const railsServiceBlobProxyPath: ((
  * @param {object | undefined} options
  * @returns {string} route path
  */
-export const rootPath: ((
-  options?: RouteOptions
-) => string) & RouteHelperExtras;
+export const rootPath: ((options?: RouteOptions) => string) & RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -485,8 +542,9 @@ export const rootPath: ((
  */
 export const sessionPath: ((
   id: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -495,8 +553,9 @@ export const sessionPath: ((
  * @returns {string} route path
  */
 export const sessionsPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -505,8 +564,9 @@ export const sessionsPath: ((
  * @returns {string} route path
  */
 export const signInPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -515,8 +575,9 @@ export const signInPath: ((
  * @returns {string} route path
  */
 export const signUpPath: ((
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 /**
  * Generates rails route to
@@ -527,8 +588,9 @@ export const signUpPath: ((
  */
 export const updateRailsDiskServicePath: ((
   encodedToken: RequiredRouteParameter,
-  options?: {format?: OptionalRouteParameter} & RouteOptions
-) => string) & RouteHelperExtras;
+  options?: { format?: OptionalRouteParameter } & RouteOptions,
+) => string) &
+  RouteHelperExtras;
 
 // By some reason this line prevents all types in a file
 // from being automatically exported

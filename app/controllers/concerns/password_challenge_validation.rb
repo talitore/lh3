@@ -20,7 +20,7 @@ module PasswordChallengeValidation
     Current.user.authenticate(params[:password_challenge])
   end
 
-  def handle_password_challenge_update(&block)
+  def handle_password_challenge_update
     if password_challenge_valid?
       yield if block_given?
     else
@@ -49,7 +49,7 @@ module PasswordChallengeValidation
     # Default props with user and errors
     # Can be extended in individual controllers
     {
-      user: @user.as_json(only: [:id, :email]),
+      user: @user.as_json(only: %i[id email]),
       errors: @user.errors.as_json
     }
   end
