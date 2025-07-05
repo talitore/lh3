@@ -29,7 +29,7 @@ module PasswordChallengeValidation
   end
 
   def handle_invalid_password_challenge
-    @user.errors.add(:password_challenge, 'is invalid')
+    @user.errors.add(:password_challenge, I18n.t('errors.messages.invalid'))
 
     # Use Inertia rendering instead of Rails partials
     render inertia: inertia_component_name, props: inertia_props_with_errors,
