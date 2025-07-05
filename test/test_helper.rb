@@ -54,21 +54,30 @@ module ActionDispatch
       delete(path, headers: inertia_headers.merge(args[:headers] || {}), **args.except(:headers))
     end
 
+    # Extract and memoize parsed JSON with error handling
+    def parsed_inertia_response
+      @parsed_inertia_response ||= begin
+        JSON.parse(response.body)
+      rescue JSON::ParserError => e
+        raise "Invalid JSON response: #{e.message}"
+      end
+    end
+
     def assert_inertia_response
       assert response.content_type.start_with?('application/json'),
              "Expected JSON response, got #{response.content_type}"
-      json_response = JSON.parse(response.body)
+      json_response = parsed_inertia_response
       assert json_response.key?('component'), 'Response is not an Inertia response'
-      assert json_response.key?('props'), 'Response is not an Inertia response'
+      assert json_response.key?('props'),     'Response is not an Inertia response'
     end
 
     def assert_inertia_component(expected_component)
-      json_response = JSON.parse(response.body)
+      json_response = parsed_inertia_response
       assert_equal expected_component, json_response['component']
     end
 
     def assert_inertia_props(expected_props = nil)
-      json_response = JSON.parse(response.body)
+      json_response = parsed_inertia_response
       if block_given?
         yield json_response['props']
       elsif expected_props
@@ -77,8 +86,7 @@ module ActionDispatch
     end
 
     def inertia_props
-      json_response = JSON.parse(response.body)
-      json_response['props']
+      parsed_inertia_response['props']
     end
   end
 end
