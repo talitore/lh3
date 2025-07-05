@@ -1,0 +1,6 @@
+---
+description: Generating urls in the front end for Rails routes
+alwaysApply: false
+---
+
+Always use the generated js-routes instead of hardcoding urls in the front end.

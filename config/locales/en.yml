@@ -28,4 +28,40 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  hello: 'Hello world'
+
+  # Email verification messages
+  email_verification:
+    success: 'Thank you for verifying your email address'
+    sent: 'We sent a verification email to your email address'
+    invalid: 'That email verification link is invalid'
+
+  # Email change messages
+  email:
+    changed: 'Your email has been changed'
+
+  # Password reset messages
+  password_reset:
+    instructions_sent: 'Check your email for reset instructions'
+    email_not_verified: "You can't reset your password until you verify your email"
+    success: 'Your password was reset successfully. Please sign in'
+    invalid_link: 'That password reset link is invalid'
+
+  # Password change messages
+  password:
+    changed: 'Your password has been changed'
+
+  # Registration messages
+  registration:
+    welcome: 'Welcome! You have signed up successfully'
+
+  # Session messages
+  session:
+    signed_in: 'Signed in successfully'
+    logged_out: 'That session has been logged out'
+    invalid_credentials: 'That email or password is incorrect'
+
+  # Email subjects
+  email_subjects:
+    password_reset: 'Reset your password'
+    email_verification: 'Verify your email'

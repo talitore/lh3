@@ -1,66 +1,57 @@
-import { Head } from '@inertiajs/react';
-import { useState } from 'react';
+import React from "react";
+import { Link } from "@inertiajs/react";
+import DefaultLayout from "../layouts/DefaultLayout";
+import { editPasswordPath } from "../routes";
 
-import inertiaSvg from '/assets/inertia.svg';
-import reactSvg from '/assets/react.svg';
-import viteRubySvg from '/assets/vite_ruby.svg';
-
-import cs from './InertiaExample.module.css';
-import DefaultLayout from '../layouts/DefaultLayout';
-
-export default function InertiaExample({ name }: { name: string }) {
-  const [count, setCount] = useState(0);
-
-  return (
-    <>
-      <Head title="Inertia + Vite Ruby + React Example" />
-
-      <div className={cs.root}>
-        <h1 className={cs.h1}>Hello {name}!</h1>
-
-        <div>
-          <a href="https://inertia-rails.dev" target="_blank">
-            <img className={cs.logo} src={inertiaSvg} alt="Inertia logo" />
-          </a>
-          <a href="https://vite-ruby.netlify.app" target="_blank">
-            <img
-              className={`${cs.logo} ${cs.vite}`}
-              src={viteRubySvg}
-              alt="Vite Ruby logo"
-            />
-          </a>
-          <a href="https://react.dev" target="_blank">
-            <img
-              className={`${cs.logo} ${cs.react}`}
-              src={reactSvg}
-              alt="React logo"
-            />
-          </a>
-        </div>
-
-        <h2 className={cs.h2}>Inertia + Vite Ruby + React</h2>
-
-        <div className="card">
-          <button
-            className={cs.button}
-            onClick={() => setCount((count) => count + 1)}
-          >
-            count is {count}
-          </button>
-          <p>
-            Edit <code>app/frontend/pages/InertiaExample.jsx</code> and save to
-            test HMR
-          </p>
-        </div>
-        <p className={cs.readTheDocs}>
-          Click on the Inertia, Vite Ruby, and React logos to learn more
-        </p>
-      </div>
-    </>
-  );
+interface InertiaExampleProps {
+  name?: string;
 }
 
-// Inertia persistent layout convention
-InertiaExample.layout = (page: React.ReactNode) => (
-  <DefaultLayout>{page}</DefaultLayout>
-);
+export default function InertiaExample({
+  name = "World",
+}: InertiaExampleProps) {
+  return (
+    <DefaultLayout>
+      <div className="px-4 py-6 sm:px-0">
+        <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Hello, {name}!
+            </h1>
+            <p className="text-lg text-gray-600 mb-8">
+              Welcome to your Rails + Inertia.js + React application!
+            </p>
+
+            <div className="space-y-4">
+              <div className="flex justify-center space-x-4">
+                <img src="/app/assets/images/rails.svg" alt="Rails" />
+                <span className="text-2xl">+</span>
+                <img src="/app/assets/images/inertia.svg" alt="Inertia.js" />
+                <span className="text-2xl">+</span>
+                <img src="/app/assets/images/react.svg" alt="React" />
+              </div>
+
+              <div className="mt-8">
+                <h2 className="text-xl font-semibold mb-4">Quick Links</h2>
+                <div className="space-y-2">
+                  <Link
+                    href="/sessions"
+                    className="block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    Manage Sessions
+                  </Link>
+                  <Link
+                    href={editPasswordPath()}
+                    className="block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  >
+                    Change Password
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </DefaultLayout>
+  );
+}
