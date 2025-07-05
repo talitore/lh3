@@ -1,6 +1,6 @@
 import { createInertiaApp } from '@inertiajs/react';
 import { createElement, ReactNode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 
 // Temporary type definition, until @inertiajs/react provides one
 type ResolvedComponent = {
@@ -39,7 +39,11 @@ createInertiaApp({
 
   setup({ el, App, props }) {
     if (el) {
-      createRoot(el).render(createElement(App, props));
+      if (import.meta.env.DEV) {
+        createRoot(el).render(createElement(App, props));
+      } else {
+        hydrateRoot(el, createElement(App, props));
+      }
     } else {
       console.error(
         'Missing root element.\n\n' +

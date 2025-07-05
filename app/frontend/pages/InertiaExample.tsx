@@ -2,9 +2,11 @@ import { Head } from '@inertiajs/react';
 import { useState } from 'react';
 
 import inertiaSvg from '/assets/inertia.svg';
+import reactSvg from '/assets/react.svg';
 import viteRubySvg from '/assets/vite_ruby.svg';
 
 import cs from './InertiaExample.module.css';
+import DefaultLayout from '../layouts/DefaultLayout';
 
 export default function InertiaExample({ name }: { name: string }) {
   const [count, setCount] = useState(0);
@@ -27,7 +29,13 @@ export default function InertiaExample({ name }: { name: string }) {
               alt="Vite Ruby logo"
             />
           </a>
-          <a href="https://react.dev" target="_blank"></a>
+          <a href="https://react.dev" target="_blank">
+            <img
+              className={`${cs.logo} ${cs.react}`}
+              src={reactSvg}
+              alt="React logo"
+            />
+          </a>
         </div>
 
         <h2 className={cs.h2}>Inertia + Vite Ruby + React</h2>
@@ -51,3 +59,8 @@ export default function InertiaExample({ name }: { name: string }) {
     </>
   );
 }
+
+// Inertia persistent layout convention
+InertiaExample.layout = (page: React.ReactNode) => (
+  <DefaultLayout>{page}</DefaultLayout>
+);
