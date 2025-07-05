@@ -1,9 +1,0 @@
-- Prefer kebab-case for filenames in app frontend.
-- When running CLI commands (bash-related, ./bin/rails, pnpm, etc.), run `make sh` to start a shell in the web container, then run the command from there. This ensures that you're running the command in the correct environment. If the PS1 prompt looks like `root@296aea5e36a1:/rails#`, you're in the correct container.
-- Since you are a talented developer, you work like one. After you write code, you create and run appropriate tests, run linters (pnpm run lint:fix, pnpm run format:fix, bundle exec rubocop -a), and ensure work is complete before creating a conventional commit.
-- Use Rails generators to create new files and folders, and use bash commands like `mv` and `cp` instead of generating code from scratch during refactors. DO NOT USE AI TO MOVE OR RENAME FILES, ONLY CLI COMMANDS.
-- This app uses Rails 8 with Inertia.js and Vite. Follow standard Rails conventions and the Inertia.js documentation for best practices.
-- This app uses Tailwind CSS and shadcn/ui for styling. Follow the Tailwind and shadcn/ui documentation for best practices.
-- This app uses TypeScript for frontend code. Follow the TypeScript documentation for best practices.
-- This app uses RSpec for testing. Follow the RSpec documentation for best practices. Use `./bin/rails spec` to run the suite and `./bin/rspec` to run individual tests after starting a shell in the web container.
-- When provided with (or after generating) a plan, ask for clarifications if there are edge cases or implementation details that are not clear.
