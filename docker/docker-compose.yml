@@ -35,7 +35,7 @@ services:
       # Skip credentials in development mode
       VITE_APP_NAME: ${VITE_APP_NAME:-lh3}
       VITE_RUBY_HOST: 0.0.0.0
-      # Ensure Node.js and pnpm are available in PATH
+      # Ensure Node.js and npm are available in PATH
       PATH: /usr/local/node/bin:$PATH
     ports:
       - '3000:3000'

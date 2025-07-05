@@ -96,9 +96,10 @@ lint:
 
 # Run formatters
 format:
-	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web bundle exec rubocop -a
-	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web pnpm run format:fix
-	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web pnpm run lint:fix
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web bundle exec rubocop -A
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web npm run format:fix
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web npm run lint:fix
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web ./script/validate_js_routes_in_sync.sh
 
 # Clean everything
 clean:

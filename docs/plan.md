@@ -40,9 +40,9 @@ Establish the foundational Rails application, Docker environment, essential gems
 3.  **Gemfile & Package.json:**
     - Add core gems from `prd.md#1.3` to `Gemfile`.
     - Run `bundle install`.
-    - Initialize `package.json` with `pnpm init -y`.
+    - Initialize `package.json` with `npm init -y`.
     - Add core JS packages from `prd.md#1.3`.
-    - Run `pnpm install`.
+    - Run `npm install`.
     - Commit lockfiles.
 4.  **Propshaft & Asset Pipeline:**
     - Configure Propshaft in `config/application.rb` (`prd.md#2.1`).
@@ -59,7 +59,7 @@ Establish the foundational Rails application, Docker environment, essential gems
     - Create basic `app/frontend/Pages/Home.tsx` (e.g., displaying "Hello World").
     - Create a root route in `config/routes.rb` pointing to an action that renders `Inertia.render('Home')`.
 8.  **Tailwind CSS Integration:**
-    - Initialize Tailwind: `pnpm dlx tailwindcss init` (`prd.md#2.5`).
+    - Initialize Tailwind: `npm dlx tailwindcss init` (`prd.md#2.5`).
     - Configure `tailwind.config.js` (`prd.md#2.5`).
     - Create `app/frontend/styles/application.css` (`prd.md#2.5`).
 9.  **Linting Setup:**
@@ -79,7 +79,7 @@ Establish the foundational Rails application, Docker environment, essential gems
   - Rails app runs: `bin/dev` (or equivalent using Vite and Rails server separately).
   - Navigate to the root URL. See "Hello World" (or similar) rendered via React/Inertia/Vite, styled by Tailwind.
   - `bundle exec rubocop` runs without errors on initial codebase.
-  - `pnpm run lint:js` runs without errors on initial frontend code.
+  - `npm run lint:js` runs without errors on initial frontend code.
 
 ### Deliverables
 
@@ -110,16 +110,19 @@ Implement user authentication (registration, login, logout) and enhance the User
 1.  **Authentication Zero Setup:**
     - Install and configure `authentication_zero` (`prd.md#3.1`).
     - Run migrations: `rails db:migrate`.
-2.  **Inertia Views for Auth:**
+2.  **Setup `Current.user`:**
+    - Create `app/models/current.rb` to define `Current.user`.
+    - Add a `before_action` in `ApplicationController` to set `Current.user` from `current_user`. This makes the current user securely available to the model layer.
+3.  **Inertia Views for Auth:**
     - Override `SessionsController` and `RegistrationsController` `new` actions to render Inertia pages (e.g., `Auth/Login`, `Auth/Register`) as suggested in `prd.md#3.1`.
     - Create corresponding React pages:
       - `app/frontend/Pages/Auth/Login.tsx`
       - `app/frontend/Pages/Auth/Register.tsx`
     - Implement forms using React Hook Form + Zod for validation.
-3.  **User Model Enhancements:**
+4.  **User Model Enhancements:**
     - Add `display_name`, `avatar_url` to `User` model via migration (`prd.md#4.1`).
     - Update `User` model (`app/models/user.rb`) with any initial validations or methods.
-4.  **Navigation for Auth:**
+5.  **Navigation for Auth:**
     - Add Login/Register/Logout links to `AppLayout.tsx` (to be created/enhanced in a later phase, but links can be conditional now).
     - Protect a sample route to test authentication.
 
@@ -127,7 +130,7 @@ Implement user authentication (registration, login, logout) and enhance the User
 
 - Store Zod schemas in `app/frontend/ZodSchemas/`.
 - Create reusable form components if patterns emerge.
-- Ensure `current_user` helper is available in Inertia props.
+- The controller makes `current_user` available to Inertia props, while `Current.user` is used for model and service logic.
 
 ### Testing
 
@@ -171,6 +174,7 @@ Define and migrate core data models: Event, RSVP, and Photo. Establish their ass
 1.  **Event Model:**
     - Generate `Event` model scaffold (`prd.md#4.2`).
     - Add associations to `app/models/event.rb` (`belongs_to :creator`, `has_many :rsvps`, `has_many :photos`).
+    - Add a `before_validation :set_creator, on: :create` callback, where `set_creator` assigns `self.creator ||= Current.user`. This centralizes creator logic in the model.
     - Add validations (`run_number`, `descriptor`, `date`, `time`, `address`).
     - Run `rails db:migrate`.
 2.  **RSVP Model:**
@@ -189,7 +193,7 @@ Define and migrate core data models: Event, RSVP, and Photo. Establish their ass
 
 ### Best Practices & Considerations
 
-- Use `rails g model ... created_by:references{to_table: :users}` for foreign keys.
+- Use `rails g model ... creator:references{to_table: :users}` for foreign keys to ensure consistency with associations like `belongs_to :creator`.
 - Define constants for things like `Rsvp::STATUSES` in the respective models.
 
 ### Testing
@@ -243,7 +247,7 @@ Set up Pundit for authorization and create initial controllers for Events, RSVPs
     - Implement `index` action: Fetch events, render `Events/Index` Inertia page with events JSON (`prd.md#5.1`).
     - Implement `show` action: Fetch event, authorize, render `Events/Show` Inertia page with event JSON (`prd.md#5.1`).
     - Implement `new` action: Authorize, render `Events/New` Inertia page.
-    - Implement `create` action (stub): Authorize, build event, handle save (success/failure rendering Inertia) (`prd.md#5.1`).
+    - Implement `create` action (stub): Authorize, build event with `Event.new(event_params)`, and let the model callback handle setting the creator (`prd.md#5.1`).
     - Implement `set_event` private method.
     - Define `event_params`.
     - Add routes for events (`resources :events`).
@@ -405,7 +409,7 @@ Implement the functionality for creating and editing events, including the front
     - Render `<EventForm />` with `initialData`.
     - Handle form submission: `Inertia.put(`/events/${event.id}`, data)`.
 5.  **Update `EventsController`:**
-    - Implement `create` action: Authorize, build event with `current_user.created_events.build`, save, handle success (redirect to show) and failure (re-render new with errors) (`prd.md#5.1`).
+    - Implement `create` action: Authorize, create event with `Event.new(event_params)`, save, handle success (redirect to show) and failure (re-render new with errors). The creator will be set automatically via the model callback using `Current.user`.
     - Implement `edit` action: `set_event`, authorize, render `Events/Edit` with event prop.
     - Implement `update` action: `set_event`, authorize, update event, handle success/failure.
     - Implement `destroy` action: `set_event`, authorize, destroy event, redirect to index.
@@ -463,7 +467,7 @@ Implement the ability for authenticated users to RSVP to events and for those RS
 ### Key Tasks
 
 1.  **`RsvpsController` Implementation:**
-    - Implement `create` action: Authenticate user, find event, create/update RSVP (`@event.rsvps.find_or_initialize_by(user: current_user).update(status: params[:status])`). Return JSON response (`prd.md#5.2`).
+    - Implement `create` action: Authenticate user, find event, create/update RSVP (`@event.rsvps.find_or_initialize_by(user: current_user).update(status: params[:status])`). Using `current_user` here is appropriate as it's a direct controller action on a specific user's record. Return JSON response (`prd.md#5.2`).
     - Implement `update` action (can be merged with `create` if using upsert logic, or separate for distinct status changes).
     - Refine `RsvpPolicy` (e.g., user can only manage their own RSVP). Authorize actions.
     - Add `set_event` before_action.
@@ -527,7 +531,7 @@ Allow users to upload photos for an event and display them in a gallery. (Simpli
 ### Key Tasks
 
 1.  **`PhotosController` Implementation:**
-    - Implement `create` action: Authenticate, find event, create photo record with `image_url` from params, associate with `current_user` and `event`. Return JSON (`prd.md#5.3`).
+    - Implement `create` action: Authenticate, find event, create photo record. The `Photo` model should have a callback to assign the uploader from `Current.user`, similar to the `Event` model. Return JSON (`prd.md#5.3`).
     - Implement `destroy` action: Authorize, find photo, destroy.
     - Refine `PhotoPolicy` (uploader or event creator can delete).
     - Add `set_event` before_action.
@@ -595,7 +599,7 @@ Implement basic attendance tracking where users can mark themselves present on t
       - Conditionally render this component only if it's the event day (add helper `isEventDay(eventDate)`).
 3.  **Integrate `AttendanceToggle`:**
     - Add to `Events/Show.tsx`. Pass necessary props. This means the `event` prop for `Events/Show.tsx` must include the current user's RSVP details for that event.
-    - `EventsController#show` needs to ensure the `@event` JSON includes `current_user_rsvp: @event.rsvps.find_by(user: current_user)` or similar.
+    - `EventsController#show` needs to ensure the `@event` JSON includes `current_user_rsvp: @event.rsvps.find_by(user: current_user)` or similar. This is a good example of when to use the `current_user` helper directly in the controller for a specific query.
 
 ### Testing
 
@@ -650,7 +654,7 @@ Refine existing features, expand test coverage, set up basic admin stubs, and pr
     - Display with mock data. Integrate into `Events/Index.tsx`.
 4.  **Admin Dashboard Stub (`Dashboard.tsx`):**
     - Create `app/frontend/Pages/Admin/Dashboard.tsx` (`prd.md#6.6`).
-    - Add basic conditional link in `AppLayout` to `/admin/dashboard` if `current_user.is_admin?` (add `is_admin` boolean to `User` model, default false, and migrate).
+    - Add basic conditional link in `AppLayout` to `/admin/dashboard` if the current user is an admin. The controller will check `Current.user.is_admin?` and pass a prop to the frontend.
     - Stub out sections mentioned in PRD (Attendance Tracking, Hash Cash, Achievements).
 5.  **Advanced Address Input (Consideration):**
     - If time permits, start basic integration of Google Maps Autocomplete for `AddressInput.tsx` (PRD section 6.4) or defer.
