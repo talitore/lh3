@@ -22,13 +22,22 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    session_record = Current.user.sessions.find(params[:id])
-    session_record.destroy
+    session_record = find_session_to_destroy
+    session_record&.destroy
+    cookies.delete(:session_token)
 
-    redirect_to(sessions_path, notice: I18n.t('session.logged_out'))
+    redirect_to(root_path, notice: I18n.t('session.logged_out'))
   end
 
   private
+
+  def find_session_to_destroy
+    if params[:id]
+      Current.user.sessions.find(params[:id])
+    else
+      Session.find_by(id: cookies.signed[:session_token])
+    end
+  end
 
   def handle_successful_login(user)
     session_record = user.sessions.create!

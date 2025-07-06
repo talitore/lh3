@@ -22,11 +22,11 @@ gem 'image_processing'
 gem 'geocoder'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: %i[windows jruby]
+gem 'tzinfo-data', platforms: %i[mswin jruby]
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem 'debug', platforms: %i[mri windows], require: 'debug/prelude'
+  gem 'debug', platforms: %i[mri mswin], require: 'debug/prelude'
   gem 'foreman', '~> 0.88.1'
   gem 'rubocop', '~> 1.77'
   gem 'rubocop-rails', '~> 2.32', require: false
