@@ -1,7 +1,7 @@
-import React from 'react';
-import { useForm, Head, Link } from '@inertiajs/react';
-import DefaultLayout from '../../layouts/DefaultLayout';
-import { passwordPath } from '../../routes';
+import React from "react";
+import { useForm, Head, Link } from "@inertiajs/react";
+import DefaultLayout from "../../layouts/DefaultLayout";
+import { passwordPath } from "../../routes";
 
 interface PasswordEditErrors {
   password_challenge?: string[];
@@ -15,9 +15,9 @@ interface PasswordEditProps {
 
 export default function Edit({ errors }: PasswordEditProps) {
   const { data, setData, patch, processing } = useForm({
-    password_challenge: '',
-    password: '',
-    password_confirmation: '',
+    password_challenge: "",
+    password: "",
+    password_confirmation: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -50,7 +50,7 @@ export default function Edit({ errors }: PasswordEditProps) {
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={data.password_challenge}
-                onChange={(e) => setData('password_challenge', e.target.value)}
+                onChange={(e) => setData("password_challenge", e.target.value)}
               />
               {errors?.password_challenge && (
                 <div className="mt-1 text-sm text-red-600">
@@ -74,7 +74,7 @@ export default function Edit({ errors }: PasswordEditProps) {
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={data.password}
-                onChange={(e) => setData('password', e.target.value)}
+                onChange={(e) => setData("password", e.target.value)}
               />
               {errors?.password && (
                 <div className="mt-1 text-sm text-red-600">
@@ -102,7 +102,7 @@ export default function Edit({ errors }: PasswordEditProps) {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={data.password_confirmation}
                 onChange={(e) =>
-                  setData('password_confirmation', e.target.value)
+                  setData("password_confirmation", e.target.value)
                 }
               />
               {errors?.password_confirmation && (
@@ -124,7 +124,7 @@ export default function Edit({ errors }: PasswordEditProps) {
                 disabled={processing}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
               >
-                {processing ? 'Saving...' : 'Save Changes'}
+                {processing ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </form>

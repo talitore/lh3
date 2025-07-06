@@ -3,7 +3,7 @@
 # Controller for the home page
 class HomeController < ApplicationController
   def index
-    render inertia: 'InertiaExample', props: {
+    render inertia: 'Home', props: {
       name: params.fetch(:name, 'World')
     }
   end
