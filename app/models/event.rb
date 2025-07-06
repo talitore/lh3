@@ -1,11 +1,14 @@
 class Event < ApplicationRecord
-  belongs_to :creator, class_name: "User", foreign_key: :creator, inverse_of: :created_events
+  include SoftDeletable
+
+  belongs_to :creator, class_name: "User", foreign_key: :creator_id, inverse_of: :created_events
   has_many :rsvps
   has_many :photos
 
   validates :run_number, :descriptor, :date, :time, :address, presence: true
 
   before_validation :set_creator, on: :create
+  before_destroy :handle_dependent_records
   ##
   # Sets the creator of the event to the current user if not already assigned.
   def set_creator
@@ -25,5 +28,11 @@ class Event < ApplicationRecord
       rsvps: {},
       photos: {}
     }))
+  end
+
+  private
+
+  def handle_dependent_records
+    rsvps.find_each(&:destroy)
   end
 end

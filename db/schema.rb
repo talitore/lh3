@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_06_164040) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_06_205602) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -23,7 +23,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_06_164040) do
     t.bigint "creator", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
     t.index ["creator"], name: "index_events_on_creator"
+    t.index ["deleted_at"], name: "index_events_on_deleted_at"
   end
 
   create_table "photos", force: :cascade do |t|
@@ -33,6 +35,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_06_164040) do
     t.string "alt_text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_photos_on_deleted_at"
     t.index ["event_id"], name: "index_photos_on_event_id"
     t.index ["user_id"], name: "index_photos_on_user_id"
   end
@@ -44,6 +48,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_06_164040) do
     t.datetime "attended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_rsvps_on_deleted_at"
     t.index ["event_id"], name: "index_rsvps_on_event_id"
     t.index ["user_id"], name: "index_rsvps_on_user_id"
   end
@@ -65,6 +71,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_06_164040) do
     t.datetime "updated_at", null: false
     t.string "display_name"
     t.string "avatar_url"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

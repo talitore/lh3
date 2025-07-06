@@ -1,4 +1,6 @@
 class Rsvp < ApplicationRecord
+  include SoftDeletable
+
   STATUSES = %w[yes maybe no].freeze
 
   belongs_to :user

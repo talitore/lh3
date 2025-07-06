@@ -4,7 +4,7 @@ class PhotosController < ApplicationController
   before_action :set_event
 
   def create
-    authorize Photo
+    authorize @event, :create_photo?
     @photo = @event.photos.build(photo_params)
     @photo.user = Current.user # The uploader is always the current user
 
