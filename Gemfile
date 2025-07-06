@@ -9,14 +9,16 @@ gem 'puma', '>= 5.0'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.1'
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem 'authentication-zero', '~> 4.0'
 gem 'bcrypt', '~> 3.1.7'
+gem 'authentication-zero', '~> 4.0'
+gem 'pundit'
 
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem 'inertia_rails', '~> 3.9'
 gem 'js-routes'
 gem 'propshaft'
 gem 'vite_rails', '~> 3.0'
+gem 'image_processing'
 gem 'geocoder'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
