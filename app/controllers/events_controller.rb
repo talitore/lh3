@@ -20,7 +20,7 @@ class EventsController < ApplicationController
 
   def create
     authorize Event
-    event = Event.new(event_params) # Event.new will call set_creator
+    event = Event.new(event_params) # creator is set via before_validation callback on save
 
     if event.save
       redirect_to event_path(event), notice: 'Event created.'
