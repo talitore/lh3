@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_06_205602) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_06_211103) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -51,6 +51,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_06_205602) do
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_rsvps_on_deleted_at"
     t.index ["event_id"], name: "index_rsvps_on_event_id"
+    t.index ["user_id", "event_id"], name: "index_rsvps_on_user_id_and_event_id", unique: true
     t.index ["user_id"], name: "index_rsvps_on_user_id"
   end
 

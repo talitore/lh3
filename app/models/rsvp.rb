@@ -7,6 +7,7 @@ class Rsvp < ApplicationRecord
   belongs_to :event
 
   validates :status, presence: true, inclusion: { in: STATUSES }
+  validates :user_id, uniqueness: { scope: :event_id, message: "has already RSVP'd for this event" }
 
   ##
   # Returns a JSON representation of the RSVP, including nested user and event data with selected attributes.
