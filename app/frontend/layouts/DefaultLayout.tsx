@@ -19,6 +19,13 @@ interface DefaultLayoutProps {
   children: React.ReactNode;
 }
 
+/**
+ * Provides a page layout with a sticky header, navigation menu, and main content area.
+ *
+ * Renders navigation links and a welcome message based on user authentication status. The main content is displayed below the header.
+ *
+ * @param children - The content to display within the layout
+ */
 export default function DefaultLayout({ children }: DefaultLayoutProps) {
   const { user } = usePage<PageProps>().props;
 
