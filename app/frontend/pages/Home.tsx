@@ -25,6 +25,13 @@ import {
 } from "lucide-react";
 import { signUpPath } from "../routes";
 
+/**
+ * Renders the multi-section homepage with hero, features, technology stack, and call-to-action sections.
+ *
+ * The homepage introduces the full-stack solution combining Rails 8, Inertia.js, React, and shadcn/ui, highlighting key features and technologies. It provides navigation links for sign-up and viewing a demo or GitHub repository.
+ *
+ * @returns The homepage React element
+ */
 export default function Home() {
   return (
     <DefaultLayout>

@@ -13,6 +13,11 @@ interface PasswordEditProps {
   errors?: PasswordEditErrors;
 }
 
+/**
+ * Renders a password change form allowing users to update their current password.
+ *
+ * Displays validation errors for each field if provided. The form requires the current password, a new password (minimum 12 characters), and confirmation of the new password. Submission triggers a password update request.
+ */
 export default function Edit({ errors }: PasswordEditProps) {
   const { data, setData, patch, processing } = useForm({
     password_challenge: "",
