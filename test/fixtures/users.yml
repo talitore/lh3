@@ -1,7 +1,22 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 lazaro_nixon:
-  email: lazaronixon@app.local
+  id: 1
+  email: lazaro_nixon@example.com
   display_name: Lazaro Nixon
-  password_digest: <%= BCrypt::Password.create("Secret1*3*5*") %>
+  password_digest: <%= User.new(password: 'password').password_digest %>
+  verified: true
+
+magic:
+  id: 980190962
+  email: magic@example.com
+  display_name: Magic User
+  password_digest: <%= User.new(password: 'password').password_digest %>
+  verified: true
+
+extra:
+  id: 64810937
+  email: extra@example.com
+  display_name: Extra User
+  password_digest: <%= User.new(password: 'password').password_digest %>
   verified: true

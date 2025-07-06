@@ -4,6 +4,8 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
+  has_many :rsvps
+  has_many :photos
 
   validates :email, presence: true, uniqueness: true
   validates :display_name, presence: true

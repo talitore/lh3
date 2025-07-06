@@ -10,9 +10,43 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_05_163705) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_06_164040) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "events", force: :cascade do |t|
+    t.integer "run_number"
+    t.string "descriptor"
+    t.date "date"
+    t.time "time"
+    t.string "address"
+    t.bigint "creator", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator"], name: "index_events_on_creator"
+  end
+
+  create_table "photos", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "event_id", null: false
+    t.string "image_url"
+    t.string "alt_text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_photos_on_event_id"
+    t.index ["user_id"], name: "index_photos_on_user_id"
+  end
+
+  create_table "rsvps", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "event_id", null: false
+    t.string "status"
+    t.datetime "attended_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_rsvps_on_event_id"
+    t.index ["user_id"], name: "index_rsvps_on_user_id"
+  end
 
   create_table "sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -34,5 +68,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_05_163705) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "events", "users", column: "creator"
+  add_foreign_key "photos", "events"
+  add_foreign_key "photos", "users"
+  add_foreign_key "rsvps", "events"
+  add_foreign_key "rsvps", "users"
   add_foreign_key "sessions", "users"
 end

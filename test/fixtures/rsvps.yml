@@ -1,0 +1,22 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  id: 1
+  user: 1
+  event: 1
+  status: MyString
+  attended_at: 2025-07-06 16:40:35
+
+two:
+  id: 2
+  user: 1
+  event: 2
+  status: MyString
+  attended_at: 2025-07-06 16:40:35
+
+magic:
+  id: 980190962
+  user: 1
+  event: 1
+  status: MagicString
+  attended_at: 2025-07-06 16:40:35

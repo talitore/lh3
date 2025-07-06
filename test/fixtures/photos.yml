@@ -1,0 +1,22 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  id: 1
+  user: 1
+  event: 1
+  image_url: MyString
+  alt_text: MyString
+
+two:
+  id: 2
+  user: 1
+  event: 2
+  image_url: MyString
+  alt_text: MyString
+
+magic:
+  id: 980190962
+  user: 1
+  event: 1
+  image_url: MagicString
+  alt_text: MagicString
