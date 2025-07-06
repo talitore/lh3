@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "strict": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
     "baseUrl": "./app/frontend",
     "paths": {
       "@/*": ["./*"]
