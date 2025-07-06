@@ -3,7 +3,6 @@
 ## 1. Initial Setup & Boilerplate
 
 1. **Provision the Git repo & directory structure**
-
    - Create a new Rails 8 app with the minimal flag (no default XHR stacks):
 
      ```bash
@@ -23,9 +22,7 @@
    - Commit the “bare” Rails structure and push to your main Git branch.
 
 2. **Set up Docker + Kamal**
-
    - Write a `Dockerfile` that:
-
      - Installs Ruby 3.x (matching Rails 8).
      - Installs Node 18+ (for Vite/npm).
      - Copies your Gemfile/`package-lock.json` and runs `bundle install` / `npm install`.
@@ -33,7 +30,6 @@
      - Sets `CMD ["bin/rails", "server", "-b", "0.0.0.0"]` or uses Kamal’s entrypoint if desired.
 
    - Create a `docker-compose.yml` (or let Kamal generate one) with services:
-
      - **app** (your Rails + Inertia server)
      - **db** (PostgreSQL, version 14+)
      - **redis** (if you plan to run Solid Cache/Solid Queue as separate processes—although database‐backed queue/cache may not strictly need Redis)
@@ -41,7 +37,6 @@
    - Configure Kamal: add a `kamal.rb` (or `kamal.yml`) that defines your staging/production Docker image registry, server SSH credentials, and deploy hooks.
 
 3. **Gemfile / Package.json stubs**
-
    - **Gemfile** (add these lines early):
 
      ```ruby
@@ -75,7 +70,6 @@
 ## 2. Rails + Inertia + Vite Integration
 
 1. **Propshaft & Asset Pipeline**
-
    - In `config/application.rb`, ensure Propshaft is enabled:
 
      ```ruby
@@ -88,7 +82,6 @@
    - Create a `Propshaft` folder structure under `app/assets/` if you have any static images/fonts you’ll reference from Rails.
 
 2. **Vite Setup**
-
    - Run `bundle exec vite install` (this will install `vite.config.ts`, `app/frontend` folder, and stub out default Vite scripts).
    - In `vite.config.ts`, configure:
 
@@ -115,13 +108,12 @@
      {
        "scripts": {
          "dev": "vite dev",
-         "build": "vite build"
-       }
+         "build": "vite build",
+       },
      }
      ```
 
 3. **Inertia Rails Configuration**
-
    - Add to `config/initializers/inertia_rails.rb`:
 
      ```ruby
@@ -153,7 +145,6 @@
      ```
 
 4. **React / TypeScript Entrypoint**
-
    - Create `app/frontend/entrypoints/application.tsx`:
 
      ```tsx
@@ -182,7 +173,6 @@
      ```
 
 5. **Tailwind CSS (v4) Integration**
-
    - Install Tailwind config:
 
      ```bash
@@ -214,7 +204,6 @@
 ## 3. Authentication & Authorization
 
 1. **Authentication Zero Setup**
-
    - Run the installer:
 
      ```bash
@@ -237,7 +226,6 @@
    - Build corresponding React pages in `app/frontend/Pages/Auth/Login.tsx`, etc., using React Hook Form + Zod for validation.
 
 2. **Pundit Setup**
-
    - Add to `application_controller.rb`:
 
      ```ruby
@@ -257,7 +245,6 @@
 ## 4. Data Modeling & Migrations
 
 1. **User Model**
-
    - Already created by Authentication Zero: fields include `email`, `encrypted_password`, `name`, etc.
    - Add any extra columns you need (e.g. `avatar_url:string`, `display_name:string`) via migration:
 
@@ -267,7 +254,6 @@
      ```
 
 2. **Event (Run) Model**
-
    - Generate scaffold without views (we’ll use Inertia instead of default ERB):
 
      ```bash
@@ -302,7 +288,6 @@
      ```
 
 3. **RSVP & Attendance Models**
-
    - We’ll combine “RSVP” and “Attendance” into one table that toggles status (for simplicity):
 
      ```bash
@@ -339,7 +324,6 @@
      ```
 
 4. **Photo & Album Models**
-
    - We’ll store each photo as its own record, and group them into an “album” by event_id. If we ever want a separate Album object, we can add that later. For now:
 
      ```bash
@@ -364,7 +348,6 @@
      ```
 
 5. **Geocoding**
-
    - Because we want “address → lat/lng,” install a gem like `geocoder`:
 
      ```ruby
@@ -390,7 +373,6 @@
 ## 5. Core Controller & Policy Development
 
 1. **EventsController (Inertia)**
-
    - Generate:
 
      ```bash
@@ -458,7 +440,6 @@
      ```
 
 2. **RsvpsController (for RSVP + attendance)**
-
    - Generate:
 
      ```bash
@@ -505,7 +486,6 @@
    - In Pundit, create `RsvpPolicy` so only the RSVP owner can update their status/attendance. Organizers (event.creator) can also view/modify all RSVPs.
 
 3. **PhotosController (for Upload & Album Management)**
-
    - Generate:
 
      ```bash
@@ -595,7 +575,6 @@
 > ```
 
 1. **Global Layout (AppLayout.tsx)**
-
    - Contains the top nav (“lh3” logo, Feed/Events/Members links, Admin Mode toggle if `current_user.is_admin`).
    - Sidebar with “Upcoming Events” and “Quick Stats” cards.
    - Footer (if desired).
@@ -604,11 +583,9 @@
    - Import Lucide React icons for mapping, RSVP icons, check‐mark, camera, etc.
 
 2. **“Events/Index.tsx” (Feed page)**
-
    - **Data passed in from controller**: `props.events` (array of events with nested `rsvp_count`, `attendance_count`, `photo_count`), plus `current_user_id`.
    - Map over `events` and render `<EventCard key={id} event={event} currentUserId={current_user_id} />`.
    - At the top, show a “Next Run” banner if there’s an event whose date/time is closest to “now.” That banner includes:
-
      - Run number + descriptor
      - Date/Time (formatted)
      - Address with Map icon (linking to Google Maps or opening a modal map)
@@ -619,7 +596,6 @@
    - Then list recent “community posts” (we can stub this out as an empty array initially).
 
 3. **“EventCard.tsx” Component**
-
    - Props:
 
      ```ts
@@ -683,7 +659,6 @@
    - The `RSVPButton` toggles between “RSVP” / “Cancel RSVP” based on a fetch to `/events/:id/rsvps`.
 
 4. **“EventForm.tsx” Component (for New/Edit)**
-
    - Use **React Hook Form** + **Zod** validation:
 
      ```ts
@@ -693,13 +668,11 @@
      ```
 
    - UI fields:
-
      - **Run Number** (number input).
      - **Descriptor** (text input).
      - **Date** (HTML date picker).
      - **Time** (HTML time picker).
      - **AddressInput**: custom component that integrates Google Maps Autocomplete (or Mapbox) to let the user type an address and select one. Under the hood:
-
        - `<input type="text" {...register("address")} />`
        - As they type, call Google Maps Places API (via your own API key, probably in an environment variable).
        - On select, set both `address` (formatted string) and hidden `latitude`/`longitude` fields.
@@ -711,13 +684,10 @@
    - On submit, form data (including `address`, `latitude`, `longitude`) posts to `POST /events` or `PATCH /events/:id`.
 
 5. **“Events/Show\.tsx” Page**
-
    - Fetches `event` prop from the controller (which includes nested RSVPs and photos).
    - At top, show a similar banner as in EventCard, but with a full “Edit” button (if `current_user_id === event.created_by`).
    - Under that, place:
-
      1. **Self‐Check-In / Attendance Toggle**
-
         - If `today’s date == event.date`, show a button “Tap to mark attendance.”
         - If already tagged, show “✅ You were here at HH\:MM.”
         - Implementation:
@@ -732,38 +702,29 @@
         - `AttendanceToggle` will call `PATCH /events/:id/rsvp` with `{ attended_at: new Date().toISOString() }`.
 
      2. **PhotoAlbum / PhotoGallery**
-
         - Renders a grid (e.g. Tailwind `grid grid-cols-3 gap-2`) of photos: `event.photos`.
         - Each photo is a clickable thumbnail that opens a lightbox.
         - If `current_user_id` exists, show a `<PhotoUploader eventId={event.id} />` component with:
-
           - File input (accept “image/\*”).
           - On submit, upload to S3 (or Cloudinary) via a signed URL retrieved from a Rails endpoint (you’ll need to build that). Once uploaded, Rails persists the `image_url`.
 
      3. **Attendance / RSVP Summary**
-
         - Show a modal or slide-out that lists who RSVP’d “yes,” “no,” or “pending,” and who actually attended. (Optional for MVP, but you can stub out a small link “View all RSVPs” that toggles a dialog.)
 
 6. **“Dashboard.tsx” (Admin Mode)**
-
    - If `current_user.is_admin`, show extra admin tools:
-
      - **Attendance Tracking**
-
        - A table of past events with quick “Update attendance” links.
 
      - **Hash Cash Management**
-
        - Manage each user’s “Hash Cash” balance (points system).
 
      - **Manage Achievements**
-
        - CRUD interface for awarding achievements to users.
 
    - You can leave these pages blank for MVP or just stub links until you build out their controllers.
 
 7. **Reusable Components**
-
    - **RSVPButton.tsx**
 
      ```tsx
@@ -857,16 +818,13 @@
      ```
 
 8. **“PhotoUploader.tsx” & “PhotoGallery.tsx”**
-
    - **PhotoUploader.tsx**:
-
      - Use a simple `<input type="file" />`.
      - Upon file selection, request a signed upload URL from Rails endpoint `GET /events/:id/photos/sign_s3_url?filename=xyz.jpg`.
      - Upload file directly via `fetch(url, { method: "PUT", body: file, headers: { "Content-Type": file.type } })`.
      - On success, `POST /events/:id/photos` with JSON `{ image_url: s3PublicUrl, alt_text: "…optional…" }`.
 
    - **PhotoGallery.tsx**:
-
      - Props: `photos: Array<{ id: number; image_url: string; alt_text: string; user_id: number }>`
      - Render a responsive grid (`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2`).
      - On click, open a Lightbox modal (you can use a HeadlessUI Dialog) showing the full‐size image and uploader name (fetch user info if needed).
@@ -876,7 +834,6 @@
 ## 7. Background Jobs & Real-Time Updates
 
 1. **Solid Queue for Background Processing**
-
    - Install and configure in `config/application.rb` or a new initializer:
 
      ```ruby
@@ -886,7 +843,6 @@
      ```
 
    - Use background jobs for:
-
      - **Email notifications** (RSVP reminder, attendance reminders)
      - **Photo processing** (if resizing or thumbnailing). For example:
 
@@ -905,7 +861,6 @@
    - Enqueue jobs in controllers: e.g. after `@photo.save`, call `PhotoResizingJob.perform_async(@photo.id)`.
 
 2. **Solid Cache for Caching**
-
    - Configure in `config/initializers/solid_cache.rb`:
 
      ```ruby
@@ -915,7 +870,6 @@
      ```
 
    - Use caching for heavy queries, such as:
-
      - Counting RSVPs per event. In `Event` model:
 
        ```ruby
@@ -929,7 +883,6 @@
      - Caching “Upcoming Events” list in the sidebar (refresh every 5 minutes).
 
 3. **Solid Cable for WebSockets (if you want live updates)**
-
    - In `config/cable.yml`, point to Action Cable server or your Redis (if you need broadcasting).
    - In `app/channels/application_cable/channel.rb` / `connection.rb`, keep defaults.
    - Create a channel, e.g. `EventsChannel`, that streams for all connected clients:
@@ -960,7 +913,6 @@
 ## 8. Testing Strategy (RSpec + Capybara)
 
 1. **Configure RSpec**
-
    - Run `rails generate rspec:install`.
    - Make sure you have `spec/rails_helper.rb` and `spec/spec_helper.rb`.
    - Add FactoryBot syntax methods to `rails_helper.rb`:
@@ -972,7 +924,6 @@
      ```
 
 2. **Factories (FactoryBot)**
-
    - `spec/factories/users.rb`:
 
      ```ruby
@@ -1006,70 +957,38 @@
    - `spec/factories/rsvps.rb` and `spec/factories/photos.rb` similarly.
 
 3. **Unit / Model Specs**
-
    - **User Model**: ensure token validations, Pundit role (e.g. “admin?\`).
    - **Event Model**:
-
      - Validations for `run_number` uniqueness, presence.
      - `geocoded_by :address` actually sets `latitude`/`longitude`.
      - `rsvp_count`, `attendance_count`, etc.
 
    - **Rsvp Model**:
-
      - Validations on `status`.
      - Associations with `User` & `Event`.
 
    - **Photo Model**:
-
      - Validates presence of `image_url`.
      - After create, enqueues `PhotoResizingJob`.
 
 4. **Controller Specs**
-
    - `spec/controllers/events_controller_spec.rb`:
-
      - GET #index returns 200 and renders Inertia props with correct JSON shape.
      - POST #create with valid params increases `Event.count` by 1.
      - Pundit prohibits non‐admin from editing another user’s event.
 
    - `spec/controllers/rsvps_controller_spec.rb`:
-
      - POST #create with valid event and user sets `status: “yes”`.
      - PATCH #update updates `attended_at`.
 
    - `spec/controllers/photos_controller_spec.rb`:
-
      - POST #create returns 201 and enqueues a background job.
-
-5. **System (Feature) Specs with Capybara**
-
-   - Simulate a user logging in, going to “New Event,” filling out the form, submitting, and seeing the event appear in the feed.
-   - Test:
-
-     1. **RSVP Flow**
-
-        - User sees “RSVP” button on the event card.
-        - Click → button text changes to “Cancel RSVP” and the rsvp_count increments.
-
-     2. **Attendance Flow**
-
-        - Navigate to event’s Show page on the event date.
-        - Click “Mark Me Present” → sees confirmation with time.
-
-     3. **Photo Upload**
-
-        - On Show page, click “Upload Photo,” choose a local test image, and see the image appear in the gallery grid.
-
-     4. **Geocoding**
-
-        - In New Event form, type “1234 Some Trail Rd” → choose address suggestion → On submit, verify that event.latitude is not nil.
 
 ---
 
 ## 9. Linting, Formatting & CI
 
 1. **RuboCop with rails-omakase**
-
    - Create `.rubocop.yml` at the root:
 
      ```yaml
@@ -1083,7 +1002,6 @@
    - Run `bundle exec rubocop` in CI or locally to ensure code style.
 
 2. **ESLint & Prettier for TSX**
-
    - Create `.eslintrc.cjs` in project root:
 
      ```js
@@ -1141,7 +1059,6 @@
 ## 10. Deployment & Environment Configuration
 
 1. **Production Environment Variables**
-
    - **DATABASE_URL** for your Postgres instance.
    - **RAILS_MASTER_KEY** (from `config/credentials.yml.enc`).
    - **AUTH_ZERO_SECRET_KEY**, **AUTH_ZERO_ISSUER** (per Authentication Zero docs).
@@ -1151,7 +1068,6 @@
    - **RAILS_ENV=production**.
 
 2. **Docker Compose (Kamal) for Production**
-
    - Ensure `kamal config:set staging --env-file .env.staging` (and similarly for production).
    - In `kamal.rb` (or `kamal.yml`), define service:
 
@@ -1178,7 +1094,6 @@
    - Run `kamal deploy staging` → verify that the app boots, migrations run, and you can hit the home page.
 
 3. **SSL / Domain**
-
    - Point your domain (e.g. `lh3.example.com`) at the server’s IP.
    - In Kamal, enable Let’s Encrypt:
 
@@ -1196,7 +1111,6 @@
      ```
 
 4. **Worker Processes (Solid Queue / Solid Cache)**
-
    - In Docker/Kamal, spin up a separate service for your queue/worker:
 
      ```yaml
@@ -1218,9 +1132,7 @@
 ## 11. Analytics, Monitoring, & Notifications
 
 1. **Email Reminders**
-
    - Create a mailer (e.g. `EventMailer`) that:
-
      - Sends “Don’t forget to RSVP” 2 days before the event to everyone who hasn’t RSVPed.
      - Sends “See you at today’s hash!” on event day to everyone who RSVPed “yes.”
 
@@ -1248,17 +1160,14 @@
      ```
 
 2. **Basic Analytics**
-
    - Integrate Google Analytics (or Plausible) by adding the tracking snippet into `application.html.erb` (only in production).
    - Track clicks on:
-
      - “RSVP” buttons
      - “Mark Me Present”
      - “What is Hashing?” link
      - “Upload Photo.”
 
 3. **Error Monitoring**
-
    - Add something like Sentry (Rails gem + JS SDK) to capture exceptions in production.
    - Configure DSN as an environment variable (`SENTRY_DSN`).
 
@@ -1267,38 +1176,30 @@
 ## 12. Iteration & Next Steps (Post-MVP)
 
 1. **Allow Users to Edit Their RSVP**
-
    - Right now, “RSVP” toggles between yes/pending. Later, add “Maybe” or “No” options as radio buttons.
 
 2. **User‐Submitted Trails Database**
-
    - Instead of free‐text address, allow organizers to pick from a “pre‐registered trails” table that includes:
-
      - Trail name, official website, difficulty rating, length, best season, GPS GPX file link.
 
    - In the EventForm, let them search or autocomplete from that table; fallback to free‐text if not found.
 
 3. **Club‐Wide Map of Upcoming Runs**
-
    - Build a “Map” page that pulls coordinates for all upcoming events and plots them on a Leaflet/Mapbox map.
    - Clicking a marker opens a popup with the event snippet and RSVP summary.
 
 4. **Inertia SSR (Server-Side Rendering)**
-
    - If initial page load metrics show high TTFB, consider enabling Inertia SSR. React pages then render on the server, improving SEO.
 
 5. **Gamification & Hash Cash**
-
    - Build a `HashCash` model (linked to User) for awarding/purchasing points.
    - In Admin Dashboard, allow awarding points for attendance, photo uploads, volunteer work.
    - Show users their Hash Cash balance in the sidebar.
 
 6. **Mobile App Integration (Future)**
-
    - Since you’re already using Inertia + React, you could share some UI components into a React Native (or Expo) app that calls your Rails API endpoints. This is an advanced stretch goal.
 
 7. **Refine Caching Strategy**
-
    - Move from database‐backed Solid Cache to Redis or Memcached if performance becomes an issue.
    - Memoize the “Upcoming Events” panel in the sidebar so that each page load does not requery for the next 3 events.
 
