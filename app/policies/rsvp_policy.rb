@@ -12,18 +12,31 @@ class RsvpPolicy < ApplicationPolicy
     # end
   end
 
+  ##
+  # Determines whether the user is authorized to create an RSVP.
+  # @return [Boolean] True if the user is authenticated; otherwise, false.
   def create?
     user.present?
   end
 
+  ##
+  # Determines if the user is authorized to update the RSVP record.
+  # Only the owner of the record who is logged in can perform the update.
+  # @return [Boolean] True if the user is present and owns the record.
   def update?
     user.present? && record.user == user
   end
 
+  ##
+  # Returns the list of attributes permitted when creating an RSVP.
+  # @return [Array<Symbol>] The permitted attributes for RSVP creation.
   def permitted_attributes_for_create
     [:status]
   end
 
+  ##
+  # Returns the list of attributes permitted for updating an RSVP.
+  # @return [Array<Symbol>] The permitted attributes for update, limited to :status.
   def permitted_attributes_for_update
     [:status]
   end

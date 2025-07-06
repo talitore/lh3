@@ -30,11 +30,16 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # Pundit: Binds Pundit's user context to our Current.user
+  ##
+  # Returns the current user for Pundit authorization context.
+  # @return [User, nil] The currently authenticated user, or nil if no user is set.
   def pundit_user
     Current.user
   end
 
+  ##
+  # Authenticates the user based on a signed session token cookie.
+  # If a valid session is found, sets the current user; otherwise, deletes the session cookie and redirects to the sign-in page.
   def authenticate
     session_record = Session.find_by(id: cookies.signed[:session_token])
     if session_record
@@ -45,11 +50,15 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  ##
+  # Stores the current request's user agent and IP address in the global Current context.
   def set_current_request_details
     Current.user_agent = request.user_agent
     Current.ip_address = request.ip
   end
 
+  ##
+  # Handles unauthorized access attempts by setting an alert message and redirecting the user to the previous page or the home page.
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
     redirect_to(request.referrer || root_path)
