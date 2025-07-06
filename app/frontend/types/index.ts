@@ -1,5 +1,3 @@
-import type { Page } from "@inertiajs/core";
-
 export interface User {
   id: number;
   email: string;
@@ -7,7 +5,8 @@ export interface User {
   avatar_url: string | null;
 }
 
-export interface PageProps extends Page.Props {
+export interface PageProps {
   user: User | null;
   errors: Record<string, string>;
+  [key: string]: unknown;
 }

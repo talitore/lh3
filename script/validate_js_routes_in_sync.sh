@@ -15,7 +15,7 @@ if ! git diff --exit-code app/frontend/routes/index.js; then
   echo "1. Run: bin/rails js:routes"
   echo "2. Commit the updated app/frontend/routes/index.js file"
   echo ""
-  echo "Diff:"
+  echo "If `make format` was just run, you may need to stage the route changes and run `make format` again."
   exit 1
 fi
 echo "✅ js-routes file is up-to-date"
