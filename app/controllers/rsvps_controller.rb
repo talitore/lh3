@@ -4,7 +4,7 @@ class RsvpsController < ApplicationController
   before_action :set_event
 
   def create
-    authorize Rsvp
+    authorize @event, :create_rsvp?
     @rsvp = @event.rsvps.find_or_initialize_by(user: Current.user)
     if @rsvp.update(rsvp_params)
       redirect_to event_path(@event), notice: 'RSVP saved.'

@@ -1,4 +1,6 @@
 class Photo < ApplicationRecord
+  include SoftDeletable
+
   belongs_to :user
   belongs_to :event
 

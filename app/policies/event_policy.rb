@@ -30,6 +30,14 @@ class EventPolicy < ApplicationPolicy
     edit?
   end
 
+  def create_rsvp?
+    !record.deleted?
+  end
+
+  def create_photo?
+    !record.deleted?
+  end
+
   def permitted_attributes
     %i[run_number descriptor date time address]
   end
