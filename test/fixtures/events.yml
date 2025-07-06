@@ -1,0 +1,47 @@
+---
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  id: 1
+  run_number: 1
+  descriptor: MyString
+  date: 2025-07-06
+  time: 2025-07-06 16:40:47
+  address: MyString
+  creator: 1
+
+two:
+  id: 2
+  run_number: 1
+  descriptor: MyString
+  date: 2025-07-06
+  time: 2025-07-06 16:40:47
+  address: MyString
+  creator: 1
+
+magic:
+  id: 980190962
+  run_number: 2
+  descriptor: MagicString
+  date: 2025-07-07
+  time: 2025-07-07 16:40:47
+  address: MagicAddress
+  creator: 1
+
+auto:
+  id: 64810937
+  run_number: 3
+  descriptor: AutoString
+  date: 2025-07-08
+  time: 2025-07-08 16:40:47
+  address: AutoAddress
+  creator: 1
+
+extra:
+  id: 450215437
+  run_number: 4
+  descriptor: ExtraString
+  date: 2025-07-09
+  time: 2025-07-09 16:40:47
+  address: ExtraAddress
+  creator: 1

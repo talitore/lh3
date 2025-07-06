@@ -17,6 +17,7 @@ gem 'inertia_rails', '~> 3.9'
 gem 'js-routes'
 gem 'propshaft'
 gem 'vite_rails', '~> 3.0'
+gem 'geocoder'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[windows jruby]
