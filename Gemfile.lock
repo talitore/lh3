@@ -91,6 +91,14 @@ GEM
     dry-cli (1.2.0)
     erb (5.0.1)
     erubi (1.13.1)
+    ffi (1.17.2-aarch64-linux-gnu)
+    ffi (1.17.2-aarch64-linux-musl)
+    ffi (1.17.2-arm-linux-gnu)
+    ffi (1.17.2-arm-linux-musl)
+    ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x86_64-darwin)
+    ffi (1.17.2-x86_64-linux-gnu)
+    ffi (1.17.2-x86_64-linux-musl)
     foreman (0.88.1)
     geocoder (1.8.5)
       base64 (>= 0.1.0)
@@ -99,6 +107,9 @@ GEM
       activesupport (>= 6.1)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
+    image_processing (1.14.0)
+      mini_magick (>= 4.9.5, < 6)
+      ruby-vips (>= 2.0.17, < 3)
     inertia_rails (3.9.0)
       railties (>= 6)
     io-console (0.8.0)
@@ -122,6 +133,9 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.4)
+    mini_magick (5.2.0)
+      benchmark
+      logger
     mini_mime (1.1.5)
     minitest (5.25.5)
     mutex_m (0.3.0)
@@ -170,6 +184,8 @@ GEM
       stringio
     puma (6.6.0)
       nio4r (~> 2.0)
+    pundit (2.5.0)
+      activesupport (>= 3.0.0)
     racc (1.8.1)
     rack (3.1.16)
     rack-proxy (0.7.7)
@@ -239,6 +255,9 @@ GEM
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-progressbar (1.13.0)
+    ruby-vips (2.2.4)
+      ffi (~> 1.12)
+      logger
     securerandom (0.4.1)
     sorbet-runtime (0.5.12219)
     stringio (3.1.7)
@@ -284,11 +303,13 @@ DEPENDENCIES
   debug
   foreman (~> 0.88.1)
   geocoder
+  image_processing
   inertia_rails (~> 3.9)
   js-routes
   pg (~> 1.1)
   propshaft
   puma (>= 5.0)
+  pundit
   rails (~> 8.0.2)
   rubocop (~> 1.77)
   rubocop-rails (~> 2.32)

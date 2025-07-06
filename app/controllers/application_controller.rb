@@ -2,11 +2,16 @@
 
 # Base controller class for the application
 class ApplicationController < ActionController::Base
+  include Pundit::Authorization
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
   before_action :authenticate
   before_action :set_current_request_details
+
+  # Pundit: Fallback for unauthorized access
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   # Share user data globally with all Inertia pages
   inertia_share do
@@ -25,6 +30,11 @@ class ApplicationController < ActionController::Base
 
   private
 
+  # Pundit: Binds Pundit's user context to our Current.user
+  def pundit_user
+    Current.user
+  end
+
   def authenticate
     session_record = Session.find_by(id: cookies.signed[:session_token])
     if session_record
@@ -38,5 +48,10 @@ class ApplicationController < ActionController::Base
   def set_current_request_details
     Current.user_agent = request.user_agent
     Current.ip_address = request.ip
+  end
+
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to perform this action."
+    redirect_to(request.referrer || root_path)
   end
 end

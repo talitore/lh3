@@ -1,5 +1,5 @@
 class Rsvp < ApplicationRecord
-  STATUSES = %w[yes maybe no]
+  STATUSES = %w[yes maybe no].freeze
 
   belongs_to :user
   belongs_to :event

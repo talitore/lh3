@@ -13,6 +13,10 @@ Rails.application.routes.draw do
     resource :email_verification, only: %i[show create]
     resource :password_reset,     only: %i[new edit create update]
   end
+  resources :events do
+    resources :rsvps, only: %i[create update]
+    resources :photos, only: %i[create destroy]
+  end
   root 'home#index'
   get 'inertia-example', to: 'inertia_example#index'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

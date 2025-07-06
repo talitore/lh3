@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :rsvps
   has_many :photos
+  has_many :created_events, class_name: "Event", foreign_key: :creator, inverse_of: :creator
 
   validates :email, presence: true, uniqueness: true
   validates :display_name, presence: true
