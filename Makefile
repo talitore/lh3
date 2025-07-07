@@ -88,7 +88,7 @@ migrate:
 
 # Run tests including engine tests
 test:
-	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web bin/rake test
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web bin/rspec spec --format documentation
 
 # Run linters
 lint:
