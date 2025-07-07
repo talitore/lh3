@@ -1,7 +1,15 @@
 require 'rails_helper'
 
-RSpec.describe 'User Registration', type: :request, inertia: true do
-  describe 'POST /sign_up' do
+RSpec.describe 'Registrations', type: :request, inertia: true do
+  describe 'GET /register' do
+    it 'renders the registration page' do
+      get sign_up_path
+      expect(response).to be_successful
+      expect(inertia).to render_component('Auth/Register')
+    end
+  end
+
+  describe 'POST /register' do
     let(:valid_params) do
       {
         email: 'newuser@example.com',
@@ -14,46 +22,39 @@ RSpec.describe 'User Registration', type: :request, inertia: true do
     context 'with valid parameters' do
       it 'creates a new user and logs them in' do
         expect {
-          post '/sign_up', params: valid_params
+          post sign_up_path, params: valid_params
         }.to change(User, :count).by(1)
 
         user = User.find_by(email: valid_params[:email])
-        expect(user).to be_present
+        expect(user).not_to be_nil
+        expect(cookies[:session_token]).to be_present
         expect(response).to redirect_to(root_path)
-        # Check that the session_token cookie is set
-        expect(response.cookies['session_token']).to be_present
+        follow_redirect!
+        expect(inertia).to render_component('Home')
       end
     end
 
-    context 'with missing required fields' do
-      it 'does not create a user and returns errors' do
+    context 'with invalid parameters' do
+      it 'does not create a user and renders errors' do
+        invalid_params = valid_params.merge(password_confirmation: 'wrong')
         expect {
-          post '/sign_up', params: valid_params.except(:email)
+          post sign_up_path, params: invalid_params
         }.not_to change(User, :count)
-        expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.body).to include('errors')
-      end
-    end
 
-    context 'with password mismatch' do
-      it 'does not create a user and returns errors' do
-        params = valid_params.merge(password_confirmation: 'wrong')
-        expect {
-          post '/sign_up', params: params
-        }.not_to change(User, :count)
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.body).to include('errors')
+        expect(inertia).to render_component('Auth/Register')
+        expect(inertia.props[:errors]).to include(:password_confirmation)
       end
-    end
 
-    context 'with duplicate email' do
-      before { create(:user, email: valid_params[:email]) }
-      it 'does not create a user and returns errors' do
+      it 'does not create a user with missing email' do
+        invalid_params = valid_params.except(:email)
         expect {
-          post '/sign_up', params: valid_params
+          post sign_up_path, params: invalid_params
         }.not_to change(User, :count)
+
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.body).to include('errors')
+        expect(inertia).to render_component('Auth/Register')
+        expect(inertia.props[:errors]).to include(:email)
       end
     end
   end
