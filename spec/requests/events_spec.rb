@@ -64,6 +64,31 @@ RSpec.describe '/events', type: :request, inertia: true do
       expect(inertia.props[:event]).to include('id' => event.id)
       expect(response).to have_http_status(:ok)
     end
+
+    it 'includes attendee list (RSVPs) in event payload' do
+      event = create(:event, creator: user, run_number: '8', descriptor: 'With RSVPs', date: Date.today, time: '09:30', address: '11 Road, City')
+      rsvp_user = create(:user)
+      create(:rsvp, event: event, user: rsvp_user, status: 'yes')
+
+      get event_path(event)
+
+      expect_inertia.to render_component('Event/Show')
+      rsvps = inertia.props[:event]['rsvps']
+      expect(rsvps).to be_an(Array)
+      expect(rsvps.dig(0, 'user', 'id')).to eq(rsvp_user.id)
+    end
+
+    it 'includes photos in event payload for gallery display' do
+      event = create(:event, creator: user, run_number: '9', descriptor: 'With Photos', date: Date.today, time: '10:00', address: '12 Road, City')
+      create(:photo, event: event, user: user, image_url: 'https://example.com/a.jpg')
+
+      get event_path(event)
+
+      expect_inertia.to render_component('Event/Show')
+      photos = inertia.props[:event]['photos']
+      expect(photos).to be_an(Array)
+      expect(photos.first['image_url']).to eq('https://example.com/a.jpg')
+    end
   end
 
   describe 'PATCH /events/:id' do
