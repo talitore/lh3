@@ -1,3 +1,103 @@
+# frozen_string_literal: true
+
+require 'rails_helper'
+
+RSpec.describe 'Registrations', type: :request, inertia: true do
+  describe 'GET /sign_up' do
+    it 'renders the registration page via Inertia' do
+      get sign_up_path
+
+      expect_inertia.to render_component('Auth/Register')
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe 'POST /sign_up' do
+    let(:email) { 'new_user@example.com' }
+    let(:password) { 'password123' }
+    let(:display_name) { 'New User' }
+
+    context 'with valid params' do
+      it 'creates the user, signs them in, redirects home, and enqueues verification email' do
+        expect do
+          perform_enqueued_jobs do
+            post sign_up_path, params: {
+              email: email,
+              password: password,
+              password_confirmation: password,
+              display_name: display_name
+            }
+          end
+        end.to change(User, :count).by(1).and change(Session, :count).by(1)
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:notice]).to eq I18n.t('registration.welcome')
+
+        # Ensure a signed session cookie was set
+        expect(response.headers['Set-Cookie']).to include('session_token')
+
+        # Email verification is sent asynchronously
+        expect(enqueued_jobs.any? { |job| job[:job] == ActionMailer::MailDeliveryJob }).to be(true)
+      end
+    end
+
+    context 'with invalid params' do
+      it 'renders the form with errors via Inertia (missing display_name)' do
+        expect do
+          post sign_up_path, params: {
+            email: email,
+            password: password,
+            password_confirmation: password
+            # missing display_name
+          }
+        end.not_to change(User, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect_inertia.to render_component('Auth/Register')
+        expect(inertia).to include_props(
+          hash_including(errors: a_hash_including(display_name: include("can't be blank")))
+        )
+      end
+
+      it 'renders the form with errors when password confirmation mismatches' do
+        expect do
+          post sign_up_path, params: {
+            email: email,
+            password: password,
+            password_confirmation: 'wrong',
+            display_name: display_name
+          }
+        end.not_to change(User, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect_inertia.to render_component('Auth/Register')
+        expect(inertia).to include_props(
+          hash_including(errors: a_hash_including(password_confirmation: include("doesn't match Password")))
+        )
+      end
+
+      it 'renders the form with errors when email already taken' do
+        create(:user, email: email)
+
+        expect do
+          post sign_up_path, params: {
+            email: email,
+            password: password,
+            password_confirmation: password,
+            display_name: display_name
+          }
+        end.not_to change(User, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect_inertia.to render_component('Auth/Register')
+        expect(inertia).to include_props(
+          hash_including(errors: a_hash_including(email: include('has already been taken')))
+        )
+      end
+    end
+  end
+end
+
 require 'rails_helper'
 
 RSpec.describe 'Registrations', type: :request, inertia: true do
