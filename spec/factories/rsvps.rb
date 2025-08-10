@@ -4,9 +4,7 @@ FactoryBot.define do
     association :event
     status { "yes" }
 
-    trait :pending do
-      status { "pending" }
-    end
+    # Remove invalid status trait to align with model validation
 
     trait :no do
       status { "no" }
