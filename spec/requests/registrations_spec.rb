@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Registrations', type: :request, inertia: true do
+  include ActiveJob::TestHelper
+
   describe 'GET /sign_up' do
     it 'renders the registration page via Inertia' do
       get sign_up_path
@@ -36,8 +38,11 @@ RSpec.describe 'Registrations', type: :request, inertia: true do
         # Ensure a signed session cookie was set
         expect(response.headers['Set-Cookie']).to include('session_token')
 
-        # Email verification is sent asynchronously
-        expect(enqueued_jobs.any? { |job| job[:job] == ActionMailer::MailDeliveryJob }).to be(true)
+        # Email verification is sent asynchronously and delivered
+        mail = ActionMailer::Base.deliveries.last
+        expect(mail).to be_present
+        expect(mail.to).to include(email)
+        expect(mail.subject).to eq(I18n.t('email_subjects.email_verification'))
       end
     end
 

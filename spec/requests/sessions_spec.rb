@@ -38,6 +38,23 @@ RSpec.describe 'Sessions', type: :request, inertia: true do
       end
     end
   end
+
+  describe 'DELETE /logout' do
+    let!(:user) { create(:user) }
+
+    it 'destroys the current session and redirects to root with notice' do
+      sign_in(user)
+
+      expect do
+        delete logout_path
+      end.to change(Session, :count).by(-1)
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:notice]).to eq I18n.t('session.logged_out')
+      # Cookie cleared
+      expect(response.headers['Set-Cookie']).to include('session_token=;')
+    end
+  end
 end
 
 
