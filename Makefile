@@ -100,7 +100,7 @@ format:
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web npm run format:fix
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web npm run lint:fix
 	# Validate js-routes via container utility script
-	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web js-routes-validate
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web /usr/local/bin/js-routes-validate
 
 # Clean everything
 clean:
