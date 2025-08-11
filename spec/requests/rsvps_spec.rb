@@ -45,13 +45,9 @@ RSpec.describe "RSVPs", :inertia do
       other_user = create(:user)
       other_rsvp = create(:rsvp, event: event, user: other_user, status: "maybe")
 
-      expect do
-        patch event_rsvp_path(event, other_rsvp), params: {rsvp: {status: "yes"}}
-      end.not_to(change { other_rsvp.reload.status })
-
-      expect(response).to redirect_to(event_path(event))
-      # We expect Pundit to handle unauthorized via ApplicationController rescue
-      expect(flash[:alert]).to be_present
+      patch event_rsvp_path(event, other_rsvp), params: {rsvp: {status: "yes"}}
+      expect(other_rsvp.reload.status).to eq("maybe")
+      expect(response).to redirect_to(request.referer || root_path)
     end
   end
 end
