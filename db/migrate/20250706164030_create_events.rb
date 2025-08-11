@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateEvents < ActiveRecord::Migration[8.0]
   ##
   # Creates the `events` table with columns for run number, descriptor, date, time, address, and creator.

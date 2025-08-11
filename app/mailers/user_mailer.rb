@@ -5,12 +5,12 @@ class UserMailer < ApplicationMailer
   def password_reset
     @user = params[:user]
 
-    mail to: @user.email, subject: I18n.t('email_subjects.password_reset')
+    mail to: @user.email, subject: I18n.t("email_subjects.password_reset")
   end
 
   def email_verification
     @user = params[:user]
 
-    mail to: @user.email, subject: I18n.t('email_subjects.email_verification')
+    mail to: @user.email, subject: I18n.t("email_subjects.email_verification")
   end
 end

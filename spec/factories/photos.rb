@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :photo do
-    association :user
-    association :event
+    user
+    event
     sequence(:image_url) { |n| "https://example.com/photo_#{n}.jpg" }
     alt_text { "A test photo" }
 

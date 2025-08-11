@@ -1,8 +1,7 @@
+# frozen_string_literal: true
+
 module RequestAuthenticationHelpers
   def sign_in(user)
-    session = user.sessions.create!
-    request = ActionDispatch::Request.new(Rails.application.env_config)
-    cookies = request.cookie_jar
-    cookies.signed[:session_token] = session.id
+    post sign_in_path, params: { email: user.email, password: 'password' }
   end
 end

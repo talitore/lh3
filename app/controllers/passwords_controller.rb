@@ -5,7 +5,7 @@ class PasswordsController < ApplicationController
   include PasswordChallengeValidation
 
   def edit
-    render inertia: 'Passwords/Edit', props: inertia_props
+    render inertia: "Passwords/Edit", props: inertia_props
   end
 
   def update
@@ -18,9 +18,9 @@ class PasswordsController < ApplicationController
 
   def handle_valid_password_update
     if Current.user.update(user_params)
-      redirect_to root_path, notice: I18n.t('password.changed')
+      redirect_to root_path, notice: I18n.t("password.changed")
     else
-      render inertia: 'Passwords/Edit', props: inertia_props_with_errors,
+      render inertia: "Passwords/Edit", props: inertia_props_with_errors,
              status: :unprocessable_entity
     end
   end
@@ -36,6 +36,6 @@ class PasswordsController < ApplicationController
   end
 
   def inertia_component_name
-    'Passwords/Edit'
+    "Passwords/Edit"
   end
 end

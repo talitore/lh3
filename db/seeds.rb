@@ -11,21 +11,21 @@
 #   end
 
 # Create a default user for development
-User.find_or_create_by!(email: 'admin@app.local') do |user|
-  user.display_name = 'Admin User'
-  user.password = 'password123'
+User.find_or_create_by!(email: "admin@app.local") do |user|
+  user.display_name = "Admin User"
+  user.password = "password123"
   user.verified = true
 end
 
-Rails.logger.debug '✅ Seed user created: admin@app.local'
+Rails.logger.debug "✅ Seed user created: admin@app.local"
 
 # Create a default event for development
-Event.find_or_create_by!(descriptor: 'Default Event') do |event|
+Event.find_or_create_by!(descriptor: "Default Event") do |event|
   event.run_number = 1
   event.date = Time.zone.today
   event.time = Time.current
-  event.address = '123 Main St, Anytown, USA'
+  event.address = "123 Main St, Anytown, USA"
   event.creator = User.first
 end
 
-Rails.logger.debug '✅ Seed event created: Default Event'
+Rails.logger.debug "✅ Seed event created: Default Event"

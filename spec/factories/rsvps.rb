@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :rsvp do
-    association :user
-    association :event
+    user
+    event
     status { "yes" }
 
     # Remove invalid status trait to align with model validation

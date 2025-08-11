@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Event < ApplicationRecord
   include SoftDeletable
 
@@ -8,6 +10,7 @@ class Event < ApplicationRecord
   validates :run_number, :descriptor, :date, :time, :address, presence: true
 
   before_validation :set_creator, on: :create
+  after_validation :geocode, if: :will_save_change_to_address?
   before_destroy :handle_dependent_records
   ##
   # Sets the creator of the event to the current user if not already assigned.
@@ -16,7 +19,6 @@ class Event < ApplicationRecord
   end
 
   geocoded_by :address
-  after_validation :geocode, if: :will_save_change_to_address?
 
   ##
   # Returns a JSON representation of the event, including the creator's basic information, associated RSVPs, and photos.
@@ -24,10 +26,10 @@ class Event < ApplicationRecord
   # @return [Hash] The event serialized as a JSON-compatible hash with nested associations.
   def as_json(options = {})
     super(options.merge(include: {
-      creator: { only: [:id, :email, :display_name] },
-      rsvps: {},
-      photos: {}
-    }))
+                          creator: {only: %i[id email display_name]},
+                          rsvps: {},
+                          photos: {}
+                        }))
   end
 
   private

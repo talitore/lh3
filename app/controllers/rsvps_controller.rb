@@ -7,7 +7,7 @@ class RsvpsController < ApplicationController
     authorize @event, :create_rsvp?
     @rsvp = @event.rsvps.find_or_initialize_by(user: Current.user)
     if @rsvp.update(rsvp_params)
-      redirect_to event_path(@event), notice: 'RSVP saved.'
+      redirect_to event_path(@event), notice: "RSVP saved."
     else
       redirect_to event_path(@event), alert: @rsvp.errors.full_messages.to_sentence
     end
@@ -17,7 +17,7 @@ class RsvpsController < ApplicationController
     @rsvp = @event.rsvps.find_by(user: Current.user)
     authorize @rsvp
     if @rsvp.update(rsvp_params)
-      redirect_to event_path(@event), notice: 'RSVP updated.'
+      redirect_to event_path(@event), notice: "RSVP updated."
     else
       redirect_to event_path(@event), alert: @rsvp.errors.full_messages.to_sentence
     end

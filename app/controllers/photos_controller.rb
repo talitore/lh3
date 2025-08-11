@@ -9,7 +9,7 @@ class PhotosController < ApplicationController
     @photo.user = Current.user # The uploader is always the current user
 
     if @photo.save
-      redirect_to event_path(@event), notice: 'Photo uploaded.'
+      redirect_to event_path(@event), notice: "Photo uploaded."
     else
       redirect_to event_path(@event), alert: @photo.errors.full_messages.to_sentence
     end
@@ -19,7 +19,7 @@ class PhotosController < ApplicationController
     @photo = @event.photos.find(params[:id])
     authorize @photo
     @photo.destroy
-    redirect_to event_path(@event), notice: 'Photo removed.'
+    redirect_to event_path(@event), notice: "Photo removed."
   end
 
   private

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Photo < ApplicationRecord
   include SoftDeletable
 
@@ -12,8 +14,8 @@ class Photo < ApplicationRecord
   # @return [Hash] The customized JSON representation of the photo.
   def as_json(options = {})
     super(options.merge(include: {
-      user: { only: [:id, :email, :display_name] },
-      event: { only: [:id, :run_number, :descriptor] }
-    }))
+                          user: {only: %i[id email display_name]},
+                          event: {only: %i[id run_number descriptor]}
+                        }))
   end
 end

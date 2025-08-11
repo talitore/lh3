@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
   end
 
   def new
-    render inertia: 'Auth/Login'
+    render inertia: "Auth/Login"
   end
 
   def create
@@ -26,7 +26,7 @@ class SessionsController < ApplicationController
     session_record&.destroy
     cookies.delete(:session_token)
 
-    redirect_to(root_path, notice: I18n.t('session.logged_out'))
+    redirect_to(root_path, notice: I18n.t("session.logged_out"))
   end
 
   private
@@ -41,11 +41,11 @@ class SessionsController < ApplicationController
 
   def handle_successful_login(user)
     session_record = user.sessions.create!
-    cookies.signed.permanent[:session_token] = { value: session_record.id, httponly: true }
-    redirect_to root_path, notice: I18n.t('session.signed_in')
+    cookies.signed.permanent[:session_token] = {value: session_record.id, httponly: true}
+    redirect_to root_path, notice: I18n.t("session.signed_in")
   end
 
   def handle_failed_login
-    redirect_to sign_in_path(email_hint: params[:email]), alert: I18n.t('session.invalid_credentials')
+    redirect_to sign_in_path(email_hint: params[:email]), alert: I18n.t("session.invalid_credentials")
   end
 end

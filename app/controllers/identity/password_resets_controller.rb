@@ -15,18 +15,18 @@ module Identity
       if (user = User.find_by(email: params[:email]))
         if user.verified?
           UserMailer.with(user: user).password_reset.deliver_later
-          redirect_to sign_in_path, notice: I18n.t('password_reset.instructions_sent')
+          redirect_to sign_in_path, notice: I18n.t("password_reset.instructions_sent")
         else
-          redirect_to new_identity_password_reset_path, alert: I18n.t('password_reset.email_not_verified')
+          redirect_to new_identity_password_reset_path, alert: I18n.t("password_reset.email_not_verified")
         end
       else
-        redirect_to new_identity_password_reset_path, alert: I18n.t('password_reset.email_not_verified')
+        redirect_to new_identity_password_reset_path, alert: I18n.t("password_reset.email_not_verified")
       end
     end
 
     def update
       if @user.update(user_params)
-        redirect_to sign_in_path, notice: I18n.t('password_reset.success')
+        redirect_to sign_in_path, notice: I18n.t("password_reset.success")
       else
         render :edit, status: :unprocessable_entity
       end
@@ -36,9 +36,9 @@ module Identity
 
     def set_user
       @user = User.find_by_token_for(:password_reset, params[:sid])
-      redirect_to new_identity_password_reset_path, alert: I18n.t('password_reset.invalid_link') if @user.nil?
+      redirect_to new_identity_password_reset_path, alert: I18n.t("password_reset.invalid_link") if @user.nil?
     rescue StandardError
-      redirect_to new_identity_password_reset_path, alert: I18n.t('password_reset.invalid_link')
+      redirect_to new_identity_password_reset_path, alert: I18n.t("password_reset.invalid_link")
     end
 
     def user_params

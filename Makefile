@@ -96,11 +96,9 @@ lint:
 
 # Run formatters
 format:
-	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web bundle exec rubocop -A
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web bundle exec rubocop -a
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web npm run format:fix
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web npm run lint:fix
-	# Validate js-routes via container utility script
-	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web /usr/local/bin/js-routes-validate
 
 # Clean everything
 clean:

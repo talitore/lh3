@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateRsvps < ActiveRecord::Migration[8.0]
   ##
   # Creates the rsvps table with user and event references, status, attended_at, and timestamps.

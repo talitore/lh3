@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :event do
-    association :creator, factory: :user
+    creator factory: %i[user]
     sequence(:run_number)
     descriptor { "Test Run" }
-    date { Date.today }
+    date { Time.zone.today }
     time { Time.current }
     address { "1600 Amphitheatre Parkway, Mountain View, CA" }
 

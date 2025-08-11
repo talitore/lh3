@@ -1,5 +1,5 @@
-import React from 'react';
-import { PageProps } from '../../types';
+import React from "react";
+import { PageProps } from "../../types";
 
 type Event = {
   id: number;

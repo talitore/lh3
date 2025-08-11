@@ -5,7 +5,7 @@ class RegistrationsController < ApplicationController
   skip_before_action :authenticate
 
   def new
-    render inertia: 'Auth/Register'
+    render inertia: "Auth/Register"
   end
 
   def create
@@ -26,14 +26,14 @@ class RegistrationsController < ApplicationController
 
   def handle_successful_registration
     session_record = @user.sessions.create!
-    cookies.signed.permanent[:session_token] = { value: session_record.id, httponly: true }
+    cookies.signed.permanent[:session_token] = {value: session_record.id, httponly: true}
 
     send_email_verification
-    redirect_to root_path, notice: I18n.t('registration.welcome')
+    redirect_to root_path, notice: I18n.t("registration.welcome")
   end
 
   def render_registration_errors
-    render inertia: 'Auth/Register', props: {
+    render inertia: "Auth/Register", props: {
       errors: @user.errors.messages
     }, status: :unprocessable_entity
   end

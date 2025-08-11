@@ -6,7 +6,7 @@ module Identity
     include PasswordChallengeValidation
 
     def edit
-      render inertia: 'Identity/Emails/Edit', props: inertia_props
+      render inertia: "Identity/Emails/Edit", props: inertia_props
     end
 
     def update
@@ -20,9 +20,9 @@ module Identity
     def handle_valid_password_update
       if @user.update(user_params)
         handle_successful_email_update
-        redirect_to root_path, notice: I18n.t('email.changed')
+        redirect_to root_path, notice: I18n.t("email.changed")
       else
-        render inertia: 'Identity/Emails/Edit', props: inertia_props_with_errors,
+        render inertia: "Identity/Emails/Edit", props: inertia_props_with_errors,
                status: :unprocessable_entity
       end
     end
@@ -35,7 +35,7 @@ module Identity
     end
 
     def user_params
-      params.permit(:email, :password_challenge).with_defaults(password_challenge: '')
+      params.permit(:email, :password_challenge).with_defaults(password_challenge: "")
     end
 
     def inertia_props
@@ -45,7 +45,7 @@ module Identity
     end
 
     def inertia_component_name
-      'Identity/Emails/Edit'
+      "Identity/Emails/Edit"
     end
   end
 end
