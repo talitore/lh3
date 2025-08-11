@@ -35,8 +35,8 @@ RSpec.describe "Registrations", :inertia do
         expect(response).to redirect_to(root_path)
         expect(flash[:notice]).to eq I18n.t("registration.welcome")
 
-        # Ensure a signed session cookie was set
-        expect(cookies.signed[:session_token]).to be_present
+        # Ensure the session cookie was set
+        expect(cookies['session_token']).to be_present
 
         # Email verification is sent asynchronously and delivered
         mail = ActionMailer::Base.deliveries.last

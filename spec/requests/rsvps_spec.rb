@@ -25,7 +25,7 @@ RSpec.describe "RSVPs", :inertia do
         post event_rsvps_path(event), params: {rsvp: {status: "maybe"}}
       end.not_to change(Rsvp, :count)
 
-      expect(event.rsvps.find_by(user: user).status).to eq("maybe")
+      expect(event.rsvps.find_by(user: user).reload.status).to eq("maybe")
     end
 
     it "rejects invalid status and redirects with alert" do

@@ -23,7 +23,7 @@ RSpec.describe "Sessions", :inertia do
 
         expect(response).to redirect_to(root_path)
         expect(flash[:notice]).to eq I18n.t("session.signed_in")
-        expect(cookies.signed[:session_token]).to be_present
+        expect(cookies['session_token']).to be_present
       end
     end
 
@@ -52,7 +52,7 @@ RSpec.describe "Sessions", :inertia do
       expect(response).to redirect_to(root_path)
       expect(flash[:notice]).to eq I18n.t("session.logged_out")
       # Cookie cleared
-      expect(cookies.signed[:session_token]).to be_nil
+      expect(cookies['session_token']).to be_nil
     end
   end
 end

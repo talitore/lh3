@@ -27,7 +27,7 @@ class Event < ApplicationRecord
   def as_json(options = {})
     super(options.merge(include: {
                           creator: {only: %i[id email display_name]},
-                          rsvps: {},
+                          rsvps: { include: { user: { only: %i[id email display_name] } } },
                           photos: {}
                         }))
   end
