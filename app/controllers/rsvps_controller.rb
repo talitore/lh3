@@ -32,6 +32,6 @@ class RsvpsController < ApplicationController
   end
 
   def rsvp_params
-    params.require(:rsvp).permit(pundit_params_for(Rsvp))
+    params.require(:rsvp).permit(:status)
   end
 end
