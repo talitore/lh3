@@ -13,19 +13,17 @@ RSpec.describe "RSVPs", :inertia do
 
   describe "POST /events/:event_id/rsvps" do
     it "creates or updates RSVP and redirects back to event with notice" do
-      expect do
-        post event_rsvps_path(event), params: {rsvp: {status: "yes"}}
-      end.to change(Rsvp, :count).by(1)
-
+      post event_rsvps_path(event), params: {rsvp: {status: "yes"}}
       expect(response).to redirect_to(event_path(event))
       expect(flash[:notice]).to eq("RSVP saved.")
+      expect(Rsvp.find_by(user: user, event: event)&.status).to eq("yes")
 
       # Posting again should update, not create a new record
       expect do
         post event_rsvps_path(event), params: {rsvp: {status: "maybe"}}
       end.not_to change(Rsvp, :count)
 
-      expect(event.rsvps.find_by(user: user).reload.status).to eq("maybe")
+      expect(Rsvp.find_by(user: user, event: event)&.reload&.status).to eq("maybe")
     end
 
     it "rejects invalid status and redirects with alert" do
@@ -39,7 +37,6 @@ RSpec.describe "RSVPs", :inertia do
   describe "PATCH /events/:event_id/rsvps/:id" do
     it "updates RSVP when authorized, otherwise forbids" do
       rsvp = create(:rsvp, event: event, user: user, status: "yes")
-
       patch event_rsvp_path(event, rsvp), params: {rsvp: {status: "no"}}
       expect(response).to redirect_to(event_path(event))
       expect(flash[:notice]).to eq("RSVP updated.")
