@@ -99,21 +99,8 @@ format:
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web bundle exec rubocop -A
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web npm run format:fix
 	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web npm run lint:fix
-	# Validate js-routes; fallback inline check if script is missing in container
-	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web bash -lc '\
-	  if [ -f script/validate_js_routes_in_sync.sh ]; then \
-	    ./script/validate_js_routes_in_sync.sh; \
-	  else \
-	    echo "Validating js-routes (Makefile fallback)"; \
-	    bin/rails js:routes; \
-	    if ! git diff --exit-code app/frontend/routes/index.js; then \
-	      echo "❌ js-routes file is out of sync!"; \
-	      echo "Run: bin/rails js:routes and commit app/frontend/routes/index.js"; \
-	      exit 1; \
-	    else \
-	      echo "✅ js-routes file is up-to-date"; \
-	    fi; \
-	  fi'
+	# Validate js-routes via container utility script
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) exec web js-routes-validate
 
 # Clean everything
 clean:

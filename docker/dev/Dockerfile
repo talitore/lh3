@@ -38,6 +38,10 @@ COPY docker/dev/entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 
+# Utility scripts
+COPY docker/dev/js_routes_validate.sh /usr/local/bin/js-routes-validate
+RUN chmod +x /usr/local/bin/js-routes-validate
+
 # Start server
 EXPOSE 3000
 # CMD not needed when using docker compose
