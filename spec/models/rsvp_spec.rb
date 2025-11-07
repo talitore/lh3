@@ -10,12 +10,12 @@ RSpec.describe Rsvp do
     it { is_expected.to validate_inclusion_of(:status).in_array(Rsvp::STATUSES) }
 
     it {
-      expect(subject).to validate_uniqueness_of(:user_id).scoped_to(:event_id).with_message("has already RSVP'd for this event")
+      expect(subject).to validate_uniqueness_of(:user_id).scoped_to(:hash_event_id).with_message("has already RSVP'd for this hash event")
     }
   end
 
   describe "associations" do
     it { is_expected.to belong_to(:user) }
-    it { is_expected.to belong_to(:event) }
+    it { is_expected.to belong_to(:hash_event) }
   end
 end

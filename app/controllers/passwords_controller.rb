@@ -17,9 +17,19 @@ class PasswordsController < ApplicationController
   private
 
   def handle_valid_password_update
-    if Current.user.update(user_params)
+    use_case = ChangePassword.new(
+      user: Current.user,
+      current_password: params[:password_challenge],
+      new_password: params[:password],
+      password_confirmation: params[:password_confirmation]
+    )
+    use_case.call
+
+    if use_case.success?
       redirect_to root_path, notice: I18n.t("password.changed")
     else
+      @user = Current.user
+      @user.errors.add(:password, use_case.errors.first)
       render inertia: "Passwords/Edit", props: inertia_props_with_errors,
              status: :unprocessable_entity
     end

@@ -253,11 +253,11 @@
      rails db:migrate
      ```
 
-2. **Event (Run) Model**
+2. **HashEvent (Run) Model**
    - Generate scaffold without views (we’ll use Inertia instead of default ERB):
 
      ```bash
-     rails g model Event \
+     rails g model HashEvent \
        run_number:integer:index \
        descriptor:string \
        date:date \
@@ -266,19 +266,18 @@
        latitude:decimal{10,6} \
        longitude:decimal{10,6} \
        intro_link:string \
-       created_by:bigint:index \
+       creator:bigint:index \
        phtml:false \
        timestamps
      rails db:migrate
      ```
 
-   - Add associations in `app/models/event.rb`:
+   - Add associations in `app/models/hash_event.rb`:
 
      ```ruby
-     class Event < ApplicationRecord
-       belongs_to :creator, class_name: "User", foreign_key: :created_by
+     class HashEvent < ApplicationRecord
+       belongs_to :creator, class_name: "User", foreign_key: :creator
        has_many :rsvps, dependent: :destroy
-       has_many :attendances, dependent: :destroy
        has_many :photos, dependent: :destroy
 
        validates :run_number, presence: true, uniqueness: true
@@ -358,7 +357,7 @@
    - Run `bundle install`, then add to `Event` model:
 
      ```ruby
-     class Event < ApplicationRecord
+     class HashEvent < ApplicationRecord
        geocoded_by :address
        after_validation :geocode, if: ->(obj){ obj.address_changed? }
 
@@ -382,24 +381,24 @@
    - Replace default ERB actions with Inertia responses. Example:
 
      ```ruby
-     class EventsController < ApplicationController
+     class HashEventsController < ApplicationController
        before_action :authenticate_user!
-       before_action :set_event, only: %i[show edit update destroy]
+       before_action :set_hash_event, only: %i[show edit update destroy]
 
        def index
-         @events = Event.order(date: :asc).includes(:rsvps, :photos)
-         render inertia: "Events/Index", props: {
-           events: @events.as_json(
-             only: %i[id run_number descriptor date time address latitude longitude intro_link],
-             methods: %i[rsvp_count attendance_count photo_count]
+         @hash_events = HashEvent.order(date: :asc).includes(:rsvps, :photos)
+         render inertia: "HashEvent/Index", props: {
+           hash_events: @hash_events.as_json(
+             only: %i[id run_number descriptor date time address latitude longitude],
+             methods: %i[rsvp_count photo_count]
            )
          }
        end
 
        def show
-         authorize @event
-         render inertia: "Events/Show", props: {
-           event: @event.as_json(
+         authorize @hash_event
+         render inertia: "HashEvent/Show", props: {
+           hash_event: @hash_event.as_json(
              include: {
                rsvps: { include: { user: { only: %i[id display_name avatar_url] } }, only: %i[id status attended_at] },
                photos: { only: %i[id image_url alt_text user_id] }
@@ -410,30 +409,30 @@
        end
 
        def new
-         authorize Event
-         render inertia: "Events/New"
+         authorize HashEvent
+         render inertia: "HashEvent/New"
        end
 
        def create
-         authorize Event
-         @event = current_user.created_events.build(event_params)
-         if @event.save
-           redirect_to inertia_redirect_to: event_path(@event)
+         authorize HashEvent
+         @hash_event = current_user.created_hash_events.build(hash_event_params)
+         if @hash_event.save
+           redirect_to hash_event_path(@hash_event)
          else
-           render inertia: "Events/New", props: { errors: @event.errors.full_messages }
+           render inertia: "HashEvent/New", props: { errors: @hash_event.errors.full_messages }
          end
        end
 
        # edit/update/destroy: similar pattern, using Pundit
        private
 
-       def set_event
-         @event = Event.find(params[:id])
+       def set_hash_event
+         @hash_event = HashEvent.find(params[:id])
        end
 
-       def event_params
-         params.require(:event).permit(
-           :run_number, :descriptor, :date, :time, :address, :intro_link
+       def hash_event_params
+         params.require(:hash_event).permit(
+           :run_number, :descriptor, :date, :time, :address
          )
        end
      end
@@ -451,10 +450,10 @@
      ```ruby
      class RsvpsController < ApplicationController
        before_action :authenticate_user!
-       before_action :set_event
+       before_action :set_hash_event
 
        def create
-         @rsvp = @event.rsvps.new(user: current_user, status: "yes")
+         @rsvp = @hash_event.rsvps.new(user: current_user, status: "yes")
          if @rsvp.save
            render json: { success: true, rsvp: @rsvp }, status: :created
          else
@@ -463,7 +462,7 @@
        end
 
        def update
-         @rsvp = @event.rsvps.find_by(user: current_user)
+         @rsvp = @hash_event.rsvps.find_by(user: current_user)
          if @rsvp.update(rsvp_params)
            render json: { success: true, rsvp: @rsvp }
          else
@@ -473,8 +472,8 @@
 
        private
 
-       def set_event
-         @event = Event.find(params[:event_id])
+       def set_hash_event
+         @hash_event = HashEvent.find(params[:event_id])
        end
 
        def rsvp_params
@@ -525,13 +524,13 @@
 
        private
 
-       def set_event
-         @event = Event.find(params[:event_id])
+       def set_hash_event
+         @hash_event = HashEvent.find(params[:event_id])
        end
      end
      ```
 
-   - Authorize via `PhotoPolicy` so that either the uploader or event creator can delete.
+   - Authorize via `PhotoPolicy` so that either the uploader or hash event creator can delete.
 
 ---
 
@@ -694,17 +693,17 @@
 
           ```jsx
           <AttendanceToggle
-            eventId={event.id}
-            userRsvp={event.rsvps.find((r) => r.user.id === currentUserId)}
+            eventId={hashEvent.id}
+            userRsvp={hashEvent.rsvps.find((r) => r.user.id === currentUserId)}
           />
           ```
 
-        - `AttendanceToggle` will call `PATCH /events/:id/rsvp` with `{ attended_at: new Date().toISOString() }`.
+        - `AttendanceToggle` will call `PATCH /hash_events/:id/rsvp` with `{ attended_at: new Date().toISOString() }`.
 
      2. **PhotoAlbum / PhotoGallery**
-        - Renders a grid (e.g. Tailwind `grid grid-cols-3 gap-2`) of photos: `event.photos`.
+        - Renders a grid (e.g. Tailwind `grid grid-cols-3 gap-2`) of photos: `hashEvent.photos`.
         - Each photo is a clickable thumbnail that opens a lightbox.
-        - If `current_user_id` exists, show a `<PhotoUploader eventId={event.id} />` component with:
+        - If `current_user_id` exists, show a `<PhotoUploader eventId={hashEvent.id} />` component with:
           - File input (accept “image/\*”).
           - On submit, upload to S3 (or Cloudinary) via a signed URL retrieved from a Rails endpoint (you’ll need to build that). Once uploaded, Rails persists the `image_url`.
 
@@ -888,9 +887,9 @@
    - Create a channel, e.g. `EventsChannel`, that streams for all connected clients:
 
      ```ruby
-     class EventsChannel < ApplicationCable::Channel
+     class HashEventsChannel < ApplicationCable::Channel
        def subscribed
-         stream_from "events"
+         stream_from "hash_events"
        end
      end
      ```
@@ -899,10 +898,10 @@
 
      ```ruby
      ActionCable.server.broadcast(
-       "events",
+       "hash_events",
        type: "rsvp_update",
-       event_id: @event.id,
-       rsvp_count: @event.rsvps.where(status: "yes").count
+       hash_event_id: @hash_event.id,
+       rsvp_count: @hash_event.rsvps.where(status: "yes").count
      )
      ```
 
@@ -940,15 +939,14 @@
 
      ```ruby
      FactoryBot.define do
-       factory :event do
+       factory :hash_event do
          run_number { rand(100..999) }
-         descriptor { "Morning Trail Run" }
+         descriptor { "Morning Trail Hash Run" }
          date { Date.today + 1 }
          time { "09:00" }
          address { "123 Forest Rd, Lawrence, KS" }
          latitude { 38.9717 }
          longitude { -95.2353 }
-         intro_link { "https://en.wikipedia.org/wiki/Hash_house_harrriers" }
          association :creator, factory: :user
        end
      end
@@ -1142,10 +1140,10 @@
      class ReminderJob
        include SolidQueue::Job
 
-       def perform(event_id)
-         event = Event.find(event_id)
-         event.rsvps.where(status: "pending").each do |rsvp|
-           EventMailer.with(user: rsvp.user, event: event).rsvp_reminder.deliver_now
+       def perform(hash_event_id)
+         hash_event = HashEvent.find(hash_event_id)
+         hash_event.rsvps.where(status: "pending").each do |rsvp|
+           EventMailer.with(user: rsvp.user, event: hash_event).rsvp_reminder.deliver_now
          end
        end
      end

@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Event do
+RSpec.describe HashEvent do
   describe "validations" do
     it { is_expected.to validate_presence_of(:run_number) }
     it { is_expected.to validate_presence_of(:descriptor) }
@@ -12,7 +12,7 @@ RSpec.describe Event do
   end
 
   describe "associations" do
-    it { is_expected.to belong_to(:creator).class_name("User").with_foreign_key(:creator).inverse_of(:created_events) }
+    it { is_expected.to belong_to(:creator).class_name("User").with_foreign_key(:creator).inverse_of(:created_hash_events) }
     it { is_expected.to have_many(:rsvps) }
     it { is_expected.to have_many(:photos) }
   end
@@ -22,34 +22,42 @@ RSpec.describe Event do
       it "sets the creator to the current user" do
         user = create(:user)
         Current.user = user
-        event = build(:event, creator: nil)
-        event.valid?
-        expect(event.creator).to eq(user)
+        hash_event = build(:hash_event, creator: nil)
+        hash_event.valid?
+        expect(hash_event.creator).to eq(user)
         Current.user = nil
       end
     end
 
     describe "after_validation :geocode" do
       it "geocodes the address if it has changed" do
-        event = build(:event)
-        expect(event).to receive(:geocode)
-        event.address = "new address"
-        event.valid?
+        hash_event = build(:hash_event)
+        expect(hash_event).to receive(:geocode)
+        hash_event.address = "new address"
+        hash_event.valid?
       end
 
       it "does not geocode the address if it has not changed" do
-        event = create(:event)
-        expect(event).not_to receive(:geocode)
-        event.valid?
+        hash_event = create(:hash_event)
+        expect(hash_event).not_to receive(:geocode)
+        hash_event.valid?
       end
     end
 
     describe "before_destroy" do
       it "calls handle_dependent_records" do
-        event = create(:event)
-        expect(event).to receive(:handle_dependent_records)
-        event.destroy
+        hash_event = create(:hash_event)
+        expect(hash_event).to receive(:handle_dependent_records)
+        hash_event.destroy
       end
     end
   end
 end
+
+
+
+
+
+
+
+

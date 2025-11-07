@@ -4,48 +4,45 @@
 class SessionsController < ApplicationController
   skip_before_action :authenticate, only: %i[new create]
 
-  def index
-    @sessions = Current.user.sessions.order(created_at: :desc)
-  end
-
   def new
     render inertia: "Auth/Login"
   end
 
   def create
-    user = User.authenticate_by(email: params[:email], password: params[:password])
-    if user
-      handle_successful_login(user)
+    use_case = UserSignIn.new(email: params[:email], password: params[:password])
+    use_case.call
+
+    if use_case.success?
+      handle_successful_login(use_case)
     else
-      handle_failed_login
+      handle_failed_login(use_case)
     end
   end
 
   def destroy
-    session_record = find_session_to_destroy
-    session_record&.destroy
+    use_case = UserSignOut.new(
+      session_id: params[:id],
+      current_session_token: cookies.signed[:session_token]
+    )
+    use_case.call
+
     cookies.delete(:session_token)
 
-    redirect_to(root_path, notice: I18n.t("session.logged_out"))
+    if use_case.success?
+      redirect_to(root_path, notice: I18n.t("session.logged_out"))
+    else
+      redirect_to(root_path, alert: use_case.errors.first)
+    end
   end
 
   private
 
-  def find_session_to_destroy
-    if params[:id]
-      Current.user.sessions.find(params[:id])
-    else
-      Session.find_by(id: cookies.signed[:session_token])
-    end
-  end
-
-  def handle_successful_login(user)
-    session_record = user.sessions.create!
-    cookies.signed.permanent[:session_token] = {value: session_record.id, httponly: true}
+  def handle_successful_login(use_case)
+    cookies.signed.permanent[:session_token] = {value: use_case.session.id, httponly: true}
     redirect_to root_path, notice: I18n.t("session.signed_in")
   end
 
-  def handle_failed_login
-    redirect_to sign_in_path(email_hint: params[:email]), alert: I18n.t("session.invalid_credentials")
+  def handle_failed_login(use_case)
+    redirect_to sign_in_path(email_hint: params[:email]), alert: use_case.errors.first
   end
 end

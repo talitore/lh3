@@ -9,12 +9,13 @@ class RegistrationsController < ApplicationController
   end
 
   def create
-    @user = User.new(user_params)
+    use_case = UserRegistration.new(user_params)
+    use_case.call
 
-    if @user.save
-      handle_successful_registration
+    if use_case.success?
+      handle_successful_registration(use_case)
     else
-      render_registration_errors
+      render_registration_errors(use_case)
     end
   end
 
@@ -24,21 +25,15 @@ class RegistrationsController < ApplicationController
     params.permit(:email, :password, :password_confirmation, :display_name)
   end
 
-  def handle_successful_registration
-    session_record = @user.sessions.create!
-    cookies.signed.permanent[:session_token] = {value: session_record.id, httponly: true}
+  def handle_successful_registration(use_case)
+    cookies.signed.permanent[:session_token] = {value: use_case.session.id, httponly: true}
 
-    send_email_verification
     redirect_to root_path, notice: I18n.t("registration.welcome")
   end
 
-  def render_registration_errors
+  def render_registration_errors(use_case)
     render inertia: "Auth/Register", props: {
-      errors: @user.errors.messages
+      errors: use_case.errors
     }, status: :unprocessable_entity
-  end
-
-  def send_email_verification
-    UserMailer.with(user: @user).email_verification.deliver_later
   end
 end

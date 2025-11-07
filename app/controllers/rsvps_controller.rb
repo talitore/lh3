@@ -1,34 +1,33 @@
 # frozen_string_literal: true
 
 class RsvpsController < ApplicationController
-  before_action :set_event
+  before_action :set_hash_event
 
   def create
-    authorize @event, :create_rsvp?
-    @rsvp = @event.rsvps.find_or_initialize_by(user: Current.user)
-    @rsvp.assign_attributes(rsvp_params)
-    if @rsvp.save
-      redirect_to event_path(@event), notice: "RSVP saved."
+    authorize @hash_event, :create_rsvp?
+    use_case = CreateRSVP.new(event: @hash_event, user: Current.user, rsvp_params: rsvp_params).call
+
+    if use_case.success?
+      redirect_to hash_event_path(@hash_event), notice: "RSVP saved."
     else
-      redirect_to event_path(@event), alert: @rsvp.errors.full_messages.to_sentence
+      redirect_to hash_event_path(@hash_event), alert: use_case.errors.first
     end
   end
 
   def update
-    @rsvp = @event.rsvps.find_by(user: Current.user)
-    authorize @rsvp
-    @rsvp.assign_attributes(rsvp_params)
-    if @rsvp.save
-      redirect_to event_path(@event), notice: "RSVP updated."
+    use_case = CreateRSVP.new(event: @hash_event, user: Current.user, rsvp_params: rsvp_params).call
+
+    if use_case.success?
+      redirect_to hash_event_path(@hash_event), notice: "RSVP updated."
     else
-      redirect_to event_path(@event), alert: @rsvp.errors.full_messages.to_sentence
+      redirect_to hash_event_path(@hash_event), alert: use_case.errors.first
     end
   end
 
   private
 
-  def set_event
-    @event = Event.find(params[:event_id])
+  def set_hash_event
+    @hash_event = HashEvent.find(params[:event_id])
   end
 
   def rsvp_params

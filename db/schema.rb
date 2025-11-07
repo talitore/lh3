@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_07_011928) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_22_154635) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "events", force: :cascade do |t|
+  create_table "hash_events", force: :cascade do |t|
     t.integer "run_number"
     t.string "descriptor"
     t.date "date"
@@ -26,43 +26,43 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_07_011928) do
     t.datetime "deleted_at"
     t.float "latitude"
     t.float "longitude"
-    t.index ["creator"], name: "index_events_on_creator"
-    t.index ["deleted_at"], name: "index_events_on_deleted_at"
+    t.index ["creator"], name: "index_hash_events_on_creator"
+    t.index ["deleted_at"], name: "index_hash_events_on_deleted_at"
   end
 
   create_table "photos", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "event_id", null: false
+    t.bigint "hash_event_id", null: false
     t.string "image_url"
     t.string "alt_text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_photos_on_deleted_at"
-    t.index ["event_id"], name: "index_photos_on_event_id"
+    t.index ["hash_event_id"], name: "index_photos_on_hash_event_id"
     t.index ["user_id"], name: "index_photos_on_user_id"
   end
 
   create_table "rsvps", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "event_id", null: false
+    t.bigint "hash_event_id", null: false
     t.string "status"
     t.datetime "attended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_rsvps_on_deleted_at"
-    t.index ["event_id"], name: "index_rsvps_on_event_id"
-    t.index ["user_id", "event_id"], name: "index_rsvps_on_user_id_and_event_id", unique: true
+    t.index ["hash_event_id"], name: "index_rsvps_on_hash_event_id"
+    t.index ["user_id", "hash_event_id"], name: "index_rsvps_on_user_id_and_hash_event_id", unique: true
     t.index ["user_id"], name: "index_rsvps_on_user_id"
   end
 
   create_table "sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "user_agent"
-    t.string "ip_address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.string "ip_address"
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
@@ -79,10 +79,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_07_011928) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "events", "users", column: "creator"
-  add_foreign_key "photos", "events"
+  add_foreign_key "hash_events", "users", column: "creator"
+  add_foreign_key "photos", "hash_events"
   add_foreign_key "photos", "users"
-  add_foreign_key "rsvps", "events"
+  add_foreign_key "rsvps", "hash_events"
   add_foreign_key "rsvps", "users"
   add_foreign_key "sessions", "users"
 end

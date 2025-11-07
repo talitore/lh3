@@ -15,7 +15,7 @@ RSpec.describe User do
     it { is_expected.to have_many(:sessions).dependent(:destroy) }
     it { is_expected.to have_many(:rsvps) }
     it { is_expected.to have_many(:photos) }
-    it { is_expected.to have_many(:created_events).class_name("Event").with_foreign_key(:creator).inverse_of(:creator) }
+    it { is_expected.to have_many(:created_hash_events).class_name("HashEvent").with_foreign_key(:creator).inverse_of(:creator) }
   end
 
   describe "#display_name" do

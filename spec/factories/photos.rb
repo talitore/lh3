@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :photo do
     user
-    event
+    hash_event
     sequence(:image_url) { |n| "https://example.com/photo_#{n}.jpg" }
     alt_text { "A test photo" }
 

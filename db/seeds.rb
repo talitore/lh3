@@ -19,13 +19,13 @@ end
 
 Rails.logger.debug "✅ Seed user created: admin@app.local"
 
-# Create a default event for development
-Event.find_or_create_by!(descriptor: "Default Event") do |event|
-  event.run_number = 1
-  event.date = Time.zone.today
-  event.time = Time.current
-  event.address = "123 Main St, Anytown, USA"
-  event.creator = User.first
+# Create a default hash event for development
+HashEvent.find_or_create_by!(descriptor: "Default Hash Event") do |hash_event|
+  hash_event.run_number = 1
+  hash_event.date = Time.zone.today
+  hash_event.time = Time.current
+  hash_event.address = "123 Main St, Anytown, USA"
+  hash_event.creator = User.first
 end
 
-Rails.logger.debug "✅ Seed event created: Default Event"
+Rails.logger.debug "✅ Seed hash event created: Default Hash Event"

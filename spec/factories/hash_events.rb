@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :event do
+  factory :hash_event do
     creator factory: %i[user]
     sequence(:run_number)
-    descriptor { "Test Run" }
+    descriptor { "Test Hash Run" }
     date { Time.zone.today }
     time { Time.current }
     address { "1600 Amphitheatre Parkway, Mountain View, CA" }

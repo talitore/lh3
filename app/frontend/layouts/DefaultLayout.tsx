@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import { User } from "../types";
 import { editPasswordPath, rootPath, sessionsPath, signInPath } from "@/routes";
 import {
@@ -9,6 +9,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { Button } from "@/components/ui/button";
 
 interface PageProps {
   user: User | null;
@@ -28,6 +29,10 @@ interface DefaultLayoutProps {
  */
 export default function DefaultLayout({ children }: DefaultLayoutProps) {
   const { user } = usePage<PageProps>().props;
+
+  const handleLogout = () => {
+    router.delete("/logout");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -90,6 +95,13 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
                 <span className="text-sm text-muted-foreground">
                   Welcome, {user.display_name}
                 </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                >
+                  Sign Out
+                </Button>
               </div>
             )}
           </div>

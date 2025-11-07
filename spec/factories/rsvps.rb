@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :rsvp do
     user
-    event
+    hash_event
     status { "yes" }
 
     # Remove invalid status trait to align with model validation

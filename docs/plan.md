@@ -154,16 +154,16 @@ Implement user authentication (registration, login, logout) and enhance the User
 
 ---
 
-## Phase 3: Core Data Models & Migrations (Event, RSVP, Photo)
+## Phase 3: Core Data Models & Migrations (HashEvent, RSVP, Photo)
 
 ### Objective
 
-Define and migrate core data models: Event, RSVP, and Photo. Establish their associations.
+Define and migrate core data models: HashEvent, RSVP, and Photo. Establish their associations.
 
 ### PRD Alignment
 
-- Section 4: Data Modeling & Migrations (Event, RSVP, Photo models)
-- Section 4.5: Geocoding (initial setup for Event model)
+- Section 4: Data Modeling & Migrations (HashEvent, RSVP, Photo models)
+- Section 4.5: Geocoding (initial setup for HashEvent model)
 
 ### User Stories Covered
 
